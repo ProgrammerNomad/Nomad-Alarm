@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final positionAsync = ref.watch(currentPositionProvider);
     final favoritesAsync = ref.watch(favoritesProvider);
     final recentAsync = ref.watch(recentSearchesProvider);
@@ -26,12 +28,16 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nomad Alarm'),
+        title: Text(l10n.appTitle),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/alarm/new'),
-        icon: const Icon(Icons.add_location_alt),
-        label: const Text('Create Alarm'),
+      floatingActionButton: Semantics(
+        label: l10n.semCreateAlarm,
+        button: true,
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push('/alarm/new'),
+          icon: const Icon(Icons.add_location_alt),
+          label: Text(l10n.createAlarm),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -57,7 +63,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Search destination…',
+                      l10n.searchDestinationHint,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -79,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Active alarms',
+                    l10n.activeAlarms,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -102,7 +108,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Favorites',
+                    l10n.favorites,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -129,7 +135,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           recentAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Text('Error loading recent: $e'),
+            error: (e, _) => Text(l10n.errorPrefix(e.toString())),
             data: (recent) {
               if (recent.isEmpty) {
                 return Card(
@@ -144,20 +150,20 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Set your first destination alarm',
+                          l10n.firstAlarmTitle,
                           style: Theme.of(context).textTheme.titleMedium,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Search for a place or drop a pin on the map.',
+                          l10n.firstAlarmBody,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 16),
                         FilledButton(
                           onPressed: () => context.push('/search'),
-                          child: const Text('Search destination'),
+                          child: Text(l10n.searchDestination),
                         ),
                       ],
                     ),
@@ -169,7 +175,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Recent',
+                    l10n.recent,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -232,21 +238,22 @@ class _ActiveAlarmCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final stateAsync = ref.watch(activeAlarmStateProvider(alarm.id));
 
     final subtitle = stateAsync.when(
-      loading: () => alarm.address ?? 'Active alarm',
-      error: (_, stackTrace) => alarm.address ?? 'Active alarm',
+      loading: () => alarm.address ?? l10n.activeAlarmFallback,
+      error: (_, stackTrace) => alarm.address ?? l10n.activeAlarmFallback,
       data: (state) {
         final distance = formatDistance(state.distanceMeters);
         final eta = formatEta(state.etaMinutes);
         if (state.status == AlarmStatus.triggered) {
-          return 'Alarm ringing - $distance away';
+          return l10n.alarmRingingDistance(distance);
         }
         if (state.etaMinutes != null) {
           return '$distance · $eta';
         }
-        return '$distance away';
+        return l10n.distanceAway(distance);
       },
     );
 
@@ -282,12 +289,13 @@ class _LocationChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final label = positionAsync.when(
-      loading: () => 'Getting location…',
-      error: (_, stackTrace) => 'Location unavailable - tap to open map',
+      loading: () => l10n.gettingLocation,
+      error: (_, stackTrace) => l10n.locationUnavailable,
       data: (position) {
         if (position == null) {
-          return 'Location unavailable - tap to open map';
+          return l10n.locationUnavailable;
         }
         return '${position.latitude.toStringAsFixed(4)}, '
             '${position.longitude.toStringAsFixed(4)}';

@@ -6,6 +6,7 @@ import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:nomad_alarm/services/widget_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_logo.dart';
 import 'package:nomad_alarm/theme/app_colors.dart';
 
@@ -78,6 +79,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       }
     }
 
+    final widgetUri = await WidgetService.getLaunchUri();
+    if (!mounted) {
+      return;
+    }
+    final widgetRoute = _routeFromWidgetUri(widgetUri);
+    if (widgetRoute != null) {
+      context.go(widgetRoute);
+      return;
+    }
+
     final running = await ref.read(alarmRepositoryProvider).getRunning();
     if (!mounted) {
       return;
@@ -92,6 +103,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
     context.go('/home');
+  }
+
+  String? _routeFromWidgetUri(Uri? uri) {
+    if (uri == null) {
+      return null;
+    }
+    final route = uri.queryParameters['route'];
+    if (route != null && route.startsWith('/')) {
+      return route;
+    }
+    return null;
   }
 
   @override

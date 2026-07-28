@@ -9,34 +9,57 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
-* Flutter app scaffold (Phase 0 + Phase 1)
-* Material 3 theme, go_router bottom nav, Splash/Welcome/Permissions onboarding
-* Isar database with all collections and SettingsRepository
-* Settings screen, Permission Center, logo on splash/welcome/about/app icon
-* GitHub Actions CI and unit/widget tests
-* Design System (`docs/DESIGN_SYSTEM.md`) - colors, typography, spacing, M3 tokens, components
-* User Flows (`docs/USER_FLOWS.md`) - end-to-end UX paths
-* Diagrams (`docs/DIAGRAMS.md`) - Mermaid architecture, sequence, state, ER diagrams
-* Repository layer spec (`docs/REPOSITORIES.md`) - data access between controllers and services
-* Error Handling guide (`docs/ERROR_HANDLING.md`)
-* Internal Events catalog (`docs/EVENTS.md`) - local-only, no analytics
-* Feature Flags (`docs/FEATURE_FLAGS.md`)
-* Constants reference (`docs/CONSTANTS.md`)
-* Battery strategy (`docs/BATTERY.md`)
-* Internationalization guide (`docs/L10N.md`)
-* Assets inventory (`docs/ASSETS.md`)
-* Sound specification (`docs/SOUNDS.md`)
-* Widgets spec (`docs/WIDGETS.md`)
-* Play Store checklist (`docs/PLAY_STORE.md`)
-* Release Checklist (`RELEASE_CHECKLIST.md`)
-* Versioning guide (`VERSIONING.md`)
-* GitHub issue templates (bug, feature, question)
-* GitHub labels and discussions guides (`.github/`)
-* Updated Architecture with repository layer
+* English + Hindi UI localization (`lib/l10n/`, gen-l10n) wired through Settings language
+* TalkBack semantics on create alarm, cancel, dismiss, snooze, backup actions
+* Local-only build guide ([LOCAL_BUILD.md](docs/LOCAL_BUILD.md))
 
 ### Changed
-* Architecture docs now use Controller → Repository → Service → DB flow
-* Documentation index expanded with reading order and categories
+* Removed GitHub Actions workflow (local builds only)
+* Repo cleanup: debug artifacts, orphan `placeholder_screen.dart`, stale `.github` templates
+* Docs synced with code (feature flags, widgets, privacy URL, MapLibre → flutter_map)
+
+> **Note:** `[1.0.0]` and `[1.5.0]` below are **not published** until [RELEASE_QA_SIGNOFF.md](docs/RELEASE_QA_SIGNOFF.md) is completed on a physical device and Play Store assets are captured.
+
+---
+
+## [1.5.0] - 2026-07-28
+
+### Added
+* **JSON backup & restore** - export/import alarms, favorites, settings, and history via Settings → Data
+* **Home screen widgets** - small (2×1) and medium (4×2) Android widgets with live distance and ETA
+* Dynamic app version on About screen (`package_info_plus`)
+* Open source licenses screen (Play Store requirement)
+* Hosted privacy policy link (`docs/PRIVACY.md`)
+
+### Changed
+* Feature flags enabled: `backupRestore`, `homeScreenWidgets`
+* Version bumped to 1.5.0+2
+
+---
+
+## [1.0.0] - 2026-07-28
+
+### Added
+* **Location & maps** - OSM map, Nominatim search, favorites, recent destinations
+* **Alarm engine** - distance-based triggers, active alarm screen, ring screen with TTS and vibration
+* **Background tracking** - Android foreground service, persistent notification with live distance and ETA
+* **History & trips** - auto-logged journeys, completed/missed/dismissed history
+* **Settings** - theme, units, language, alarm defaults (distance, voice, vibration, flashlight), battery GPS profile
+* **Permissions** - 5-step onboarding (location, notifications, background, exact alarm, battery optimization)
+* **Phase 6 polish** - straight-line ETA, flashlight strobe on ring, low-battery warnings, debug screen
+* Straight-line ETA on active alarm, home card, and tracking notification
+* Flashlight alert option on alarm config and ring
+* Low battery detection with notification and in-app banner
+* Debug screen (debug builds) with GPS/service/battery snapshot
+* Expanded unit, widget, and integration test coverage
+
+### Changed
+* Background GPS respects battery profile (Balanced / Aggressive / Saver) with auto-aggressive near destination
+* Alarm defaults configurable from Settings and applied to new alarms
+
+### Documentation
+* Design System, User Flows, Diagrams, Repository layer, Error Handling, Events, Feature Flags
+* Battery strategy, L10N guide, Play Store checklist, Release checklist, Versioning guide
 
 ---
 
@@ -45,8 +68,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 * Initial repository with README and project documentation
 * Master Blueprint defining vision, features, and technology stack
+* Flutter app scaffold (Phase 0 + Phase 1 foundation)
 
 ---
 
-[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.0.0...v1.5.0
+[1.0.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/releases/tag/v0.1.0

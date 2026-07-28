@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
@@ -131,6 +132,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final alarm = _alarm;
 
     return PopScope(
@@ -155,7 +157,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Stop approaching!',
+                        l10n.stopApproaching,
                         style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -173,22 +175,30 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
                         ),
                       ],
                       const Spacer(),
-                      FilledButton.icon(
-                        onPressed: () => _dismiss(snooze: false),
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
+                      Semantics(
+                        label: l10n.semDismissAlarm,
+                        button: true,
+                        child: FilledButton.icon(
+                          onPressed: () => _dismiss(snooze: false),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(48),
+                          ),
+                          icon: const Icon(Icons.check),
+                          label: Text(l10n.dismiss),
                         ),
-                        icon: const Icon(Icons.check),
-                        label: const Text('Dismiss'),
                       ),
                       const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: () => _dismiss(snooze: true),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
+                      Semantics(
+                        label: l10n.semSnoozeAlarm,
+                        button: true,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _dismiss(snooze: true),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(48),
+                          ),
+                          icon: const Icon(Icons.snooze),
+                          label: Text(l10n.snoozeTwoMin),
                         ),
-                        icon: const Icon(Icons.snooze),
-                        label: const Text('Snooze 2 min'),
                       ),
                     ],
                   ),

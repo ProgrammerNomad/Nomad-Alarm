@@ -19,8 +19,9 @@ subprojects {
 }
 
 subprojects {
-    pluginManager.withPlugin("com.android.library") {
-        extensions.configure<LibraryExtension>("android") {
+    afterEvaluate {
+        extensions.findByType(LibraryExtension::class.java)?.apply {
+            compileSdk = 36
             if (namespace.isNullOrEmpty()) {
                 namespace = "dev.isar.${project.name.replace("-", "_")}"
             }

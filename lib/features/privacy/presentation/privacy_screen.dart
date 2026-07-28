@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:nomad_alarm/core/constants/app_constants.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 
 class PrivacyScreen extends StatelessWidget {
@@ -6,27 +9,40 @@ class PrivacyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const NomadScaffold(
-      title: 'Privacy',
+    final l10n = context.l10n;
+
+    return NomadScaffold(
+      title: l10n.privacyTitle,
       showBackButton: true,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your privacy matters',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              l10n.privacyHeading,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            SizedBox(height: 16),
-            Text('• No account or login required'),
-            SizedBox(height: 8),
-            Text('• No ads or analytics'),
-            SizedBox(height: 8),
-            Text('• No cloud storage - all data stays on your device'),
-            SizedBox(height: 8),
-            Text('• Location is used only for alarm distance calculation'),
-            SizedBox(height: 8),
-            Text('• Open source - inspect the code anytime'),
+            const SizedBox(height: 16),
+            Text('• ${l10n.privacyBullet1}'),
+            const SizedBox(height: 8),
+            Text('• ${l10n.privacyBullet2}'),
+            const SizedBox(height: 8),
+            Text('• ${l10n.privacyBullet3}'),
+            const SizedBox(height: 8),
+            Text('• ${l10n.privacyBullet4}'),
+            const SizedBox(height: 8),
+            Text('• ${l10n.privacyBullet5}'),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () => launchUrl(
+                Uri.parse(AppConstants.privacyPolicyUrl),
+                mode: LaunchMode.externalApplication,
+              ),
+              icon: const Icon(Icons.open_in_new),
+              label: Text(l10n.fullPrivacyPolicy),
+            ),
           ],
         ),
       ),

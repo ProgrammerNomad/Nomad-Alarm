@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
@@ -63,13 +64,14 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
   }
 
   Future<void> _save({required bool start}) async {
+    final l10n = context.l10n;
     final draft = await _buildDraft();
     if (draft == null) {
       if (!mounted) {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a destination first')),
+        SnackBar(content: Text(l10n.selectDestinationFirst)),
       );
       return;
     }
@@ -93,7 +95,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Alarm saved')),
+        SnackBar(content: Text(l10n.alarmSaved)),
       );
       context.go('/home');
     } finally {
@@ -105,11 +107,12 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final destination = widget.destination;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Alarm'),
+        title: Text(l10n.createAlarmTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -122,11 +125,11 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('No destination selected'),
+                    Text(l10n.noDestinationSelected),
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () => context.push('/search'),
-                      child: const Text('Search destination'),
+                      child: Text(l10n.searchDestination),
                     ),
                   ],
                 ),
@@ -149,7 +152,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Alert distance',
+                  l10n.alertDistance,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
@@ -168,19 +171,19 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                   },
                 ),
                 SwitchListTile(
-                  title: const Text('Voice alert'),
-                  subtitle: const Text('Spoken alert when triggered'),
+                  title: Text(l10n.voiceAlert),
+                  subtitle: Text(l10n.voiceAlertSubtitle),
                   value: _voiceEnabled,
                   onChanged: (v) => setState(() => _voiceEnabled = v),
                 ),
                 SwitchListTile(
-                  title: const Text('Vibration'),
+                  title: Text(l10n.vibration),
                   value: _vibrationEnabled,
                   onChanged: (v) => setState(() => _vibrationEnabled = v),
                 ),
                 SwitchListTile(
-                  title: const Text('Flashlight'),
-                  subtitle: const Text('LED strobe when alarm rings'),
+                  title: Text(l10n.flashlight),
+                  subtitle: Text(l10n.flashlightSubtitle),
                   value: _flashlightEnabled,
                   onChanged: (v) => setState(() => _flashlightEnabled = v),
                 ),
@@ -193,12 +196,12 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Save & Start'),
+                      : Text(l10n.saveAndStart),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
                   onPressed: _saving ? null : () => _save(start: false),
-                  child: const Text('Save only'),
+                  child: Text(l10n.saveOnly),
                 ),
               ],
             ),

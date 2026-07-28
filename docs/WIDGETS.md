@@ -2,7 +2,7 @@
 
 Android home screen widgets, lock screen, and Quick Settings tile specifications.
 
-**Version:** v1.5 (feature-flagged off in v1.0)
+**Version:** v1.5 (enabled in v1.5.0 - small + medium widgets implemented)
 
 See [Feature Flags](FEATURE_FLAGS.md) and [Design System](DESIGN_SYSTEM.md).
 

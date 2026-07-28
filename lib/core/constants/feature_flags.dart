@@ -6,9 +6,9 @@ abstract class FeatureFlags {
   static const bool nominatimSearch = true;
   static const bool osmMaps = true;
 
-  static const bool homeScreenWidgets = false;
+  static const bool homeScreenWidgets = true;
   static const bool quickSettingsTile = false;
-  static const bool backupRestore = false;
+  static const bool backupRestore = true;
   static const bool deepLinkImport = false;
 
   static const bool googleMapsProvider = false;

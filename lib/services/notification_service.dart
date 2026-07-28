@@ -110,7 +110,7 @@ class NotificationService {
       alarmNotificationId,
       'Stop approaching!',
       destinationName,
-      NotificationDetails(
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           alarmChannelId,
           'Alarm Ring',
@@ -175,7 +175,7 @@ class NotificationService {
   }
 
   NotificationDetails _trackingDetails(int alarmId) {
-    return NotificationDetails(
+    return const NotificationDetails(
       android: AndroidNotificationDetails(
         trackingChannelId,
         'Active Alarm',

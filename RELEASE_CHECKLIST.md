@@ -32,20 +32,7 @@ See [Versioning](VERSIONING.md) and [Play Store](docs/PLAY_STORE.md).
 
 ## Build
 
-```bash
-# Clean build
-flutter clean
-flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-
-# Verify
-flutter analyze
-flutter test
-
-# Release builds
-flutter build appbundle --release
-flutter build apk --release
-```
+Local builds only - see [docs/LOCAL_BUILD.md](docs/LOCAL_BUILD.md). No GitHub Actions required.
 
 - [ ] AAB builds successfully
 - [ ] APK builds successfully (for GitHub Release)

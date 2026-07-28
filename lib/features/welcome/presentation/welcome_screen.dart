@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/ui_constants.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_logo.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_primary_button.dart';
@@ -11,6 +12,8 @@ class WelcomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -21,17 +24,17 @@ class WelcomeScreen extends ConsumerWidget {
               const NomadLogo(size: 140),
               const SizedBox(height: 32),
               Text(
-                'Never miss your stop again',
+                l10n.welcomeTitle,
                 style: Theme.of(context).textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              const _Bullet(text: '100% free - no ads, no subscriptions'),
-              const _Bullet(text: 'Privacy first - no login, no tracking'),
-              const _Bullet(text: 'Works offline for active alarms'),
+              _Bullet(text: l10n.welcomeBullet1),
+              _Bullet(text: l10n.welcomeBullet2),
+              _Bullet(text: l10n.welcomeBullet3),
               const Spacer(),
               NomadPrimaryButton(
-                label: 'Get Started',
+                label: l10n.getStarted,
                 onPressed: () async {
                   await ref
                       .read(settingsControllerProvider.notifier)

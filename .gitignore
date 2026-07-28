@@ -1,6 +1,7 @@
 # Android/Gradle crash logs
 android/hs_err_pid*.log
 android/replay_pid*.log
+bugreport*.zip
 *.class
 *.log
 *.pyc
@@ -20,11 +21,6 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -34,6 +30,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+isar.dll
 
 # Symbolication related
 app.*.symbols
@@ -45,3 +42,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Release signing (never commit)
+android/key.properties

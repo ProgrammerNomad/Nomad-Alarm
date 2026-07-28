@@ -102,6 +102,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   var paused = false;
   var lastDistanceMeters = double.infinity;
   LocationSettings? activeSettings;
+  Future<void> Function(Position position)? onPosition;
 
   Future<void> stopAll() async {
     await subscription?.cancel();
@@ -129,10 +130,10 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     await subscription?.cancel();
     subscription = Geolocator.getPositionStream(
       locationSettings: settings,
-    ).listen(handlePosition);
+    ).listen((position) => onPosition!(position));
   }
 
-  Future<void> handlePosition(Position position) async {
+  onPosition = (Position position) async {
     final activeConfig = config;
     if (activeConfig == null || paused) {
       return;
@@ -167,7 +168,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
       currentStatus = AlarmStatus.triggered;
       service.invoke('triggered', {'alarmId': activeConfig.alarmId});
     }
-  }
+  };
 
   service.on('start').listen((event) async {
     if (event == null) {
@@ -202,7 +203,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   service.on('snooze').listen((_) {
     currentStatus = AlarmStatus.active;
     snoozeSuppressedUntil = DateTime.now().add(
-      Duration(minutes: AlarmConstants.snoozeDurationMin),
+      const Duration(minutes: AlarmConstants.snoozeDurationMin),
     );
   });
 

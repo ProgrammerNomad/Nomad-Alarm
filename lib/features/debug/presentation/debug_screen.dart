@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
-import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/services/battery_monitor_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 

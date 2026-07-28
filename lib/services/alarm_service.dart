@@ -18,6 +18,7 @@ import 'package:nomad_alarm/services/battery_monitor_service.dart';
 import 'package:nomad_alarm/services/flashlight_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
+import 'package:nomad_alarm/services/widget_service.dart';
 
 typedef AlarmTriggerHandler = void Function(int alarmId, {bool isRing});
 
@@ -352,6 +353,16 @@ class AlarmService {
       await _notificationService.updateTrackingNotification(enriched);
     }
 
+    await WidgetService.updateActiveAlarm(
+      active: enriched.status == AlarmStatus.active ||
+          enriched.status == AlarmStatus.paused ||
+          enriched.status == AlarmStatus.triggered,
+      destination: enriched.destinationName,
+      distanceMeters: enriched.distanceMeters,
+      etaMinutes: enriched.etaMinutes,
+      alarmId: enriched.alarmId,
+    );
+
     if (enriched.isGpsLost) {
       await _notificationService.showGpsLostAlert(enriched.alarmId);
     }
@@ -540,6 +551,7 @@ class AlarmService {
     await _session?.controller.close();
     _session = null;
     _evaluator.tracker.reset();
+    await WidgetService.clear();
   }
 
   Future<void> dispose() async {

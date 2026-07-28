@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nomad Alarm</string>
+    <string name="widget_small_description">Active alarm distance (compact)</string>
+    <string name="widget_medium_description">Active alarm with destination and ETA</string>
+</resources>

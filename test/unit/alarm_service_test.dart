@@ -125,6 +125,16 @@ void main() {
     expect(state.distanceMeters, lessThan(500));
   });
 
+  test('evaluate stays active when outside threshold', () {
+    final alarm = _alarm(trigger: 500);
+    final state = service.evaluate(
+      alarm,
+      _position(lat: 51.52, lon: -0.1278),
+    );
+    expect(state.status, AlarmStatus.active);
+    expect(state.distanceMeters, greaterThan(500));
+  });
+
   test('evaluate includes eta when moving', () {
     final alarm = _alarm(trigger: 5000);
     final state = service.evaluate(

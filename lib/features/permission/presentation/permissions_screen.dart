@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/ui_constants.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/core/l10n/permission_l10n.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
@@ -18,7 +20,9 @@ class PermissionsScreen extends ConsumerStatefulWidget {
 class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
   int _step = 0;
 
-  PermissionInfo get _current => PermissionService.permissionSteps[_step];
+  List<PermissionInfo> get _steps => localizedPermissionSteps(context.l10n);
+
+  PermissionInfo get _current => _steps[_step];
 
   Future<void> _grant() async {
     final service = ref.read(permissionServiceProvider);
@@ -36,7 +40,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
   void _skip() => _next();
 
   Future<void> _next() async {
-    if (_step < PermissionService.permissionSteps.length - 1) {
+    if (_step < _steps.length - 1) {
       setState(() => _step++);
       return;
     }
@@ -48,9 +52,12 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final steps = _steps;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Permissions (${_step + 1}/${PermissionService.permissionSteps.length})'),
+        title: Text(l10n.permissionsTitle(_step + 1, steps.length)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(UiConstants.screenPadding),
@@ -58,7 +65,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LinearProgressIndicator(
-              value: (_step + 1) / PermissionService.permissionSteps.length,
+              value: (_step + 1) / steps.length,
             ),
             const SizedBox(height: 32),
             Icon(
@@ -77,14 +84,14 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const Spacer(),
-            NomadPrimaryButton(label: 'Grant', onPressed: _grant),
+            NomadPrimaryButton(label: l10n.grant, onPressed: _grant),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               height: UiConstants.minTouchTarget,
               child: TextButton(
                 onPressed: _current.skippable ? _skip : null,
-                child: Text(_current.skippable ? 'Skip for now' : 'Required'),
+                child: Text(_current.skippable ? l10n.skipForNow : l10n.required),
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
@@ -49,6 +50,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final stateAsync = ref.watch(activeAlarmStateProvider(widget.alarmId));
 
     ref.listen(activeAlarmStateProvider(widget.alarmId), (prev, next) {
@@ -60,12 +62,12 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Active Alarm'),
+        title: Text(l10n.activeAlarmTitle),
         automaticallyImplyLeading: false,
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
         data: (state) {
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -104,7 +106,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'estimated arrival',
+                  l10n.estimatedArrival,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
@@ -126,28 +128,28 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                 if (state.isGpsLost) ...[
                   const SizedBox(height: 16),
                   _WarningBanner(
-                    message: 'GPS signal lost - last fix may be stale',
+                    message: l10n.gpsLostWarning,
                     color: Colors.orange,
                   ),
                 ],
                 if (state.hasPassedDestination) ...[
                   const SizedBox(height: 16),
                   _WarningBanner(
-                    message: 'You may have passed your destination',
+                    message: l10n.passedDestinationWarning,
                     color: Colors.red,
                   ),
                 ],
                 if (state.isLowBattery) ...[
                   const SizedBox(height: 16),
                   _WarningBanner(
-                    message: 'Low battery - charge your phone to keep tracking reliable',
+                    message: l10n.lowBatteryWarning,
                     color: Colors.amber,
                   ),
                 ],
                 if (state.status == AlarmStatus.paused) ...[
                   const SizedBox(height: 16),
                   _WarningBanner(
-                    message: 'Alarm paused',
+                    message: l10n.alarmPaused,
                     color: Colors.blue,
                   ),
                 ],
@@ -161,7 +163,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                       ref.invalidate(activeAlarmsProvider);
                     },
                     icon: const Icon(Icons.play_arrow),
-                    label: const Text('Resume'),
+                    label: Text(l10n.resume),
                   )
                 else
                   OutlinedButton.icon(
@@ -172,7 +174,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                       ref.invalidate(activeAlarmsProvider);
                     },
                     icon: const Icon(Icons.pause),
-                    label: const Text('Pause'),
+                    label: Text(l10n.pause),
                   ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
@@ -184,21 +186,25 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                     }
                   },
                   icon: const Icon(Icons.map),
-                  label: const Text('Open Map'),
+                  label: Text(l10n.openMap),
                 ),
                 const SizedBox(height: 8),
-                TextButton.icon(
-                  onPressed: () async {
-                    await ref
-                        .read(alarmServiceProvider)
-                        .cancelAlarm(widget.alarmId);
-                    ref.invalidate(activeAlarmsProvider);
-                    if (context.mounted) {
-                      context.go('/home');
-                    }
-                  },
-                  icon: const Icon(Icons.cancel_outlined),
-                  label: const Text('Cancel Alarm'),
+                Semantics(
+                  label: l10n.semCancelAlarm,
+                  button: true,
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      await ref
+                          .read(alarmServiceProvider)
+                          .cancelAlarm(widget.alarmId);
+                      ref.invalidate(activeAlarmsProvider);
+                      if (context.mounted) {
+                        context.go('/home');
+                      }
+                    },
+                    icon: const Icon(Icons.cancel_outlined),
+                    label: Text(l10n.cancelAlarm),
+                  ),
                 ),
               ],
             ),

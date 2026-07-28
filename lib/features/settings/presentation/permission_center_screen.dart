@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/core/l10n/permission_l10n.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
+import 'package:nomad_alarm/l10n/app_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionCenterScreen extends ConsumerStatefulWidget {
@@ -32,17 +35,20 @@ class _PermissionCenterScreenState extends ConsumerState<PermissionCenterScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final steps = localizedPermissionSteps(l10n);
+
     return NomadScaffold(
-      title: 'Permission Center',
+      title: l10n.permCenterTitle,
       showBackButton: true,
       body: _statuses == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              children: PermissionService.permissionSteps.map((info) {
+              children: steps.map((info) {
                 final status = _statuses![info.type] ?? PermissionStatus.denied;
                 return ListTile(
                   title: Text(info.title),
-                  subtitle: Text(_statusLabel(status)),
+                  subtitle: Text(_statusLabel(l10n, status)),
                   trailing: status.isGranted
                       ? Icon(
                           Icons.check_circle,
@@ -59,7 +65,7 @@ class _PermissionCenterScreenState extends ConsumerState<PermissionCenterScreen>
                             }
                             await _load();
                           },
-                          child: const Text('Fix'),
+                          child: Text(l10n.permFix),
                         ),
                 );
               }).toList(),
@@ -67,12 +73,11 @@ class _PermissionCenterScreenState extends ConsumerState<PermissionCenterScreen>
     );
   }
 
-  String _statusLabel(PermissionStatus status) {
+  String _statusLabel(AppLocalizations l10n, PermissionStatus status) {
     return switch (status) {
-      PermissionStatus.granted => 'Granted',
-      PermissionStatus.denied => 'Denied',
-      PermissionStatus.permanentlyDenied =>
-        'Permanently denied - open settings',
+      PermissionStatus.granted => l10n.permGranted,
+      PermissionStatus.denied => l10n.permDenied,
+      PermissionStatus.permanentlyDenied => l10n.permPermanentlyDenied,
       PermissionStatus.restricted => 'Restricted',
       PermissionStatus.limited => 'Limited',
       PermissionStatus.provisional => 'Provisional',

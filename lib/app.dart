@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_alarm/l10n/app_localizations.dart';
 import 'package:nomad_alarm/core/constants/app_constants.dart';
 import 'package:nomad_alarm/core/router/app_router.dart';
 import 'package:nomad_alarm/models/enums.dart';
@@ -24,11 +26,25 @@ class NomadAlarmApp extends ConsumerWidget {
       error: (_, _) => ThemeMode.system,
     );
 
+    final locale = settingsAsync.when(
+      data: (settings) => Locale(settings.languageCode),
+      loading: () => const Locale('en'),
+      error: (_, _) => const Locale('en'),
+    );
+
     return MaterialApp.router(
       title: AppConstants.appName,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

@@ -63,7 +63,7 @@ class TripRepositoryImpl implements TripRepository {
   Future<Trip> endTrip(int tripId, TripOutcome outcome, {TripStats? stats}) async {
     final trip = await getById(tripId);
     if (trip == null) {
-      throw StorageException('Trip not found.');
+      throw const StorageException('Trip not found.');
     }
     if (trip.endedAt != null) {
       return trip;

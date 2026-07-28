@@ -33,77 +33,82 @@ const AppSettingsSchema = CollectionSchema(
       name: r'debugLoggingEnabled',
       type: IsarType.bool,
     ),
-    r'defaultTriggerDistanceMeters': PropertySchema(
+    r'defaultFlashlightEnabled': PropertySchema(
       id: 3,
+      name: r'defaultFlashlightEnabled',
+      type: IsarType.bool,
+    ),
+    r'defaultTriggerDistanceMeters': PropertySchema(
+      id: 4,
       name: r'defaultTriggerDistanceMeters',
       type: IsarType.double,
     ),
     r'defaultVibrationEnabled': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'defaultVibrationEnabled',
       type: IsarType.bool,
     ),
     r'defaultVoiceEnabled': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'defaultVoiceEnabled',
       type: IsarType.bool,
     ),
     r'fontFamily': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'fontFamily',
       type: IsarType.string,
     ),
     r'hasCompletedPermissions': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'hasCompletedPermissions',
       type: IsarType.bool,
     ),
     r'hasCompletedWelcome': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'hasCompletedWelcome',
       type: IsarType.bool,
     ),
     r'languageCode': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'languageCode',
       type: IsarType.string,
     ),
     r'lockScreenInfoEnabled': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'lockScreenInfoEnabled',
       type: IsarType.bool,
     ),
     r'mapProvider': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'mapProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsmapProviderEnumValueMap,
     ),
     r'persistentNotificationEnabled': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'persistentNotificationEnabled',
       type: IsarType.bool,
     ),
     r'routeProvider': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'routeProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsrouteProviderEnumValueMap,
     ),
     r'searchProvider': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'searchProvider',
       type: IsarType.byte,
       enumMap: _AppSettingssearchProviderEnumValueMap,
     ),
     r'themeMode': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'themeMode',
       type: IsarType.byte,
       enumMap: _AppSettingsthemeModeEnumValueMap,
     ),
     r'useMetric': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'useMetric',
       type: IsarType.bool,
     )
@@ -143,20 +148,21 @@ void _appSettingsSerialize(
   writer.writeString(offsets[0], object.accentColor);
   writer.writeByte(offsets[1], object.batteryProfile.index);
   writer.writeBool(offsets[2], object.debugLoggingEnabled);
-  writer.writeDouble(offsets[3], object.defaultTriggerDistanceMeters);
-  writer.writeBool(offsets[4], object.defaultVibrationEnabled);
-  writer.writeBool(offsets[5], object.defaultVoiceEnabled);
-  writer.writeString(offsets[6], object.fontFamily);
-  writer.writeBool(offsets[7], object.hasCompletedPermissions);
-  writer.writeBool(offsets[8], object.hasCompletedWelcome);
-  writer.writeString(offsets[9], object.languageCode);
-  writer.writeBool(offsets[10], object.lockScreenInfoEnabled);
-  writer.writeByte(offsets[11], object.mapProvider.index);
-  writer.writeBool(offsets[12], object.persistentNotificationEnabled);
-  writer.writeByte(offsets[13], object.routeProvider.index);
-  writer.writeByte(offsets[14], object.searchProvider.index);
-  writer.writeByte(offsets[15], object.themeMode.index);
-  writer.writeBool(offsets[16], object.useMetric);
+  writer.writeBool(offsets[3], object.defaultFlashlightEnabled);
+  writer.writeDouble(offsets[4], object.defaultTriggerDistanceMeters);
+  writer.writeBool(offsets[5], object.defaultVibrationEnabled);
+  writer.writeBool(offsets[6], object.defaultVoiceEnabled);
+  writer.writeString(offsets[7], object.fontFamily);
+  writer.writeBool(offsets[8], object.hasCompletedPermissions);
+  writer.writeBool(offsets[9], object.hasCompletedWelcome);
+  writer.writeString(offsets[10], object.languageCode);
+  writer.writeBool(offsets[11], object.lockScreenInfoEnabled);
+  writer.writeByte(offsets[12], object.mapProvider.index);
+  writer.writeBool(offsets[13], object.persistentNotificationEnabled);
+  writer.writeByte(offsets[14], object.routeProvider.index);
+  writer.writeByte(offsets[15], object.searchProvider.index);
+  writer.writeByte(offsets[16], object.themeMode.index);
+  writer.writeBool(offsets[17], object.useMetric);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -171,29 +177,30 @@ AppSettings _appSettingsDeserialize(
           reader.readByteOrNull(offsets[1])] ??
       BatteryProfile.balanced;
   object.debugLoggingEnabled = reader.readBool(offsets[2]);
-  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[3]);
-  object.defaultVibrationEnabled = reader.readBool(offsets[4]);
-  object.defaultVoiceEnabled = reader.readBool(offsets[5]);
-  object.fontFamily = reader.readString(offsets[6]);
-  object.hasCompletedPermissions = reader.readBool(offsets[7]);
-  object.hasCompletedWelcome = reader.readBool(offsets[8]);
+  object.defaultFlashlightEnabled = reader.readBool(offsets[3]);
+  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[4]);
+  object.defaultVibrationEnabled = reader.readBool(offsets[5]);
+  object.defaultVoiceEnabled = reader.readBool(offsets[6]);
+  object.fontFamily = reader.readString(offsets[7]);
+  object.hasCompletedPermissions = reader.readBool(offsets[8]);
+  object.hasCompletedWelcome = reader.readBool(offsets[9]);
   object.id = id;
-  object.languageCode = reader.readString(offsets[9]);
-  object.lockScreenInfoEnabled = reader.readBool(offsets[10]);
+  object.languageCode = reader.readString(offsets[10]);
+  object.lockScreenInfoEnabled = reader.readBool(offsets[11]);
   object.mapProvider =
-      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[11])] ??
+      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[12])] ??
           MapProviderType.osm;
-  object.persistentNotificationEnabled = reader.readBool(offsets[12]);
+  object.persistentNotificationEnabled = reader.readBool(offsets[13]);
   object.routeProvider = _AppSettingsrouteProviderValueEnumMap[
-          reader.readByteOrNull(offsets[13])] ??
+          reader.readByteOrNull(offsets[14])] ??
       RouteProviderType.osrm;
   object.searchProvider = _AppSettingssearchProviderValueEnumMap[
-          reader.readByteOrNull(offsets[14])] ??
+          reader.readByteOrNull(offsets[15])] ??
       SearchProviderType.nominatim;
   object.themeMode =
-      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[15])] ??
+      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[16])] ??
           AppThemeMode.system;
-  object.useMetric = reader.readBool(offsets[16]);
+  object.useMetric = reader.readBool(offsets[17]);
   return object;
 }
 
@@ -213,40 +220,42 @@ P _appSettingsDeserializeProp<P>(
     case 2:
       return (reader.readBool(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
-    case 4:
       return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readDouble(offset)) as P;
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
-    case 7:
       return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
-      return (reader.readString(offset)) as P;
-    case 10:
       return (reader.readBool(offset)) as P;
+    case 10:
+      return (reader.readString(offset)) as P;
     case 11:
+      return (reader.readBool(offset)) as P;
+    case 12:
       return (_AppSettingsmapProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MapProviderType.osm) as P;
-    case 12:
-      return (reader.readBool(offset)) as P;
     case 13:
+      return (reader.readBool(offset)) as P;
+    case 14:
       return (_AppSettingsrouteProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           RouteProviderType.osrm) as P;
-    case 14:
+    case 15:
       return (_AppSettingssearchProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SearchProviderType.nominatim) as P;
-    case 15:
+    case 16:
       return (_AppSettingsthemeModeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           AppThemeMode.system) as P;
-    case 16:
+    case 17:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -602,6 +611,16 @@ extension AppSettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'debugLoggingEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      defaultFlashlightEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'defaultFlashlightEnabled',
         value: value,
       ));
     });
@@ -1341,6 +1360,20 @@ extension AppSettingsQuerySortBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByDefaultFlashlightEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'defaultFlashlightEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByDefaultFlashlightEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'defaultFlashlightEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
       sortByDefaultTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'defaultTriggerDistanceMeters', Sort.asc);
@@ -1568,6 +1601,20 @@ extension AppSettingsQuerySortThenBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByDefaultFlashlightEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'defaultFlashlightEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByDefaultFlashlightEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'defaultFlashlightEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
       thenByDefaultTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'defaultTriggerDistanceMeters', Sort.asc);
@@ -1788,6 +1835,13 @@ extension AppSettingsQueryWhereDistinct
   }
 
   QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByDefaultFlashlightEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'defaultFlashlightEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
       distinctByDefaultTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'defaultTriggerDistanceMeters');
@@ -1906,6 +1960,13 @@ extension AppSettingsQueryProperty
       debugLoggingEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'debugLoggingEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      defaultFlashlightEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'defaultFlashlightEnabled');
     });
   }
 
