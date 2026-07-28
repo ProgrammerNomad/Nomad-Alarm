@@ -83,8 +83,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               width: double.infinity,
               height: UiConstants.minTouchTarget,
               child: TextButton(
-                onPressed: _skip,
-                child: const Text('Skip for now'),
+                onPressed: _current.skippable ? _skip : null,
+                child: Text(_current.skippable ? 'Skip for now' : 'Required'),
               ),
             ),
           ],
@@ -98,6 +98,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
       NomadPermissionType.location => Icons.location_on_outlined,
       NomadPermissionType.notification => Icons.notifications_outlined,
       NomadPermissionType.backgroundLocation => Icons.my_location_outlined,
+      NomadPermissionType.exactAlarm => Icons.alarm_outlined,
+      NomadPermissionType.batteryOptimization => Icons.battery_charging_full_outlined,
     };
   }
 }

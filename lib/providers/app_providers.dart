@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/repositories/stub_repositories.dart';
+import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
 import 'package:nomad_alarm/services/map_service.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
@@ -41,5 +43,10 @@ final bootstrapProvider = FutureProvider<bool>((ref) async {
   await ref.watch(isarServiceProvider.future);
   final isarService = ref.read(isarServiceProvider).requireValue;
   await SettingsService(isarService.isar).getSettings();
+
+  await ref.read(notificationServiceProvider).initialize();
+  await BackgroundAlarmService.ensureConfigured();
+  ref.read(alarmServiceProvider);
+
   return true;
 });

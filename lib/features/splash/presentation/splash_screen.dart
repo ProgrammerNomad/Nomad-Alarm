@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/models/enums.dart';
+import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
@@ -55,6 +56,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       context.go('/permissions');
       return;
     }
+
+    final launchPayload =
+        await ref.read(notificationServiceProvider).getLaunchPayload();
+    if (!mounted) {
+      return;
+    }
+    if (launchPayload != null) {
+      if (launchPayload.startsWith('ring:')) {
+        final id = int.tryParse(launchPayload.split(':').last);
+        if (id != null) {
+          context.go('/alarm/ring/$id');
+          return;
+        }
+      } else if (launchPayload.startsWith('active:')) {
+        final id = int.tryParse(launchPayload.split(':').last);
+        if (id != null) {
+          context.go('/alarm/active/$id');
+          return;
+        }
+      }
+    }
+
     final running = await ref.read(alarmRepositoryProvider).getRunning();
     if (!mounted) {
       return;

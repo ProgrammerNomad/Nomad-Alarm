@@ -54,4 +54,36 @@ class AlarmRuntimeState {
       status: status ?? this.status,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'alarmId': alarmId,
+        'destinationName': destinationName,
+        'address': address,
+        'destLatitude': destLatitude,
+        'destLongitude': destLongitude,
+        'distanceMeters': distanceMeters,
+        'speedKmh': speedKmh,
+        'accuracyMeters': accuracyMeters,
+        'lastFixAt': lastFixAt.toIso8601String(),
+        'isGpsLost': isGpsLost,
+        'hasPassedDestination': hasPassedDestination,
+        'status': status.index,
+      };
+
+  factory AlarmRuntimeState.fromJson(Map<String, dynamic> json) {
+    return AlarmRuntimeState(
+      alarmId: json['alarmId'] as int,
+      destinationName: json['destinationName'] as String,
+      address: json['address'] as String?,
+      destLatitude: (json['destLatitude'] as num?)?.toDouble(),
+      destLongitude: (json['destLongitude'] as num?)?.toDouble(),
+      distanceMeters: (json['distanceMeters'] as num).toDouble(),
+      speedKmh: (json['speedKmh'] as num).toDouble(),
+      accuracyMeters: (json['accuracyMeters'] as num).toDouble(),
+      lastFixAt: DateTime.parse(json['lastFixAt'] as String),
+      isGpsLost: json['isGpsLost'] as bool,
+      hasPassedDestination: json['hasPassedDestination'] as bool,
+      status: AlarmStatus.values[json['status'] as int],
+    );
+  }
 }

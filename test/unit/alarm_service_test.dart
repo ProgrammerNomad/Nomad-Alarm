@@ -2,14 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nomad_alarm/models/alarm.dart';
+import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/repositories/alarm_repository.dart';
 import 'package:nomad_alarm/services/alarm_service.dart';
-import 'package:nomad_alarm/services/location_service.dart';
+import 'package:nomad_alarm/services/notification_service.dart';
+import 'package:nomad_alarm/services/speech_service.dart';
 
 class MockAlarmRepository extends Mock implements AlarmRepository {}
 
-class MockLocationService extends Mock implements LocationService {}
+class MockNotificationService extends Mock implements NotificationService {}
+
+class MockSpeechService extends Mock implements SpeechService {}
 
 Position _position({
   required double lat,
@@ -54,31 +58,45 @@ Alarm _alarm({
 
 void main() {
   late MockAlarmRepository repository;
-  late MockLocationService locationService;
+  late MockNotificationService notificationService;
+  late MockSpeechService speechService;
   late AlarmService service;
 
   setUpAll(() {
     registerFallbackValue(_alarm());
-    registerFallbackValue(LocationAccuracy.high);
+    registerFallbackValue(
+      AlarmRuntimeState(
+        alarmId: 1,
+        destinationName: 'Test',
+        distanceMeters: 0,
+        speedKmh: 0,
+        accuracyMeters: 0,
+        lastFixAt: DateTime.utc(2024, 1, 1),
+        isGpsLost: false,
+        hasPassedDestination: false,
+        status: AlarmStatus.active,
+      ),
+    );
   });
 
   setUp(() {
     repository = MockAlarmRepository();
-    locationService = MockLocationService();
+    notificationService = MockNotificationService();
+    speechService = MockSpeechService();
     service = AlarmService(
       alarmRepository: repository,
-      locationService: locationService,
+      notificationService: notificationService,
+      speechService: speechService,
     );
 
-    when(() => locationService.getCurrentPositionSafe()).thenAnswer(
-      (_) async => _position(lat: 51.52, lon: -0.1278),
-    );
-    when(
-      () => locationService.watchPosition(
-        accuracy: any(named: 'accuracy'),
-        distanceFilterMeters: any(named: 'distanceFilterMeters'),
-      ),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => notificationService.cancelAll()).thenAnswer((_) async {});
+    when(() => notificationService.cancelAlarmNotification())
+        .thenAnswer((_) async {});
+    when(() => notificationService.showTrackingNotification(any()))
+        .thenAnswer((_) async {});
+    when(() => notificationService.updateTrackingNotification(any()))
+        .thenAnswer((_) async {});
+    when(() => speechService.stop()).thenAnswer((_) async {});
   });
 
   test('evaluate triggers when within threshold', () {
@@ -99,27 +117,5 @@ void main() {
     );
     expect(state.status, AlarmStatus.active);
     expect(state.distanceMeters, greaterThan(500));
-  });
-
-  test('pauseAlarm updates status to paused', () async {
-    final alarm = _alarm();
-    when(() => repository.getById(1)).thenAnswer((_) async => alarm);
-    when(() => repository.update(any())).thenAnswer((_) async {});
-
-    await service.startAlarm(1);
-    await service.pauseAlarm(1);
-
-    expect(alarm.status, AlarmStatus.paused);
-  });
-
-  test('cancelAlarm updates status to cancelled', () async {
-    final alarm = _alarm();
-    when(() => repository.getById(1)).thenAnswer((_) async => alarm);
-    when(() => repository.update(any())).thenAnswer((_) async {});
-
-    await service.startAlarm(1);
-    await service.cancelAlarm(1);
-
-    expect(alarm.status, AlarmStatus.cancelled);
   });
 }

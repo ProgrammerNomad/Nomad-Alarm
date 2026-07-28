@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
+import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:vibration/vibration.dart';
 
 class AlarmRingScreen extends ConsumerStatefulWidget {
   const AlarmRingScreen({
@@ -25,6 +27,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
   late final AnimationController _pulseController;
   Timer? _hapticTimer;
   Alarm? _alarm;
+  var _alertsStarted = false;
 
   @override
   void initState() {
@@ -36,30 +39,76 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
       upperBound: 1.15,
     )..repeat(reverse: true);
 
-    _hapticTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      HapticFeedback.heavyImpact();
-    });
-
     _loadAlarm();
   }
 
   Future<void> _loadAlarm() async {
     final alarm =
         await ref.read(alarmRepositoryProvider).getById(widget.alarmId);
-    if (mounted) {
-      setState(() => _alarm = alarm);
+    if (!mounted) {
+      return;
     }
+    setState(() => _alarm = alarm);
+    if (alarm != null) {
+      await _startAlerts(alarm);
+    }
+  }
+
+  Future<void> _startAlerts(Alarm alarm) async {
+    if (_alertsStarted) {
+      return;
+    }
+    _alertsStarted = true;
+
+    final settings = ref.read(appSettingsProvider).valueOrNull;
+    final languageCode = settings?.languageCode ?? 'en';
+    final state = await ref
+        .read(alarmServiceProvider)
+        .getRuntimeState(widget.alarmId);
+
+    if (alarm.voiceEnabled) {
+      await ref.read(speechServiceProvider).speakApproaching(
+            destinationName: alarm.name,
+            distanceMeters: state?.distanceMeters ?? alarm.triggerDistanceMeters,
+            languageCode: languageCode,
+          );
+    }
+
+    if (alarm.vibrationEnabled) {
+      final hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator == true) {
+        await Vibration.vibrate(
+          pattern: [0, 800, 400, 800, 400, 800],
+          repeat: 0,
+        );
+      } else {
+        _hapticTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+          HapticFeedback.heavyImpact();
+        });
+      }
+    } else {
+      _hapticTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        HapticFeedback.heavyImpact();
+      });
+    }
+  }
+
+  Future<void> _stopAlerts() async {
+    _hapticTimer?.cancel();
+    await Vibration.cancel();
+    await ref.read(speechServiceProvider).stop();
   }
 
   @override
   void dispose() {
     _hapticTimer?.cancel();
+    Vibration.cancel();
     _pulseController.dispose();
     super.dispose();
   }
 
   Future<void> _dismiss({required bool snooze}) async {
-    _hapticTimer?.cancel();
+    await _stopAlerts();
     await ref
         .read(alarmServiceProvider)
         .dismissAlarm(widget.alarmId, snooze: snooze);
