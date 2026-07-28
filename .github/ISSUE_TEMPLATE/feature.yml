@@ -1,0 +1,54 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Nomad Alarm prioritizes reliability, privacy, and offline use. Features requiring accounts, ads, analytics, or a backend are generally out of scope.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / User Story
+      description: What problem does this solve? Who is the user?
+      placeholder: "As a train commuter, I want ... so that ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+    validations:
+      required: true
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Target Version (if known)
+      options:
+        - v1.0
+        - v1.5
+        - v2.0
+        - v3.0
+        - Not sure
+
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Alignment with project principles
+      options:
+        - label: Works offline (or degrades gracefully)
+        - label: No account/login required
+        - label: No new tracking/analytics
+        - label: Improves alarm reliability
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and discussions
+          required: true
