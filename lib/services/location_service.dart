@@ -1,5 +1,7 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
+import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/services/location_platform.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
 import 'package:permission_handler/permission_handler.dart' hide ServiceStatus;
@@ -30,8 +32,9 @@ class LocationService {
   }
 
   Future<Position?> getCurrentPositionSafe({
-    LocationAccuracy accuracy = LocationAccuracy.high,
+    BatteryProfile profile = BatteryProfile.balanced,
   }) async {
+    final accuracy = BatteryProfileConfig.forProfile(profile).accuracy;
     try {
       return await getCurrentPosition(accuracy: accuracy);
     } on PermissionException {
@@ -77,8 +80,7 @@ class LocationService {
   }
 
   Stream<Position> watchPosition({
-    LocationAccuracy accuracy = LocationAccuracy.high,
-    int distanceFilterMeters = 10,
+    BatteryProfile profile = BatteryProfile.balanced,
   }) async* {
     await _ensurePermission();
     final enabled = await _platform.isLocationServiceEnabled();
@@ -87,10 +89,11 @@ class LocationService {
         'Location services are turned off. Enable GPS to continue.',
       );
     }
+    final cfg = BatteryProfileConfig.forProfile(profile);
     yield* _platform.getPositionStream(
       locationSettings: LocationSettings(
-        accuracy: accuracy,
-        distanceFilter: distanceFilterMeters,
+        accuracy: cfg.accuracy,
+        distanceFilter: cfg.distanceFilterMeters,
         timeLimit: _locationTimeout,
       ),
     );

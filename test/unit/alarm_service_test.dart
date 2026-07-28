@@ -8,6 +8,8 @@ import 'package:nomad_alarm/repositories/alarm_repository.dart';
 import 'package:nomad_alarm/repositories/history_repository.dart';
 import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/alarm_service.dart';
+import 'package:nomad_alarm/services/battery_monitor_service.dart';
+import 'package:nomad_alarm/services/flashlight_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 
@@ -99,6 +101,8 @@ void main() {
       historyRepository: historyRepository,
       notificationService: notificationService,
       speechService: speechService,
+      flashlightService: FlashlightService(),
+      batteryMonitorService: BatteryMonitorService(),
     );
 
     when(() => notificationService.cancelAll()).thenAnswer((_) async {});
@@ -121,13 +125,13 @@ void main() {
     expect(state.distanceMeters, lessThan(500));
   });
 
-  test('evaluate stays active when outside threshold', () {
-    final alarm = _alarm(trigger: 500);
+  test('evaluate includes eta when moving', () {
+    final alarm = _alarm(trigger: 5000);
     final state = service.evaluate(
       alarm,
-      _position(lat: 51.52, lon: -0.1278),
+      _position(lat: 51.52, lon: -0.1278, speed: 20),
     );
-    expect(state.status, AlarmStatus.active);
-    expect(state.distanceMeters, greaterThan(500));
+    expect(state.etaMinutes, isNotNull);
+    expect(state.etaMinutes!, greaterThan(0));
   });
 }

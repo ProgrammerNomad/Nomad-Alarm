@@ -16,6 +16,7 @@ class AlarmDraft {
     this.type = AlarmType.distance,
     this.voiceEnabled = true,
     this.vibrationEnabled = true,
+    this.flashlightEnabled = false,
   });
 
   final String name;
@@ -28,12 +29,14 @@ class AlarmDraft {
   final AlarmType type;
   final bool voiceEnabled;
   final bool vibrationEnabled;
+  final bool flashlightEnabled;
 
   factory AlarmDraft.fromSearchResult(
     SearchResult result, {
     double triggerDistanceMeters = 500,
     bool voiceEnabled = true,
     bool vibrationEnabled = true,
+    bool flashlightEnabled = false,
   }) {
     return AlarmDraft(
       name: result.name,
@@ -44,6 +47,7 @@ class AlarmDraft {
       triggerDistanceMeters: triggerDistanceMeters,
       voiceEnabled: voiceEnabled,
       vibrationEnabled: vibrationEnabled,
+      flashlightEnabled: flashlightEnabled,
     );
   }
 }
@@ -78,7 +82,7 @@ class AlarmRepositoryImpl implements AlarmRepository {
       ..repeat = false
       ..voiceEnabled = draft.voiceEnabled
       ..vibrationEnabled = draft.vibrationEnabled
-      ..flashlightEnabled = false
+      ..flashlightEnabled = draft.flashlightEnabled
       ..status = AlarmStatus.draft
       ..createdAt = now
       ..updatedAt = now;

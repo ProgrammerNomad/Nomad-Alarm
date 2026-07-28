@@ -238,10 +238,15 @@ class _ActiveAlarmCard extends ConsumerWidget {
       loading: () => alarm.address ?? 'Active alarm',
       error: (_, stackTrace) => alarm.address ?? 'Active alarm',
       data: (state) {
+        final distance = formatDistance(state.distanceMeters);
+        final eta = formatEta(state.etaMinutes);
         if (state.status == AlarmStatus.triggered) {
-          return 'Alarm ringing - ${formatDistance(state.distanceMeters)} away';
+          return 'Alarm ringing - $distance away';
         }
-        return '${formatDistance(state.distanceMeters)} away';
+        if (state.etaMinutes != null) {
+          return '$distance · $eta';
+        }
+        return '$distance away';
       },
     );
 

@@ -24,4 +24,24 @@ void main() {
   test('formatDistance shows km at or above 1 km', () {
     expect(formatDistance(1500), '1.5 km');
   });
+
+  test('estimateEtaMinutes returns null when stationary', () {
+    expect(estimateEtaMinutes(1000, 3), isNull);
+    expect(estimateEtaMinutes(1000, 0), isNull);
+  });
+
+  test('estimateEtaMinutes computes from speed and distance', () {
+    // 60 km/h = 16.67 m/s → 1000m ≈ 1 min
+    final eta = estimateEtaMinutes(1000, 60);
+    expect(eta, closeTo(1, 0.1));
+  });
+
+  test('formatEta shows dash when unknown', () {
+    expect(formatEta(null), '-');
+  });
+
+  test('formatEta shows minutes', () {
+    expect(formatEta(12), '~12 min');
+    expect(formatEta(0.5), '< 1 min');
+  });
 }

@@ -96,9 +96,17 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'to destination',
+                  formatEta(state.etaMinutes),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'estimated arrival',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -127,6 +135,13 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                   _WarningBanner(
                     message: 'You may have passed your destination',
                     color: Colors.red,
+                  ),
+                ],
+                if (state.isLowBattery) ...[
+                  const SizedBox(height: 16),
+                  _WarningBanner(
+                    message: 'Low battery - charge your phone to keep tracking reliable',
+                    color: Colors.amber,
                   ),
                 ],
                 if (state.status == AlarmStatus.paused) ...[

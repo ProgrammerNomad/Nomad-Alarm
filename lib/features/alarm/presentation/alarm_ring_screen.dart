@@ -74,6 +74,10 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
           );
     }
 
+    if (alarm.flashlightEnabled) {
+      await ref.read(flashlightServiceProvider).startStrobe();
+    }
+
     if (alarm.vibrationEnabled) {
       final hasVibrator = await Vibration.hasVibrator();
       if (hasVibrator == true) {
@@ -86,7 +90,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
           HapticFeedback.heavyImpact();
         });
       }
-    } else {
+    } else if (!alarm.flashlightEnabled) {
       _hapticTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         HapticFeedback.heavyImpact();
       });
@@ -96,6 +100,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
   Future<void> _stopAlerts() async {
     _hapticTimer?.cancel();
     await Vibration.cancel();
+    await ref.read(flashlightServiceProvider).stop();
     await ref.read(speechServiceProvider).stop();
   }
 

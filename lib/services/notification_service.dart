@@ -85,10 +85,14 @@ class NotificationService {
   }
 
   Future<void> showTrackingNotification(AlarmRuntimeState state) async {
+    final distance = formatDistance(state.distanceMeters);
+    final body = state.etaMinutes != null
+        ? '$distance · ${formatEta(state.etaMinutes)}'
+        : '$distance to destination';
     await _plugin.show(
       trackingNotificationId,
       state.destinationName,
-      '${formatDistance(state.distanceMeters)} to destination',
+      body,
       _trackingDetails(state.alarmId),
       payload: 'active:${state.alarmId}',
     );
@@ -129,6 +133,23 @@ class NotificationService {
       301,
       'GPS signal lost',
       'Location updates paused - check your GPS',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          alertsChannelId,
+          'Warnings',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+      payload: 'active:$alarmId',
+    );
+  }
+
+  Future<void> showLowBatteryAlert(int alarmId) async {
+    await _plugin.show(
+      302,
+      'Low battery',
+      'Charge your phone to keep the alarm running reliably',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           alertsChannelId,

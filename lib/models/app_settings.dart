@@ -25,6 +25,7 @@ class AppSettings {
   late double defaultTriggerDistanceMeters;
   late bool defaultVoiceEnabled;
   late bool defaultVibrationEnabled;
+  late bool defaultFlashlightEnabled;
 
   @enumerated
   late BatteryProfile batteryProfile;
@@ -50,6 +51,7 @@ class AppSettings {
       ..defaultTriggerDistanceMeters = 500
       ..defaultVoiceEnabled = true
       ..defaultVibrationEnabled = true
+      ..defaultFlashlightEnabled = false
       ..batteryProfile = BatteryProfile.balanced
       ..hasCompletedWelcome = false
       ..hasCompletedPermissions = false

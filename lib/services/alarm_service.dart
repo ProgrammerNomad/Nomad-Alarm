@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
@@ -13,6 +14,8 @@ import 'package:nomad_alarm/repositories/alarm_repository.dart';
 import 'package:nomad_alarm/repositories/history_repository.dart';
 import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
+import 'package:nomad_alarm/services/battery_monitor_service.dart';
+import 'package:nomad_alarm/services/flashlight_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 
@@ -67,6 +70,9 @@ class AlarmService {
     required HistoryRepository historyRepository,
     required NotificationService notificationService,
     required SpeechService speechService,
+    required FlashlightService flashlightService,
+    required BatteryMonitorService batteryMonitorService,
+    this.batteryProfile = BatteryProfile.balanced,
     this.onNavigateToAlarm,
     this.languageCode = 'en',
   })  : _alarmRepository = alarmRepository,
@@ -74,6 +80,8 @@ class AlarmService {
         _historyRepository = historyRepository,
         _notificationService = notificationService,
         _speechService = speechService,
+        _flashlightService = flashlightService,
+        _batteryMonitorService = batteryMonitorService,
         _evaluator = AlarmEvaluator();
 
   final AlarmRepository _alarmRepository;
@@ -81,9 +89,12 @@ class AlarmService {
   final HistoryRepository _historyRepository;
   final NotificationService _notificationService;
   final SpeechService _speechService;
+  final FlashlightService _flashlightService;
+  final BatteryMonitorService _batteryMonitorService;
   final AlarmEvaluator _evaluator;
   final AlarmTriggerHandler? onNavigateToAlarm;
   final String languageCode;
+  final BatteryProfile batteryProfile;
 
   _AlarmSession? _session;
   var _eventsBound = false;
@@ -149,9 +160,7 @@ class AlarmService {
     final trip = await _tripRepository.startTrip(alarm);
 
     await _startSession(alarm, tripId: trip.id);
-    await BackgroundAlarmService.startMonitoring(
-      AlarmMonitorConfig.fromAlarm(alarm),
-    );
+    await BackgroundAlarmService.startMonitoring(_monitorConfig(alarm));
     await _notificationService.showTrackingNotification(
       AlarmRuntimeState(
         alarmId: alarm.id,
@@ -202,14 +211,13 @@ class AlarmService {
       await _startSession(alarm, tripId: activeTrip?.id);
     }
 
-    await BackgroundAlarmService.resumeMonitoring(
-      AlarmMonitorConfig.fromAlarm(alarm),
-    );
+    await BackgroundAlarmService.resumeMonitoring(_monitorConfig(alarm));
   }
 
   Future<void> cancelAlarm(int alarmId) async {
     await BackgroundAlarmService.stopMonitoring();
     await _notificationService.cancelAll();
+    await _flashlightService.stop();
 
     final alarm = await _alarmRepository.getById(alarmId);
     if (alarm == null) {
@@ -246,6 +254,7 @@ class AlarmService {
       alarm.triggeredAt = null;
       await _alarmRepository.update(alarm);
       await _speechService.stop();
+      await _flashlightService.stop();
       FlutterBackgroundService().invoke('snooze');
 
       await _historyRepository.log(
@@ -269,6 +278,7 @@ class AlarmService {
     );
 
     await _speechService.stop();
+    await _flashlightService.stop();
     await BackgroundAlarmService.stopMonitoring();
 
     if (_session?.alarmId == alarmId) {
@@ -284,10 +294,17 @@ class AlarmService {
     );
 
     return _evaluator.evaluate(
-      config: AlarmMonitorConfig.fromAlarm(alarm),
+      config: _monitorConfig(alarm),
       position: position,
       currentStatus: alarm.status,
       snoozeSuppressedUntil: _session?.snoozeSuppressedUntil,
+    );
+  }
+
+  AlarmMonitorConfig _monitorConfig(Alarm alarm) {
+    return AlarmMonitorConfig.fromAlarm(
+      alarm,
+      batteryProfile: batteryProfile,
     );
   }
 
@@ -323,23 +340,29 @@ class AlarmService {
       );
     }
 
-    _emitState(state);
+    final enriched = await _enrichWithBattery(state);
+    _emitState(enriched);
 
     final tripId = _session?.tripId;
     if (tripId != null) {
       await _tripRepository.updateStats(tripId, _session!.tripTracker.toStats());
     }
 
-    if (state.status != AlarmStatus.paused) {
-      await _notificationService.updateTrackingNotification(state);
+    if (enriched.status != AlarmStatus.paused) {
+      await _notificationService.updateTrackingNotification(enriched);
     }
 
-    if (state.isGpsLost) {
-      await _notificationService.showGpsLostAlert(state.alarmId);
+    if (enriched.isGpsLost) {
+      await _notificationService.showGpsLostAlert(enriched.alarmId);
     }
 
-    if (state.status == AlarmStatus.triggered) {
-      final alarm = await _alarmRepository.getById(state.alarmId);
+    if (enriched.isLowBattery && !(_session?.lowBatteryNotified ?? false)) {
+      _session?.lowBatteryNotified = true;
+      await _notificationService.showLowBatteryAlert(enriched.alarmId);
+    }
+
+    if (enriched.status == AlarmStatus.triggered) {
+      final alarm = await _alarmRepository.getById(enriched.alarmId);
       if (alarm != null && alarm.status != AlarmStatus.triggered) {
         alarm.status = AlarmStatus.triggered;
         alarm.triggeredAt = DateTime.now();
@@ -347,7 +370,7 @@ class AlarmService {
       }
     }
 
-    if (state.hasPassedDestination && !(_session?.passedHandled ?? true)) {
+    if (enriched.hasPassedDestination && !(_session?.passedHandled ?? true)) {
       _session?.passedHandled = true;
       final alarm = await _alarmRepository.getById(state.alarmId);
       if (alarm != null &&
@@ -362,6 +385,7 @@ class AlarmService {
   Future<void> _handleMissed(Alarm alarm, {required String reason}) async {
     await BackgroundAlarmService.stopMonitoring();
     await _notificationService.cancelAll();
+    await _flashlightService.stop();
 
     await _finalizeAlarm(
       alarm,
@@ -428,7 +452,28 @@ class AlarmService {
       );
     }
 
+    if (alarm.flashlightEnabled) {
+      await _flashlightService.startStrobe();
+    }
+
     onNavigateToAlarm?.call(alarmId, isRing: true);
+  }
+
+  Future<AlarmRuntimeState> _enrichWithBattery(AlarmRuntimeState state) async {
+    final now = DateTime.now();
+    if (_session?.lastBatteryCheck != null &&
+        now.difference(_session!.lastBatteryCheck!).inSeconds <
+            AlarmConstants.lowBatteryCheckIntervalSec) {
+      return state;
+    }
+    _session?.lastBatteryCheck = now;
+    final low = await _batteryMonitorService.isLowBattery(
+      AlarmConstants.lowBatteryThresholdPercent,
+    );
+    if (low == state.isLowBattery) {
+      return state;
+    }
+    return state.copyWith(isLowBattery: low);
   }
 
   void _handleNotificationTap(String? payload) {
@@ -518,4 +563,6 @@ class _AlarmSession {
   AlarmRuntimeState? lastState;
   int snoozeCount = 0;
   bool passedHandled = false;
+  bool lowBatteryNotified = false;
+  DateTime? lastBatteryCheck;
 }

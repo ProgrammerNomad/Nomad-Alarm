@@ -25,6 +25,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
   late double _triggerDistanceMeters;
   late bool _voiceEnabled;
   late bool _vibrationEnabled;
+  late bool _flashlightEnabled;
   bool _saving = false;
 
   @override
@@ -33,6 +34,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
     _triggerDistanceMeters = AlarmConstants.defaultTriggerDistanceM;
     _voiceEnabled = true;
     _vibrationEnabled = true;
+    _flashlightEnabled = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = ref.read(settingsControllerProvider).valueOrNull;
       if (settings != null && mounted) {
@@ -40,6 +42,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
           _triggerDistanceMeters = settings.defaultTriggerDistanceMeters;
           _voiceEnabled = settings.defaultVoiceEnabled;
           _vibrationEnabled = settings.defaultVibrationEnabled;
+          _flashlightEnabled = settings.defaultFlashlightEnabled;
         });
       }
     });
@@ -55,6 +58,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
       triggerDistanceMeters: _triggerDistanceMeters,
       voiceEnabled: _voiceEnabled,
       vibrationEnabled: _vibrationEnabled,
+      flashlightEnabled: _flashlightEnabled,
     );
   }
 
@@ -173,6 +177,12 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                   title: const Text('Vibration'),
                   value: _vibrationEnabled,
                   onChanged: (v) => setState(() => _vibrationEnabled = v),
+                ),
+                SwitchListTile(
+                  title: const Text('Flashlight'),
+                  subtitle: const Text('LED strobe when alarm rings'),
+                  value: _flashlightEnabled,
+                  onChanged: (v) => setState(() => _flashlightEnabled = v),
                 ),
                 const SizedBox(height: 24),
                 FilledButton(

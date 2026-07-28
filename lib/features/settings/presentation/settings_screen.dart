@@ -1,7 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/constants/alarm_constants.dart';
+import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
+import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 
@@ -75,6 +81,80 @@ class SettingsScreen extends ConsumerWidget {
                 },
               ),
             ),
+            const _SectionHeader(title: 'Alarm defaults'),
+            ListTile(
+              title: const Text('Default alert distance'),
+              subtitle: Text(formatDistance(settings.defaultTriggerDistanceMeters)),
+            ),
+            Slider(
+              value: settings.defaultTriggerDistanceMeters.clamp(
+                AlarmConstants.minTriggerDistanceM,
+                AlarmConstants.maxTriggerDistanceM,
+              ),
+              min: AlarmConstants.minTriggerDistanceM,
+              max: AlarmConstants.maxTriggerDistanceM,
+              divisions: 49,
+              label: formatDistance(settings.defaultTriggerDistanceMeters),
+              onChanged: (value) {
+                ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..defaultTriggerDistanceMeters = value,
+                    );
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Voice alert'),
+              value: settings.defaultVoiceEnabled,
+              onChanged: (value) {
+                ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..defaultVoiceEnabled = value,
+                    );
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Vibration'),
+              value: settings.defaultVibrationEnabled,
+              onChanged: (value) {
+                ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..defaultVibrationEnabled = value,
+                    );
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Flashlight'),
+              subtitle: const Text('LED strobe when alarm rings'),
+              value: settings.defaultFlashlightEnabled,
+              onChanged: (value) {
+                ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..defaultFlashlightEnabled = value,
+                    );
+              },
+            ),
+            const _SectionHeader(title: 'Battery'),
+            ListTile(
+              title: const Text('GPS profile'),
+              subtitle: Text(_batteryProfileDescription(settings.batteryProfile)),
+              trailing: DropdownButton<BatteryProfile>(
+                value: settings.batteryProfile,
+                underline: const SizedBox.shrink(),
+                items: BatteryProfile.values
+                    .map(
+                      (profile) => DropdownMenuItem(
+                        value: profile,
+                        child: Text(_batteryProfileLabel(profile)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (profile) {
+                  if (profile == null) {
+                    return;
+                  }
+                  ref.read(settingsControllerProvider.notifier).saveSettings(
+                        settings..batteryProfile = profile,
+                      );
+                  ref.invalidate(alarmServiceProvider);
+                },
+              ),
+            ),
             const _SectionHeader(title: 'More'),
             ListTile(
               leading: const Icon(Icons.security),
@@ -94,6 +174,13 @@ class SettingsScreen extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/about'),
             ),
+            if (FeatureFlags.debugScreen && kDebugMode)
+              ListTile(
+                leading: const Icon(Icons.bug_report_outlined),
+                title: const Text('Debug'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/debug'),
+              ),
           ],
         ),
       ),
@@ -105,6 +192,25 @@ class SettingsScreen extends ConsumerWidget {
       AppThemeMode.system => 'System',
       AppThemeMode.light => 'Light',
       AppThemeMode.dark => 'Dark',
+    };
+  }
+
+  String _batteryProfileLabel(BatteryProfile profile) {
+    return switch (profile) {
+      BatteryProfile.balanced => 'Balanced',
+      BatteryProfile.aggressive => 'Aggressive',
+      BatteryProfile.saver => 'Saver',
+    };
+  }
+
+  String _batteryProfileDescription(BatteryProfile profile) {
+    return switch (profile) {
+      BatteryProfile.balanced =>
+        'Best for daily commutes - updates every ~10 m',
+      BatteryProfile.aggressive =>
+        'Maximum reliability - more battery use near destination',
+      BatteryProfile.saver =>
+        'Minimum GPS use - may reduce accuracy',
     };
   }
 }

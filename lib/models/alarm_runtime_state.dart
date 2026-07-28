@@ -16,6 +16,8 @@ class AlarmRuntimeState {
     this.longitude,
     this.destLatitude,
     this.destLongitude,
+    this.etaMinutes,
+    this.isLowBattery = false,
   });
 
   final int alarmId;
@@ -32,6 +34,8 @@ class AlarmRuntimeState {
   final bool isGpsLost;
   final bool hasPassedDestination;
   final AlarmStatus status;
+  final double? etaMinutes;
+  final bool isLowBattery;
 
   AlarmRuntimeState copyWith({
     double? distanceMeters,
@@ -43,6 +47,8 @@ class AlarmRuntimeState {
     AlarmStatus? status,
     double? latitude,
     double? longitude,
+    double? etaMinutes,
+    bool? isLowBattery,
   }) {
     return AlarmRuntimeState(
       alarmId: alarmId,
@@ -60,6 +66,8 @@ class AlarmRuntimeState {
       hasPassedDestination:
           hasPassedDestination ?? this.hasPassedDestination,
       status: status ?? this.status,
+      etaMinutes: etaMinutes ?? this.etaMinutes,
+      isLowBattery: isLowBattery ?? this.isLowBattery,
     );
   }
 
@@ -78,6 +86,8 @@ class AlarmRuntimeState {
         'isGpsLost': isGpsLost,
         'hasPassedDestination': hasPassedDestination,
         'status': status.index,
+        'etaMinutes': etaMinutes,
+        'isLowBattery': isLowBattery,
       };
 
   factory AlarmRuntimeState.fromJson(Map<String, dynamic> json) {
@@ -96,6 +106,8 @@ class AlarmRuntimeState {
       isGpsLost: json['isGpsLost'] as bool,
       hasPassedDestination: json['hasPassedDestination'] as bool,
       status: AlarmStatus.values[json['status'] as int],
+      etaMinutes: (json['etaMinutes'] as num?)?.toDouble(),
+      isLowBattery: json['isLowBattery'] as bool? ?? false,
     );
   }
 }

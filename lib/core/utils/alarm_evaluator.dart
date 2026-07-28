@@ -112,6 +112,7 @@ class AlarmEvaluator {
       isGpsLost: gpsLost,
       hasPassedDestination: _tracker.hasPassedDestination,
       status: status,
+      etaMinutes: estimateEtaMinutes(distance, speedKmh),
     );
   }
 }

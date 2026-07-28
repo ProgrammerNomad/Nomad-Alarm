@@ -16,4 +16,7 @@ abstract class AlarmConstants {
 
   static const double gpsAccuracyGoodM = 50;
   static const double gpsAccuracyWarnM = 100;
+
+  static const int lowBatteryThresholdPercent = 15;
+  static const int lowBatteryCheckIntervalSec = 60;
 }

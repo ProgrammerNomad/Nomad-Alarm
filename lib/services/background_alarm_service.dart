@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
+import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
@@ -60,6 +61,10 @@ class BackgroundAlarmService {
     FlutterBackgroundService().invoke('resume', config.toJson());
   }
 
+  static Future<bool> isRunning() async {
+    return FlutterBackgroundService().isRunning();
+  }
+
   static void listenEvents({
     required void Function(AlarmRuntimeState state) onState,
     required void Function(int alarmId) onTriggered,
@@ -95,14 +100,36 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   final evaluator = AlarmEvaluator();
   StreamSubscription<Position>? subscription;
   var paused = false;
+  var lastDistanceMeters = double.infinity;
+  LocationSettings? activeSettings;
 
   Future<void> stopAll() async {
     await subscription?.cancel();
     subscription = null;
     config = null;
+    activeSettings = null;
     evaluator.tracker.reset();
     service.invoke('stopped');
     service.stopSelf();
+  }
+
+  Future<void> startGpsStream(AlarmMonitorConfig cfg, double distance) async {
+    final profileConfig = BatteryProfileConfig.effectiveFor(
+      selectedProfile: cfg.batteryProfile,
+      distanceMeters: distance,
+      triggerDistanceMeters: cfg.triggerDistanceMeters,
+    );
+    final settings = profileConfig.toLocationSettings();
+    if (activeSettings != null &&
+        activeSettings!.accuracy == settings.accuracy &&
+        activeSettings!.distanceFilter == settings.distanceFilter) {
+      return;
+    }
+    activeSettings = settings;
+    await subscription?.cancel();
+    subscription = Geolocator.getPositionStream(
+      locationSettings: settings,
+    ).listen(handlePosition);
   }
 
   Future<void> handlePosition(Position position) async {
@@ -118,10 +145,18 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
       snoozeSuppressedUntil: snoozeSuppressedUntil,
     );
 
+    lastDistanceMeters = state.distanceMeters;
+    await startGpsStream(activeConfig, state.distanceMeters);
+
     if (service is AndroidServiceInstance) {
+      final eta = formatEta(state.etaMinutes);
+      final distance = formatDistance(state.distanceMeters);
+      final content = state.etaMinutes != null
+          ? '$distance · $eta'
+          : '$distance to destination';
       service.setForegroundNotificationInfo(
         title: activeConfig.name,
-        content: '${formatDistance(state.distanceMeters)} to destination',
+        content: content,
       );
     }
 
@@ -142,15 +177,10 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     currentStatus = AlarmStatus.active;
     paused = false;
     snoozeSuppressedUntil = null;
+    lastDistanceMeters = double.infinity;
     evaluator.tracker.reset();
 
-    await subscription?.cancel();
-    subscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: AlarmConstants.gpsDistanceFilterBalancedM,
-      ),
-    ).listen(handlePosition);
+    await startGpsStream(config!, lastDistanceMeters);
   });
 
   service.on('pause').listen((_) {
@@ -164,6 +194,9 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     }
     paused = false;
     currentStatus = AlarmStatus.active;
+    if (config != null) {
+      await startGpsStream(config!, lastDistanceMeters);
+    }
   });
 
   service.on('snooze').listen((_) {

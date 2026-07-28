@@ -5,6 +5,7 @@ import 'package:nomad_alarm/features/about/presentation/about_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/active_alarm_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/alarm_config_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/alarm_ring_screen.dart';
+import 'package:nomad_alarm/features/debug/presentation/debug_screen.dart';
 import 'package:nomad_alarm/features/history/presentation/history_screen.dart';
 import 'package:nomad_alarm/features/home/presentation/home_screen.dart';
 import 'package:nomad_alarm/features/map/presentation/map_screen.dart';
@@ -84,6 +85,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/privacy',
         builder: (context, state) => const PrivacyScreen(),
+      ),
+      GoRoute(
+        path: '/debug',
+        builder: (context, state) => const DebugScreen(),
       ),
       GoRoute(
         path: '/search',

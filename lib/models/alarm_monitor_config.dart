@@ -1,4 +1,5 @@
 import 'package:nomad_alarm/models/alarm.dart';
+import 'package:nomad_alarm/models/enums.dart';
 
 /// Serializable alarm config for background isolate monitoring.
 class AlarmMonitorConfig {
@@ -11,6 +12,7 @@ class AlarmMonitorConfig {
     this.address,
     this.voiceEnabled = true,
     this.vibrationEnabled = true,
+    this.batteryProfile = BatteryProfile.balanced,
   });
 
   final int alarmId;
@@ -21,8 +23,12 @@ class AlarmMonitorConfig {
   final String? address;
   final bool voiceEnabled;
   final bool vibrationEnabled;
+  final BatteryProfile batteryProfile;
 
-  factory AlarmMonitorConfig.fromAlarm(Alarm alarm) {
+  factory AlarmMonitorConfig.fromAlarm(
+    Alarm alarm, {
+    BatteryProfile batteryProfile = BatteryProfile.balanced,
+  }) {
     return AlarmMonitorConfig(
       alarmId: alarm.id,
       name: alarm.name,
@@ -32,6 +38,7 @@ class AlarmMonitorConfig {
       address: alarm.address,
       voiceEnabled: alarm.voiceEnabled,
       vibrationEnabled: alarm.vibrationEnabled,
+      batteryProfile: batteryProfile,
     );
   }
 
@@ -45,6 +52,9 @@ class AlarmMonitorConfig {
       address: json['address'] as String?,
       voiceEnabled: json['voiceEnabled'] as bool? ?? true,
       vibrationEnabled: json['vibrationEnabled'] as bool? ?? true,
+      batteryProfile: json['batteryProfile'] != null
+          ? BatteryProfile.values[json['batteryProfile'] as int]
+          : BatteryProfile.balanced,
     );
   }
 
@@ -57,5 +67,6 @@ class AlarmMonitorConfig {
         'address': address,
         'voiceEnabled': voiceEnabled,
         'vibrationEnabled': vibrationEnabled,
+        'batteryProfile': batteryProfile.index,
       };
 }
