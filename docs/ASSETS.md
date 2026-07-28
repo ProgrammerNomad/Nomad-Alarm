@@ -55,7 +55,7 @@ assets/
 | `logo_foreground.png` | 432×432 | Adaptive icon foreground |
 | Play Store icon | 512×512 | Store listing |
 
-Design: transparent PNG - blue pin `#1565C0`, white bell `#FFFFFF`. Adaptive icon uses pin-blue background.
+Design: transparent PNG - blue pin `#1565C0`, white bell `#FFFFFF`. Splash and launcher icon background: `#121212`.
 
 Generate launcher icons:
 
@@ -65,7 +65,7 @@ flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/icons/app_icon/icon.png"
-  adaptive_icon_background: "#2962FF"
+  adaptive_icon_background: "#121212"
   adaptive_icon_foreground: "assets/images/logo/logo_foreground.png"
 ```
 

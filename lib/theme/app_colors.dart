@@ -43,6 +43,10 @@ abstract class AppColors {
   static const Color onSurfaceVariantDark = Color(0xFF9E9E9E);
   static const Color outlineDark = Color(0xFF616161);
 
+  /// Splash and launcher icon background (dark - shows pin + bell on transparent logo)
+  static const Color splashBackground = Color(0xFF121212);
+  static const Color iconBackground = Color(0xFF121212);
+
   /// Dark theme primary - lighter pin-blue for contrast on dark surfaces
   static const Color primaryDark = Color(0xFF64B5F6);
   static const Color onPrimaryDark = Color(0xFF0D2F5C);

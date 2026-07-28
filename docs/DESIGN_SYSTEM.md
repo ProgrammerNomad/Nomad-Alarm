@@ -40,6 +40,15 @@ See also: [Screens](SCREENS.md), [Assets](ASSETS.md), [Sounds](SOUNDS.md).
 | `onSurfaceVariant` | `#616161` | Secondary text, captions |
 | `outline` | `#BDBDBD` | Borders, dividers |
 
+### Splash and Launcher Icon
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| `splashBackground` | `#121212` | Splash screen and native launch background |
+| `iconBackground` | `#121212` | Adaptive icon background layer |
+
+Logo foreground (transparent PNG): pin `#1565C0`, bell `#FFFFFF`. Dark background ensures both are visible.
+
 ### User-Selectable Accent Colors
 
 | Name | Hex |
