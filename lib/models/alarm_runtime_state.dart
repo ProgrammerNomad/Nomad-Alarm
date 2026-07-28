@@ -12,6 +12,8 @@ class AlarmRuntimeState {
     required this.hasPassedDestination,
     required this.status,
     this.address,
+    this.latitude,
+    this.longitude,
     this.destLatitude,
     this.destLongitude,
   });
@@ -19,6 +21,8 @@ class AlarmRuntimeState {
   final int alarmId;
   final String destinationName;
   final String? address;
+  final double? latitude;
+  final double? longitude;
   final double? destLatitude;
   final double? destLongitude;
   final double distanceMeters;
@@ -37,11 +41,15 @@ class AlarmRuntimeState {
     bool? isGpsLost,
     bool? hasPassedDestination,
     AlarmStatus? status,
+    double? latitude,
+    double? longitude,
   }) {
     return AlarmRuntimeState(
       alarmId: alarmId,
       destinationName: destinationName,
       address: address,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       destLatitude: destLatitude,
       destLongitude: destLongitude,
       distanceMeters: distanceMeters ?? this.distanceMeters,
@@ -59,6 +67,8 @@ class AlarmRuntimeState {
         'alarmId': alarmId,
         'destinationName': destinationName,
         'address': address,
+        'latitude': latitude,
+        'longitude': longitude,
         'destLatitude': destLatitude,
         'destLongitude': destLongitude,
         'distanceMeters': distanceMeters,
@@ -75,6 +85,8 @@ class AlarmRuntimeState {
       alarmId: json['alarmId'] as int,
       destinationName: json['destinationName'] as String,
       address: json['address'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
       destLatitude: (json['destLatitude'] as num?)?.toDouble(),
       destLongitude: (json['destLongitude'] as num?)?.toDouble(),
       distanceMeters: (json['distanceMeters'] as num).toDouble(),

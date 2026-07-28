@@ -101,6 +101,8 @@ class AlarmEvaluator {
       alarmId: config.alarmId,
       destinationName: config.name,
       address: config.address,
+      latitude: position.latitude,
+      longitude: position.longitude,
       destLatitude: config.destLatitude,
       destLongitude: config.destLongitude,
       distanceMeters: distance,

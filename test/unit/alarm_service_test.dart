@@ -5,11 +5,17 @@ import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/repositories/alarm_repository.dart';
+import 'package:nomad_alarm/repositories/history_repository.dart';
+import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/alarm_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 
 class MockAlarmRepository extends Mock implements AlarmRepository {}
+
+class MockTripRepository extends Mock implements TripRepository {}
+
+class MockHistoryRepository extends Mock implements HistoryRepository {}
 
 class MockNotificationService extends Mock implements NotificationService {}
 
@@ -58,6 +64,8 @@ Alarm _alarm({
 
 void main() {
   late MockAlarmRepository repository;
+  late MockTripRepository tripRepository;
+  late MockHistoryRepository historyRepository;
   late MockNotificationService notificationService;
   late MockSpeechService speechService;
   late AlarmService service;
@@ -81,10 +89,14 @@ void main() {
 
   setUp(() {
     repository = MockAlarmRepository();
+    tripRepository = MockTripRepository();
+    historyRepository = MockHistoryRepository();
     notificationService = MockNotificationService();
     speechService = MockSpeechService();
     service = AlarmService(
       alarmRepository: repository,
+      tripRepository: tripRepository,
+      historyRepository: historyRepository,
       notificationService: notificationService,
       speechService: speechService,
     );

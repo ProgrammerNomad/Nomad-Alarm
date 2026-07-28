@@ -128,7 +128,7 @@ class NotificationService {
     await _plugin.show(
       301,
       'GPS signal lost',
-      'Location updates paused — check your GPS',
+      'Location updates paused - check your GPS',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           alertsChannelId,

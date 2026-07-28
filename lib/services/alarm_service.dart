@@ -4,30 +4,81 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
+import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/repositories/alarm_repository.dart';
+import 'package:nomad_alarm/repositories/history_repository.dart';
+import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 
 typedef AlarmTriggerHandler = void Function(int alarmId, {bool isRing});
 
+class _TripStatsTracker {
+  double totalDistanceMeters = 0;
+  double maxSpeedKmh = 0;
+  final List<double> _speedSamples = [];
+  double? _lastLat;
+  double? _lastLon;
+
+  void recordPosition(double lat, double lon, double speedKmh) {
+    if (_lastLat != null && _lastLon != null) {
+      totalDistanceMeters += haversineMeters(_lastLat!, _lastLon!, lat, lon);
+    }
+    _lastLat = lat;
+    _lastLon = lon;
+    if (speedKmh > 0) {
+      _speedSamples.add(speedKmh);
+      if (speedKmh > maxSpeedKmh) {
+        maxSpeedKmh = speedKmh;
+      }
+    }
+  }
+
+  TripStats toStats() {
+    final avg = _speedSamples.isEmpty
+        ? null
+        : _speedSamples.reduce((a, b) => a + b) / _speedSamples.length;
+    return TripStats(
+      totalDistanceMeters:
+          totalDistanceMeters > 0 ? totalDistanceMeters : null,
+      maxSpeedKmh: maxSpeedKmh > 0 ? maxSpeedKmh : null,
+      avgSpeedKmh: avg,
+    );
+  }
+
+  void reset() {
+    totalDistanceMeters = 0;
+    maxSpeedKmh = 0;
+    _speedSamples.clear();
+    _lastLat = null;
+    _lastLon = null;
+  }
+}
+
 class AlarmService {
   AlarmService({
     required AlarmRepository alarmRepository,
+    required TripRepository tripRepository,
+    required HistoryRepository historyRepository,
     required NotificationService notificationService,
     required SpeechService speechService,
     this.onNavigateToAlarm,
     this.languageCode = 'en',
   })  : _alarmRepository = alarmRepository,
+        _tripRepository = tripRepository,
+        _historyRepository = historyRepository,
         _notificationService = notificationService,
         _speechService = speechService,
         _evaluator = AlarmEvaluator();
 
   final AlarmRepository _alarmRepository;
+  final TripRepository _tripRepository;
+  final HistoryRepository _historyRepository;
   final NotificationService _notificationService;
   final SpeechService _speechService;
   final AlarmEvaluator _evaluator;
@@ -95,7 +146,9 @@ class AlarmService {
     alarm.updatedAt = DateTime.now();
     await _alarmRepository.update(alarm);
 
-    await _startSession(alarm);
+    final trip = await _tripRepository.startTrip(alarm);
+
+    await _startSession(alarm, tripId: trip.id);
     await BackgroundAlarmService.startMonitoring(
       AlarmMonitorConfig.fromAlarm(alarm),
     );
@@ -141,7 +194,14 @@ class AlarmService {
     }
     alarm.status = AlarmStatus.active;
     await _alarmRepository.update(alarm);
-    await _startSession(alarm);
+
+    if (_session?.alarmId == alarmId) {
+      await _startSession(alarm, tripId: _session!.tripId);
+    } else {
+      final activeTrip = await _tripRepository.getActiveTrip();
+      await _startSession(alarm, tripId: activeTrip?.id);
+    }
+
     await BackgroundAlarmService.resumeMonitoring(
       AlarmMonitorConfig.fromAlarm(alarm),
     );
@@ -151,17 +211,25 @@ class AlarmService {
     await BackgroundAlarmService.stopMonitoring();
     await _notificationService.cancelAll();
 
+    final alarm = await _alarmRepository.getById(alarmId);
+    if (alarm == null) {
+      if (_session?.alarmId == alarmId) {
+        await _disposeSession();
+      }
+      return;
+    }
+
+    await _finalizeAlarm(
+      alarm,
+      alarmStatus: AlarmStatus.cancelled,
+      tripOutcome: TripOutcome.cancelled,
+      historyType: HistoryType.dismissed,
+      historyNotes: 'Cancelled by user',
+    );
+
     if (_session?.alarmId == alarmId) {
       await _disposeSession();
     }
-
-    final alarm = await _alarmRepository.getById(alarmId);
-    if (alarm == null) {
-      return;
-    }
-    alarm.status = AlarmStatus.cancelled;
-    alarm.updatedAt = DateTime.now();
-    await _alarmRepository.update(alarm);
   }
 
   Future<void> dismissAlarm(int alarmId, {bool snooze = false}) async {
@@ -173,11 +241,19 @@ class AlarmService {
     await _notificationService.cancelAlarmNotification();
 
     if (snooze) {
+      _session?.snoozeCount += 1;
       alarm.status = AlarmStatus.active;
       alarm.triggeredAt = null;
       await _alarmRepository.update(alarm);
       await _speechService.stop();
       FlutterBackgroundService().invoke('snooze');
+
+      await _historyRepository.log(
+        alarm: alarm,
+        type: HistoryType.snoozed,
+        tripId: _session?.tripId,
+        snoozeCount: _session?.snoozeCount,
+      );
 
       if (_session?.alarmId == alarmId && _session!.lastState != null) {
         _emitState(_session!.lastState!.copyWith(status: AlarmStatus.active));
@@ -185,10 +261,12 @@ class AlarmService {
       return;
     }
 
-    alarm.status = AlarmStatus.completed;
-    alarm.completedAt = DateTime.now();
-    alarm.updatedAt = DateTime.now();
-    await _alarmRepository.update(alarm);
+    await _finalizeAlarm(
+      alarm,
+      alarmStatus: AlarmStatus.completed,
+      tripOutcome: TripOutcome.completed,
+      historyType: HistoryType.completed,
+    );
 
     await _speechService.stop();
     await BackgroundAlarmService.stopMonitoring();
@@ -199,6 +277,12 @@ class AlarmService {
   }
 
   AlarmRuntimeState evaluate(Alarm alarm, Position position) {
+    _session?.tripTracker.recordPosition(
+      position.latitude,
+      position.longitude,
+      position.speed >= 0 ? position.speed * 3.6 : 0,
+    );
+
     return _evaluator.evaluate(
       config: AlarmMonitorConfig.fromAlarm(alarm),
       position: position,
@@ -207,13 +291,15 @@ class AlarmService {
     );
   }
 
-  Future<void> _startSession(Alarm alarm) async {
+  Future<void> _startSession(Alarm alarm, {int? tripId}) async {
+    final preserveTripId = tripId ?? _session?.tripId;
     await _disposeSession();
 
     final controller = StreamController<AlarmRuntimeState>.broadcast();
     _session = _AlarmSession(
       alarmId: alarm.id,
       controller: controller,
+      tripId: preserveTripId,
     );
     _evaluator.tracker.reset();
   }
@@ -221,13 +307,28 @@ class AlarmService {
   Future<void> _handleBackgroundState(AlarmRuntimeState state) async {
     if (_session == null || _session!.alarmId != state.alarmId) {
       final controller = StreamController<AlarmRuntimeState>.broadcast();
+      final activeTrip = await _tripRepository.getActiveTrip();
       _session = _AlarmSession(
         alarmId: state.alarmId,
         controller: controller,
+        tripId: activeTrip?.id,
+      );
+    }
+
+    if (state.latitude != null && state.longitude != null) {
+      _session!.tripTracker.recordPosition(
+        state.latitude!,
+        state.longitude!,
+        state.speedKmh,
       );
     }
 
     _emitState(state);
+
+    final tripId = _session?.tripId;
+    if (tripId != null) {
+      await _tripRepository.updateStats(tripId, _session!.tripTracker.toStats());
+    }
 
     if (state.status != AlarmStatus.paused) {
       await _notificationService.updateTrackingNotification(state);
@@ -245,6 +346,66 @@ class AlarmService {
         await _alarmRepository.update(alarm);
       }
     }
+
+    if (state.hasPassedDestination && !(_session?.passedHandled ?? true)) {
+      _session?.passedHandled = true;
+      final alarm = await _alarmRepository.getById(state.alarmId);
+      if (alarm != null &&
+          alarm.status != AlarmStatus.completed &&
+          alarm.status != AlarmStatus.missed &&
+          alarm.status != AlarmStatus.cancelled) {
+        await _handleMissed(alarm, reason: 'Destination passed');
+      }
+    }
+  }
+
+  Future<void> _handleMissed(Alarm alarm, {required String reason}) async {
+    await BackgroundAlarmService.stopMonitoring();
+    await _notificationService.cancelAll();
+
+    await _finalizeAlarm(
+      alarm,
+      alarmStatus: AlarmStatus.missed,
+      tripOutcome: TripOutcome.passed,
+      historyType: HistoryType.missed,
+      historyNotes: reason,
+    );
+
+    if (_session?.alarmId == alarm.id) {
+      await _disposeSession();
+    }
+  }
+
+  Future<void> _finalizeAlarm(
+    Alarm alarm, {
+    required AlarmStatus alarmStatus,
+    required TripOutcome tripOutcome,
+    required HistoryType historyType,
+    String? historyNotes,
+  }) async {
+    alarm.status = alarmStatus;
+    alarm.updatedAt = DateTime.now();
+    if (alarmStatus == AlarmStatus.completed) {
+      alarm.completedAt = DateTime.now();
+    }
+    await _alarmRepository.update(alarm);
+
+    final tripId = _session?.tripId;
+    if (tripId != null) {
+      await _tripRepository.endTrip(
+        tripId,
+        tripOutcome,
+        stats: _session?.tripTracker.toStats(),
+      );
+    }
+
+    await _historyRepository.log(
+      alarm: alarm,
+      type: historyType,
+      tripId: tripId,
+      snoozeCount: _session?.snoozeCount,
+      notes: historyNotes,
+    );
   }
 
   Future<void> _handleTriggered(int alarmId) async {
@@ -345,11 +506,16 @@ class _AlarmSession {
   _AlarmSession({
     required this.alarmId,
     required this.controller,
+    this.tripId,
   });
 
   final int alarmId;
   final StreamController<AlarmRuntimeState> controller;
+  final int? tripId;
+  final _TripStatsTracker tripTracker = _TripStatsTracker();
   Timer? snoozeTimer;
   DateTime? snoozeSuppressedUntil;
   AlarmRuntimeState? lastState;
+  int snoozeCount = 0;
+  bool passedHandled = false;
 }

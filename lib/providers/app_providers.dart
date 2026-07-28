@@ -27,14 +27,6 @@ final mapServiceProvider = Provider<MapService>((ref) {
   return const MapService();
 });
 
-final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return TripRepositoryImpl();
-});
-
-final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
-  return HistoryRepositoryImpl();
-});
-
 final backupRepositoryProvider = Provider<BackupRepository>((ref) {
   return BackupRepositoryImpl();
 });

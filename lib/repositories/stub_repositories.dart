@@ -1,12 +1,4 @@
-// Stub repositories for Phase 3+ implementation.
-
-abstract class TripRepository {}
-
-class TripRepositoryImpl implements TripRepository {}
-
-abstract class HistoryRepository {}
-
-class HistoryRepositoryImpl implements HistoryRepository {}
+// Stub repositories for future implementation.
 
 abstract class BackupRepository {}
 

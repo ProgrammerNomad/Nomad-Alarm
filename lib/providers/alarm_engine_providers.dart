@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/core/router/app_router.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
+import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/alarm_service.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
@@ -22,6 +23,8 @@ final alarmServiceProvider = Provider<AlarmService>((ref) {
 
   final service = AlarmService(
     alarmRepository: ref.watch(alarmRepositoryProvider),
+    tripRepository: ref.watch(tripRepositoryProvider),
+    historyRepository: ref.watch(historyRepositoryProvider),
     notificationService: ref.watch(notificationServiceProvider),
     speechService: ref.watch(speechServiceProvider),
     languageCode: settings?.languageCode ?? 'en',
