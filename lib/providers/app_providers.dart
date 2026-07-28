@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/repositories/stub_repositories.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
+import 'package:nomad_alarm/services/map_service.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
+import 'package:nomad_alarm/services/search_service.dart';
 import 'package:nomad_alarm/services/settings_service.dart';
 
 final settingsServiceProvider = Provider<SettingsService>((ref) {
@@ -13,16 +15,26 @@ final permissionServiceProvider = Provider<PermissionService>((ref) {
   return PermissionService();
 });
 
-final alarmRepositoryProvider = Provider<AlarmRepository>((ref) {
-  return AlarmRepositoryImpl();
+final searchServiceProvider = Provider<SearchService>((ref) {
+  final service = SearchService();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+final mapServiceProvider = Provider<MapService>((ref) {
+  return const MapService();
 });
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
   return TripRepositoryImpl();
 });
 
-final searchRepositoryProvider = Provider<SearchRepository>((ref) {
-  return SearchRepositoryImpl();
+final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
+  return HistoryRepositoryImpl();
+});
+
+final backupRepositoryProvider = Provider<BackupRepository>((ref) {
+  return BackupRepositoryImpl();
 });
 
 final bootstrapProvider = FutureProvider<bool>((ref) async {

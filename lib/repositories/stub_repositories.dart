@@ -1,20 +1,8 @@
-// Stub repositories for Phase 2+ implementation.
-
-abstract class AlarmRepository {}
-
-class AlarmRepositoryImpl implements AlarmRepository {}
+// Stub repositories for Phase 3+ implementation.
 
 abstract class TripRepository {}
 
 class TripRepositoryImpl implements TripRepository {}
-
-abstract class SearchRepository {}
-
-class SearchRepositoryImpl implements SearchRepository {}
-
-abstract class FavoriteRepository {}
-
-class FavoriteRepositoryImpl implements FavoriteRepository {}
 
 abstract class HistoryRepository {}
 

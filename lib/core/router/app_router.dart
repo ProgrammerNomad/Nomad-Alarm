@@ -1,17 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/features/about/presentation/about_screen.dart';
+import 'package:nomad_alarm/features/alarm/presentation/active_alarm_screen.dart';
+import 'package:nomad_alarm/features/alarm/presentation/alarm_config_screen.dart';
+import 'package:nomad_alarm/features/alarm/presentation/alarm_ring_screen.dart';
 import 'package:nomad_alarm/features/history/presentation/history_screen.dart';
 import 'package:nomad_alarm/features/home/presentation/home_screen.dart';
+import 'package:nomad_alarm/features/map/presentation/map_screen.dart';
 import 'package:nomad_alarm/features/permission/presentation/permissions_screen.dart';
 import 'package:nomad_alarm/features/privacy/presentation/privacy_screen.dart';
+import 'package:nomad_alarm/features/search/presentation/search_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/permission_center_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/settings_screen.dart';
 import 'package:nomad_alarm/features/splash/presentation/splash_screen.dart';
 import 'package:nomad_alarm/features/trip/presentation/trips_screen.dart';
 import 'package:nomad_alarm/features/welcome/presentation/welcome_screen.dart';
 import 'package:nomad_alarm/shared/widgets/main_shell.dart';
-import 'package:nomad_alarm/shared/widgets/placeholder_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -82,27 +87,43 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/search',
-        builder: (context, state) => const PlaceholderScreen(title: 'Search'),
+        builder: (context, state) => const SearchScreen(),
       ),
       GoRoute(
         path: '/map',
-        builder: (context, state) => const PlaceholderScreen(title: 'Map'),
+        builder: (context, state) {
+          final lat = double.tryParse(state.uri.queryParameters['lat'] ?? '');
+          final lng = double.tryParse(state.uri.queryParameters['lng'] ?? '');
+          final zoom = double.tryParse(state.uri.queryParameters['zoom'] ?? '');
+          return MapScreen(
+            initialLatitude: lat,
+            initialLongitude: lng,
+            initialZoom: zoom,
+          );
+        },
       ),
       GoRoute(
         path: '/alarm/new',
-        builder: (context, state) => const PlaceholderScreen(title: 'Alarm Config'),
+        builder: (context, state) {
+          final extra = state.extra;
+          return AlarmConfigScreen(
+            destination: extra is DestinationArgs ? extra : null,
+          );
+        },
       ),
       GoRoute(
         path: '/alarm/active/:id',
-        builder: (context, state) => PlaceholderScreen(
-          title: 'Active Alarm #${state.pathParameters['id']}',
-        ),
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return ActiveAlarmScreen(alarmId: id);
+        },
       ),
       GoRoute(
         path: '/alarm/ring/:id',
-        builder: (context, state) => PlaceholderScreen(
-          title: 'Alarm Ring #${state.pathParameters['id']}',
-        ),
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return AlarmRingScreen(alarmId: id);
+        },
       ),
     ],
   );
