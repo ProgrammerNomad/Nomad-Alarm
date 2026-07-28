@@ -22,8 +22,8 @@ See also: [Screens](SCREENS.md), [Assets](ASSETS.md), [Sounds](SOUNDS.md).
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `primary` | `#2962FF` | FAB, primary buttons, active nav, links |
-| `onPrimary` | `#FFFFFF` | Text/icons on primary |
+| `primary` | `#1565C0` | Logo pin blue - FAB, buttons, active nav |
+| `onPrimary` | `#FFFFFF` | Logo bell white - text/icons on primary |
 | `primaryContainer` | `#E3F2FD` | Selected chips, subtle highlights |
 | `onPrimaryContainer` | `#0D47A1` | Text on primary container |
 | `secondary` | `#00C853` | Success, approaching destination, active GPS |
@@ -44,7 +44,7 @@ See also: [Screens](SCREENS.md), [Assets](ASSETS.md), [Sounds](SOUNDS.md).
 
 | Name | Hex |
 |------|-----|
-| Blue (default) | `#2962FF` |
+| Blue (default) | `#1565C0` |
 | Green | `#00C853` |
 | Orange | `#FF6D00` |
 | Purple | `#7C4DFF` |

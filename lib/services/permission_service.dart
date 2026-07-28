@@ -1,0 +1,74 @@
+import 'package:permission_handler/permission_handler.dart';
+
+enum NomadPermissionType {
+  location,
+  notification,
+  backgroundLocation,
+}
+
+class PermissionInfo {
+  const PermissionInfo({
+    required this.type,
+    required this.title,
+    required this.description,
+    required this.permission,
+  });
+
+  final NomadPermissionType type;
+  final String title;
+  final String description;
+  final Permission permission;
+}
+
+class PermissionService {
+  static const permissionSteps = [
+    PermissionInfo(
+      type: NomadPermissionType.location,
+      title: 'Location access',
+      description:
+          'We need your location to calculate distance to your destination.',
+      permission: Permission.locationWhenInUse,
+    ),
+    PermissionInfo(
+      type: NomadPermissionType.notification,
+      title: 'Notifications',
+      description:
+          'We show a small notification while your alarm is active.',
+      permission: Permission.notification,
+    ),
+    PermissionInfo(
+      type: NomadPermissionType.backgroundLocation,
+      title: 'Background location',
+      description:
+          'Allow all the time so the alarm works while your screen is off.',
+      permission: Permission.locationAlways,
+    ),
+  ];
+
+  Future<bool> isGranted(Permission permission) async {
+    return permission.isGranted;
+  }
+
+  Future<PermissionStatus> request(Permission permission) async {
+    return permission.request();
+  }
+
+  Future<Map<NomadPermissionType, PermissionStatus>> getAllStatuses() async {
+    return {
+      NomadPermissionType.location: await Permission.locationWhenInUse.status,
+      NomadPermissionType.notification: await Permission.notification.status,
+      NomadPermissionType.backgroundLocation:
+          await Permission.locationAlways.status,
+    };
+  }
+
+  Future<bool> hasMinimumPermissions() async {
+    final location = await Permission.locationWhenInUse.isGranted;
+    final notifications = await Permission.notification.isGranted;
+    return location && notifications;
+  }
+
+  Future<void> openSettings() async {
+    await openAppSettings();
+  }
+}

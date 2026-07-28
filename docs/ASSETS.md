@@ -55,7 +55,7 @@ assets/
 | `logo_foreground.png` | 432×432 | Adaptive icon foreground |
 | Play Store icon | 512×512 | Store listing |
 
-Design: location pin + alarm bell motif, primary blue `#2962FF`.
+Design: transparent PNG - blue pin `#1565C0`, white bell `#FFFFFF`. Adaptive icon uses pin-blue background.
 
 Generate launcher icons:
 

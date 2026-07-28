@@ -9,6 +9,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+* Flutter app scaffold (Phase 0 + Phase 1)
+* Material 3 theme, go_router bottom nav, Splash/Welcome/Permissions onboarding
+* Isar database with all collections and SettingsRepository
+* Settings screen, Permission Center, logo on splash/welcome/about/app icon
+* GitHub Actions CI and unit/widget tests
 * Design System (`docs/DESIGN_SYSTEM.md`) - colors, typography, spacing, M3 tokens, components
 * User Flows (`docs/USER_FLOWS.md`) - end-to-end UX paths
 * Diagrams (`docs/DIAGRAMS.md`) - Mermaid architecture, sequence, state, ER diagrams
