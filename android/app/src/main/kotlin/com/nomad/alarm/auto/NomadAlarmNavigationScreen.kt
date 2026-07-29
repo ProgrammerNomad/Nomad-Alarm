@@ -3,7 +3,6 @@ package com.nomad.alarm.auto
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
-import androidx.car.app.model.CarText
 import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.MessageInfo
@@ -38,12 +37,12 @@ class NomadAlarmNavigationScreen(carContext: CarContext) : Screen(carContext) {
             tileSubtitle.isNotEmpty() -> tileSubtitle
             else -> tapToOpen
         }
-        val roadText =
-            if (destination.isNotEmpty()) "$destination\n$detail" else detail
 
         return NavigationTemplate.Builder()
             .setNavigationInfo(
-                MessageInfo.Builder(CarText.create(roadText)).build(),
+                MessageInfo.Builder(destination.ifEmpty { "Nomad Alarm" })
+                    .setText(detail)
+                    .build(),
             )
             .build()
     }
