@@ -7,6 +7,7 @@ import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
+import 'package:nomad_alarm/providers/settings_providers.dart';
 
 class ActiveAlarmScreen extends ConsumerStatefulWidget {
   const ActiveAlarmScreen({
@@ -51,6 +52,8 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final useMetric =
+        ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
     final stateAsync = ref.watch(activeAlarmStateProvider(widget.alarmId));
 
     ref.listen(activeAlarmStateProvider(widget.alarmId), (prev, next) {
@@ -89,7 +92,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                 ],
                 const SizedBox(height: 32),
                 Text(
-                  formatDistance(state.distanceMeters),
+                  formatDistance(state.distanceMeters, useMetric: useMetric),
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -116,11 +119,13 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                   children: [
                     _StatChip(
                       icon: Icons.speed,
-                      label: '${state.speedKmh.toStringAsFixed(0)} km/h',
+                      label:
+                          '${state.speedKmh.toStringAsFixed(0)} ${l10n.kmhUnit}',
                     ),
                     _StatChip(
                       icon: Icons.gps_fixed,
-                      label: '${state.accuracyMeters.round()} m',
+                      label:
+                          '${state.accuracyMeters.round()} ${l10n.metersUnit}',
                       color: _accuracyColor(state.accuracyMeters),
                     ),
                   ],

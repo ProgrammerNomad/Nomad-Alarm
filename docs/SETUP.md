@@ -29,22 +29,20 @@ All Android toolchain checks should pass.
 
 ---
 
-## Clone & Create Project
-
-If starting from this repository (docs only so far):
+## Clone & Run
 
 ```bash
 git clone https://github.com/ProgrammerNomad/Nomad-Alarm.git
 cd Nomad-Alarm
-```
-
-Initialize Flutter project (when ready to scaffold):
-
-```bash
-flutter create --org com.nomad --project-name nomad_alarm .
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n
+flutter run
 ```
 
 Package name: `com.nomad.alarm`
+
+Maps use **flutter_map** with OpenStreetMap tiles (not MapLibre).
 
 ---
 

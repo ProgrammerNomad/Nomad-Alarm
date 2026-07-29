@@ -89,26 +89,31 @@ const AppSettingsSchema = CollectionSchema(
       name: r'persistentNotificationEnabled',
       type: IsarType.bool,
     ),
-    r'routeProvider': PropertySchema(
+    r'resumeAlarmAfterBoot': PropertySchema(
       id: 14,
+      name: r'resumeAlarmAfterBoot',
+      type: IsarType.bool,
+    ),
+    r'routeProvider': PropertySchema(
+      id: 15,
       name: r'routeProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsrouteProviderEnumValueMap,
     ),
     r'searchProvider': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'searchProvider',
       type: IsarType.byte,
       enumMap: _AppSettingssearchProviderEnumValueMap,
     ),
     r'themeMode': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'themeMode',
       type: IsarType.byte,
       enumMap: _AppSettingsthemeModeEnumValueMap,
     ),
     r'useMetric': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'useMetric',
       type: IsarType.bool,
     )
@@ -159,10 +164,11 @@ void _appSettingsSerialize(
   writer.writeBool(offsets[11], object.lockScreenInfoEnabled);
   writer.writeByte(offsets[12], object.mapProvider.index);
   writer.writeBool(offsets[13], object.persistentNotificationEnabled);
-  writer.writeByte(offsets[14], object.routeProvider.index);
-  writer.writeByte(offsets[15], object.searchProvider.index);
-  writer.writeByte(offsets[16], object.themeMode.index);
-  writer.writeBool(offsets[17], object.useMetric);
+  writer.writeBool(offsets[14], object.resumeAlarmAfterBoot);
+  writer.writeByte(offsets[15], object.routeProvider.index);
+  writer.writeByte(offsets[16], object.searchProvider.index);
+  writer.writeByte(offsets[17], object.themeMode.index);
+  writer.writeBool(offsets[18], object.useMetric);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -191,16 +197,17 @@ AppSettings _appSettingsDeserialize(
       _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[12])] ??
           MapProviderType.osm;
   object.persistentNotificationEnabled = reader.readBool(offsets[13]);
+  object.resumeAlarmAfterBoot = reader.readBool(offsets[14]);
   object.routeProvider = _AppSettingsrouteProviderValueEnumMap[
-          reader.readByteOrNull(offsets[14])] ??
+          reader.readByteOrNull(offsets[15])] ??
       RouteProviderType.osrm;
   object.searchProvider = _AppSettingssearchProviderValueEnumMap[
-          reader.readByteOrNull(offsets[15])] ??
+          reader.readByteOrNull(offsets[16])] ??
       SearchProviderType.nominatim;
   object.themeMode =
-      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[16])] ??
+      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[17])] ??
           AppThemeMode.system;
-  object.useMetric = reader.readBool(offsets[17]);
+  object.useMetric = reader.readBool(offsets[18]);
   return object;
 }
 
@@ -244,18 +251,20 @@ P _appSettingsDeserializeProp<P>(
     case 13:
       return (reader.readBool(offset)) as P;
     case 14:
+      return (reader.readBool(offset)) as P;
+    case 15:
       return (_AppSettingsrouteProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           RouteProviderType.osrm) as P;
-    case 15:
+    case 16:
       return (_AppSettingssearchProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SearchProviderType.nominatim) as P;
-    case 16:
+    case 17:
       return (_AppSettingsthemeModeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           AppThemeMode.system) as P;
-    case 17:
+    case 18:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1134,6 +1143,16 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      resumeAlarmAfterBootEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'resumeAlarmAfterBoot',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       routeProviderEqualTo(RouteProviderType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1508,6 +1527,20 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByResumeAlarmAfterBoot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'resumeAlarmAfterBoot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByResumeAlarmAfterBootDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'resumeAlarmAfterBoot', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByRouteProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'routeProvider', Sort.asc);
@@ -1761,6 +1794,20 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByResumeAlarmAfterBoot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'resumeAlarmAfterBoot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByResumeAlarmAfterBootDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'resumeAlarmAfterBoot', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByRouteProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'routeProvider', Sort.asc);
@@ -1910,6 +1957,13 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByResumeAlarmAfterBoot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'resumeAlarmAfterBoot');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByRouteProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'routeProvider');
@@ -2035,6 +2089,13 @@ extension AppSettingsQueryProperty
       persistentNotificationEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'persistentNotificationEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      resumeAlarmAfterBootProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'resumeAlarmAfterBoot');
     });
   }
 

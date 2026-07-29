@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/repositories/settings_repository.dart';
+import 'package:nomad_alarm/services/boot_prefs_sync.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
 import 'package:nomad_alarm/services/settings_service.dart';
 
@@ -26,7 +27,9 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repo.updateSettings(settings);
-      return _repo.getSettings();
+      final updated = await _repo.getSettings();
+      await BootPrefsSync.syncResumeAfterBoot(updated.resumeAlarmAfterBoot);
+      return updated;
     });
   }
 

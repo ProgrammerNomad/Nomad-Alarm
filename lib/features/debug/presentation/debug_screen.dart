@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
+import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/battery_monitor_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 
@@ -41,6 +43,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   }
 
   Future<void> _copySnapshot(WidgetRef ref) async {
+    final l10n = context.l10n;
     final alarmService = ref.read(alarmServiceProvider);
     final activeId = alarmService.activeAlarmId;
     final state = activeId != null
@@ -58,7 +61,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
         ..writeln('Destination: ${state.destinationName}')
         ..writeln('Distance: ${formatDistance(state.distanceMeters)}')
         ..writeln('ETA: ${formatEta(state.etaMinutes)}')
-        ..writeln('Speed: ${state.speedKmh.toStringAsFixed(1)} km/h')
+        ..writeln('Speed: ${state.speedKmh.toStringAsFixed(1)} ${l10n.kmhUnit}')
         ..writeln('GPS lost: ${state.isGpsLost}')
         ..writeln('Low battery: ${state.isLowBattery}');
       if (state.latitude != null && state.longitude != null) {
@@ -72,18 +75,20 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     await Clipboard.setData(ClipboardData(text: buffer.toString()));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debug snapshot copied')),
+        SnackBar(content: Text(l10n.debugSnapshotCopied)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (!FeatureFlags.debugScreen || !kDebugMode) {
-      return const NomadScaffold(
-        title: 'Debug',
+      return NomadScaffold(
+        title: l10n.debugTitle,
         showBackButton: true,
-        body: Center(child: Text('Debug screen unavailable')),
+        body: Center(child: Text(l10n.debugUnavailable)),
       );
     }
 
@@ -91,48 +96,62 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     final stateAsync = activeId != null
         ? ref.watch(activeAlarmStateProvider(activeId))
         : null;
+    final useMetric =
+        ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
 
     return NomadScaffold(
-      title: 'Debug',
+      title: l10n.debugTitle,
       showBackButton: true,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _DebugTile(label: 'Background service', value: '$_serviceRunning'),
           _DebugTile(
-            label: 'Battery',
+            label: l10n.debugBackgroundService,
+            value: '$_serviceRunning',
+          ),
+          _DebugTile(
+            label: l10n.debugBattery,
             value: _batteryLevel != null
-                ? '$_batteryLevel% (${_isCharging == true ? 'charging' : 'discharging'})'
+                ? '$_batteryLevel% (${_isCharging == true ? l10n.debugCharging : l10n.debugDischarging})'
                 : '…',
           ),
-          _DebugTile(label: 'Active alarm ID', value: '$activeId'),
+          _DebugTile(label: l10n.debugActiveAlarmId, value: '$activeId'),
           if (stateAsync != null)
             stateAsync.when(
-              loading: () => const ListTile(title: Text('Loading GPS state…')),
-              error: (e, _) => ListTile(title: Text('Error: $e')),
+              loading: () => ListTile(title: Text(l10n.debugLoadingGps)),
+              error: (e, _) => ListTile(title: Text(l10n.errorPrefix(e.toString()))),
               data: (state) => Column(
                 children: [
                   _DebugTile(
-                    label: 'Distance',
-                    value: formatDistance(state.distanceMeters),
-                  ),
-                  _DebugTile(label: 'ETA', value: formatEta(state.etaMinutes)),
-                  _DebugTile(
-                    label: 'Speed',
-                    value: '${state.speedKmh.toStringAsFixed(1)} km/h',
+                    label: l10n.debugDistance,
+                    value: formatDistance(
+                      state.distanceMeters,
+                      useMetric: useMetric,
+                    ),
                   ),
                   _DebugTile(
-                    label: 'Accuracy',
-                    value: '${state.accuracyMeters.round()} m',
+                    label: l10n.debugEta,
+                    value: formatEta(state.etaMinutes),
                   ),
-                  _DebugTile(label: 'GPS lost', value: '${state.isGpsLost}'),
                   _DebugTile(
-                    label: 'Low battery flag',
+                    label: l10n.debugSpeed,
+                    value: '${state.speedKmh.toStringAsFixed(1)} ${l10n.kmhUnit}',
+                  ),
+                  _DebugTile(
+                    label: l10n.debugAccuracy,
+                    value: '${state.accuracyMeters.round()} ${l10n.metersUnit}',
+                  ),
+                  _DebugTile(
+                    label: l10n.debugGpsLost,
+                    value: '${state.isGpsLost}',
+                  ),
+                  _DebugTile(
+                    label: l10n.debugLowBattery,
                     value: '${state.isLowBattery}',
                   ),
                   if (state.latitude != null && state.longitude != null)
                     _DebugTile(
-                      label: 'Position',
+                      label: l10n.debugPosition,
                       value:
                           '${state.latitude!.toStringAsFixed(5)}, ${state.longitude!.toStringAsFixed(5)}',
                     ),
@@ -143,13 +162,13 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
           FilledButton.icon(
             onPressed: () => _copySnapshot(ref),
             icon: const Icon(Icons.copy),
-            label: const Text('Copy snapshot'),
+            label: Text(l10n.debugCopySnapshot),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _refreshExtras,
             icon: const Icon(Icons.refresh),
-            label: const Text('Refresh'),
+            label: Text(l10n.debugRefresh),
           ),
         ],
       ),

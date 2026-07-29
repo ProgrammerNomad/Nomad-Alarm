@@ -47,6 +47,12 @@ Testing strategy for Nomad Alarm - focused on reliability of the core alarm flow
 | `parse_geo_uri` | Extract coords and label |
 | `parse_raw_coordinates` | `28.6139, 77.2090` |
 
+### Favorite Trips
+
+| Test | Description |
+|------|-------------|
+| `saveFromTrip persists trip metadata` | Round-trip save + load favorite trip fields |
+
 ### BackupService
 
 | Test | Description |

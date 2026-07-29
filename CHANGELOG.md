@@ -8,17 +8,46 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+* Android splash hang on x86 emulators - pin `path_provider_android` to 2.2.23 (pre-JNI); show retry UI if bootstrap fails
+* Isar `libisar.so` not found on emulator - import `isar_flutter_libs` in `main.dart`; repair pub cache if `jniLibs` missing, then `flutter clean` rebuild
+
+---
+
+## [1.5.2] - 2026-07-29
+
 ### Added
-* English + Hindi UI localization (`lib/l10n/`, gen-l10n) wired through Settings language
-* TalkBack semantics on create alarm, cancel, dismiss, snooze, backup actions
-* Local-only build guide ([LOCAL_BUILD.md](docs/LOCAL_BUILD.md))
+* **Debug screen l10n** (en + hi) - all tiles, buttons, and snapshot copy
+* **Runtime language sync** - Settings language change updates notifications, widgets, and tile without restart
+* **Boot receiver (opt-in)** - `resumeAlarmAfterBoot` setting relaunches app after reboot to resume active alarms
+* Widget tests: Search, History, Trips (en + hi empty states)
+* Unit test: `deep_link_service_test`; integration test: `app_launch_test`
 
 ### Changed
-* Removed GitHub Actions workflow (local builds only)
-* Repo cleanup: debug artifacts, orphan `placeholder_screen.dart`, stale `.github` templates
-* Docs synced with code (feature flags, widgets, privacy URL, MapLibre → flutter_map)
+* About screen uses localized version label; active alarm uses localized speed/accuracy units
+* Background foreground service startup notification localized
+* Version bumped to 1.5.2+4
+* Docs and QA matrix synced for v1.5.2
 
-> **Note:** `[1.0.0]` and `[1.5.0]` below are **not published** until [RELEASE_QA_SIGNOFF.md](docs/RELEASE_QA_SIGNOFF.md) is completed on a physical device and Play Store assets are captured.
+---
+
+## [1.5.1] - 2026-07-29
+
+### Added
+* **Full en/hi localization** for Search, Map, History, Trips, notifications, and home screen widgets
+* **Deep link / share import** - geo URIs, Google Maps URLs, raw coordinates; clipboard import on Search; splash routing to alarm config
+* **Quick Settings tile** - live distance when alarm active; tap opens active alarm screen
+* **Favorite trips** - save completed trip as reusable favorite; create alarm from trip detail
+* **Widget polish** - medium widget approach progress bar; large (4×3) widget with distance, speed, and progress
+* **Accessibility** - Semantics on search, map pin actions, history delete, trips, deep-link import
+* Unit tests: `deep_link_parser_test`, `favorite_trip_test`
+
+### Changed
+* Feature flags enabled: `deepLinkImport`, `quickSettingsTile`
+* Version bumped to 1.5.1+3
+* Docs synced (ROADMAP, SETUP, ARCHITECTURE, SERVICES, TESTING)
+
+> **Note:** Play Store publish remains pending until [RELEASE_QA_SIGNOFF.md](docs/RELEASE_QA_SIGNOFF.md) is completed on device.
 
 ---
 
@@ -72,7 +101,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.1...v1.5.2
+[1.5.1]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.0.0...v1.5.0
 [1.0.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/releases/tag/v0.1.0

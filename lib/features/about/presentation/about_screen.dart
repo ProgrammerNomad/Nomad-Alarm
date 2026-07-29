@@ -46,7 +46,7 @@ class _AboutScreenState extends State<AboutScreen> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
-          Text('Version $_version'),
+          Text(l10n.versionLabel(_version)),
           const SizedBox(height: 8),
           Text(l10n.developedBy),
           const SizedBox(height: 24),

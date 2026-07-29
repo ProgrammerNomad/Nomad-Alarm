@@ -180,6 +180,8 @@ class BackupService {
         'latitude': fav.latitude,
         'longitude': fav.longitude,
         'address': fav.address,
+        'linkedTripId': fav.linkedTripId,
+        'routePolyline': fav.routePolyline,
         'sortOrder': fav.sortOrder,
         'createdAt': fav.createdAt.toIso8601String(),
       };
@@ -192,6 +194,8 @@ class BackupService {
       ..latitude = (json['latitude'] as num).toDouble()
       ..longitude = (json['longitude'] as num).toDouble()
       ..address = json['address'] as String?
+      ..linkedTripId = json['linkedTripId'] as int?
+      ..routePolyline = json['routePolyline'] as String?
       ..sortOrder = json['sortOrder'] as int? ?? 0
       ..createdAt =
           DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now();
@@ -232,6 +236,7 @@ class BackupService {
         'defaultVibrationEnabled': settings.defaultVibrationEnabled,
         'defaultFlashlightEnabled': settings.defaultFlashlightEnabled,
         'batteryProfile': settings.batteryProfile.index,
+        'resumeAlarmAfterBoot': settings.resumeAlarmAfterBoot,
       };
 
   void _applySettingsFromJson(AppSettings settings, Map<String, dynamic> json) {
@@ -252,5 +257,7 @@ class BackupService {
         settings.defaultFlashlightEnabled;
     settings.batteryProfile = BatteryProfile
         .values[json['batteryProfile'] as int? ?? settings.batteryProfile.index];
+    settings.resumeAlarmAfterBoot =
+        json['resumeAlarmAfterBoot'] as bool? ?? settings.resumeAlarmAfterBoot;
   }
 }

@@ -43,18 +43,28 @@ const FavoriteSchema = CollectionSchema(
       name: r'latitude',
       type: IsarType.double,
     ),
-    r'longitude': PropertySchema(
+    r'linkedTripId': PropertySchema(
       id: 5,
+      name: r'linkedTripId',
+      type: IsarType.long,
+    ),
+    r'longitude': PropertySchema(
+      id: 6,
       name: r'longitude',
       type: IsarType.double,
     ),
     r'name': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'name',
       type: IsarType.string,
     ),
+    r'routePolyline': PropertySchema(
+      id: 8,
+      name: r'routePolyline',
+      type: IsarType.string,
+    ),
     r'sortOrder': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'sortOrder',
       type: IsarType.long,
     )
@@ -92,6 +102,12 @@ int _favoriteEstimateSize(
     }
   }
   bytesCount += 3 + object.name.length * 3;
+  {
+    final value = object.routePolyline;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -106,9 +122,11 @@ void _favoriteSerialize(
   writer.writeDateTime(offsets[2], object.createdAt);
   writer.writeString(offsets[3], object.icon);
   writer.writeDouble(offsets[4], object.latitude);
-  writer.writeDouble(offsets[5], object.longitude);
-  writer.writeString(offsets[6], object.name);
-  writer.writeLong(offsets[7], object.sortOrder);
+  writer.writeLong(offsets[5], object.linkedTripId);
+  writer.writeDouble(offsets[6], object.longitude);
+  writer.writeString(offsets[7], object.name);
+  writer.writeString(offsets[8], object.routePolyline);
+  writer.writeLong(offsets[9], object.sortOrder);
 }
 
 Favorite _favoriteDeserialize(
@@ -126,9 +144,11 @@ Favorite _favoriteDeserialize(
   object.icon = reader.readStringOrNull(offsets[3]);
   object.id = id;
   object.latitude = reader.readDouble(offsets[4]);
-  object.longitude = reader.readDouble(offsets[5]);
-  object.name = reader.readString(offsets[6]);
-  object.sortOrder = reader.readLong(offsets[7]);
+  object.linkedTripId = reader.readLongOrNull(offsets[5]);
+  object.longitude = reader.readDouble(offsets[6]);
+  object.name = reader.readString(offsets[7]);
+  object.routePolyline = reader.readStringOrNull(offsets[8]);
+  object.sortOrder = reader.readLong(offsets[9]);
   return object;
 }
 
@@ -151,10 +171,14 @@ P _favoriteDeserializeProp<P>(
     case 4:
       return (reader.readDouble(offset)) as P;
     case 5:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
+    case 9:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -169,6 +193,7 @@ const _FavoritecategoryEnumValueMap = {
   'airport': 4,
   'hotel': 5,
   'custom': 6,
+  'trip': 7,
 };
 const _FavoritecategoryValueEnumMap = {
   0: FavoriteCategory.home,
@@ -178,6 +203,7 @@ const _FavoritecategoryValueEnumMap = {
   4: FavoriteCategory.airport,
   5: FavoriteCategory.hotel,
   6: FavoriteCategory.custom,
+  7: FavoriteCategory.trip,
 };
 
 Id _favoriteGetId(Favorite object) {
@@ -781,6 +807,77 @@ extension FavoriteQueryFilter
     });
   }
 
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> linkedTripIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'linkedTripId',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      linkedTripIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'linkedTripId',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> linkedTripIdEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'linkedTripId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      linkedTripIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'linkedTripId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> linkedTripIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'linkedTripId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> linkedTripIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'linkedTripId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Favorite, Favorite, QAfterFilterCondition> longitudeEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -973,6 +1070,158 @@ extension FavoriteQueryFilter
     });
   }
 
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'routePolyline',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'routePolyline',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'routePolyline',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'routePolyline',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition> routePolylineMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'routePolyline',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'routePolyline',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterFilterCondition>
+      routePolylineIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'routePolyline',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Favorite, Favorite, QAfterFilterCondition> sortOrderEqualTo(
       int value) {
     return QueryBuilder.apply(this, (query) {
@@ -1094,6 +1343,18 @@ extension FavoriteQuerySortBy on QueryBuilder<Favorite, Favorite, QSortBy> {
     });
   }
 
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByLinkedTripId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'linkedTripId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByLinkedTripIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'linkedTripId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByLongitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'longitude', Sort.asc);
@@ -1115,6 +1376,18 @@ extension FavoriteQuerySortBy on QueryBuilder<Favorite, Favorite, QSortBy> {
   QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByRoutePolyline() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'routePolyline', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> sortByRoutePolylineDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'routePolyline', Sort.desc);
     });
   }
 
@@ -1205,6 +1478,18 @@ extension FavoriteQuerySortThenBy
     });
   }
 
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByLinkedTripId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'linkedTripId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByLinkedTripIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'linkedTripId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByLongitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'longitude', Sort.asc);
@@ -1226,6 +1511,18 @@ extension FavoriteQuerySortThenBy
   QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByRoutePolyline() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'routePolyline', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QAfterSortBy> thenByRoutePolylineDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'routePolyline', Sort.desc);
     });
   }
 
@@ -1276,6 +1573,12 @@ extension FavoriteQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Favorite, Favorite, QDistinct> distinctByLinkedTripId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'linkedTripId');
+    });
+  }
+
   QueryBuilder<Favorite, Favorite, QDistinct> distinctByLongitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'longitude');
@@ -1286,6 +1589,14 @@ extension FavoriteQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Favorite, Favorite, QDistinct> distinctByRoutePolyline(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'routePolyline',
+          caseSensitive: caseSensitive);
     });
   }
 
@@ -1335,6 +1646,12 @@ extension FavoriteQueryProperty
     });
   }
 
+  QueryBuilder<Favorite, int?, QQueryOperations> linkedTripIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'linkedTripId');
+    });
+  }
+
   QueryBuilder<Favorite, double, QQueryOperations> longitudeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'longitude');
@@ -1344,6 +1661,12 @@ extension FavoriteQueryProperty
   QueryBuilder<Favorite, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Favorite, String?, QQueryOperations> routePolylineProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'routePolyline');
     });
   }
 

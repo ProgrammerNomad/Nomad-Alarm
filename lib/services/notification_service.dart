@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 
@@ -20,7 +21,22 @@ class NotificationService {
   NotificationTapHandler? onNotificationTap;
   void Function(String action, int alarmId)? onNotificationAction;
 
-  Future<void> initialize() async {
+  String _languageCode = 'en';
+  NotificationL10n? _l10n;
+
+  Future<void> setLanguageCode(String languageCode) async {
+    _languageCode = languageCode;
+    _l10n = await NotificationL10n.load(languageCode);
+    await _ensureChannels();
+  }
+
+  Future<NotificationL10n> _strings() async {
+    _l10n ??= await NotificationL10n.load(_languageCode);
+    return _l10n!;
+  }
+
+  Future<void> initialize({String languageCode = 'en'}) async {
+    _languageCode = languageCode;
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
 
@@ -30,32 +46,36 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
+    await setLanguageCode(languageCode);
+  }
+
+  Future<void> _ensureChannels() async {
+    final strings = await _strings();
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
     await androidPlugin?.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         trackingChannelId,
-        'Active Alarm',
-        description: 'Shows distance while alarm is tracking',
+        strings.trackingChannelName,
+        description: strings.trackingChannelDesc,
         importance: Importance.low,
       ),
     );
     await androidPlugin?.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         alarmChannelId,
-        'Alarm Ring',
-        description: 'Alerts when you reach your destination',
+        strings.alarmChannelName,
+        description: strings.alarmChannelDesc,
         importance: Importance.max,
         playSound: true,
         enableVibration: true,
       ),
     );
     await androidPlugin?.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         alertsChannelId,
-        'Warnings',
-        description: 'GPS and battery warnings',
+        strings.warningsChannelName,
         importance: Importance.high,
       ),
     );
@@ -85,15 +105,16 @@ class NotificationService {
   }
 
   Future<void> showTrackingNotification(AlarmRuntimeState state) async {
+    final strings = await _strings();
     final distance = formatDistance(state.distanceMeters);
     final body = state.etaMinutes != null
         ? '$distance · ${formatEta(state.etaMinutes)}'
-        : '$distance to destination';
+        : strings.toDestination(distance);
     await _plugin.show(
       trackingNotificationId,
       state.destinationName,
       body,
-      _trackingDetails(state.alarmId),
+      await _trackingDetails(state.alarmId, strings),
       payload: 'active:${state.alarmId}',
     );
   }
@@ -106,15 +127,16 @@ class NotificationService {
     int alarmId,
     String destinationName,
   ) async {
+    final strings = await _strings();
     await _plugin.show(
       alarmNotificationId,
-      'Stop approaching!',
+      strings.stopApproaching,
       destinationName,
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           alarmChannelId,
-          'Alarm Ring',
-          channelDescription: 'Alerts when you reach your destination',
+          strings.alarmChannelName,
+          channelDescription: strings.alarmChannelDesc,
           importance: Importance.max,
           priority: Priority.max,
           fullScreenIntent: true,
@@ -129,14 +151,15 @@ class NotificationService {
   }
 
   Future<void> showGpsLostAlert(int alarmId) async {
+    final strings = await _strings();
     await _plugin.show(
       301,
-      'GPS signal lost',
-      'Location updates paused - check your GPS',
-      const NotificationDetails(
+      strings.gpsLostTitle,
+      strings.gpsLostBody,
+      NotificationDetails(
         android: AndroidNotificationDetails(
           alertsChannelId,
-          'Warnings',
+          strings.warningsChannelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
@@ -146,14 +169,15 @@ class NotificationService {
   }
 
   Future<void> showLowBatteryAlert(int alarmId) async {
+    final strings = await _strings();
     await _plugin.show(
       302,
-      'Low battery',
-      'Charge your phone to keep the alarm running reliably',
-      const NotificationDetails(
+      strings.lowBatteryTitle,
+      strings.lowBatteryBody,
+      NotificationDetails(
         android: AndroidNotificationDetails(
           alertsChannelId,
-          'Warnings',
+          strings.warningsChannelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
@@ -174,12 +198,15 @@ class NotificationService {
     await _plugin.cancelAll();
   }
 
-  NotificationDetails _trackingDetails(int alarmId) {
-    return const NotificationDetails(
+  Future<NotificationDetails> _trackingDetails(
+    int alarmId,
+    NotificationL10n strings,
+  ) async {
+    return NotificationDetails(
       android: AndroidNotificationDetails(
         trackingChannelId,
-        'Active Alarm',
-        channelDescription: 'Shows distance while alarm is tracking',
+        strings.trackingChannelName,
+        channelDescription: strings.trackingChannelDesc,
         importance: Importance.low,
         priority: Priority.low,
         ongoing: true,
@@ -187,13 +214,13 @@ class NotificationService {
         actions: [
           AndroidNotificationAction(
             'pause',
-            'Pause',
+            strings.pause,
             showsUserInterface: false,
             cancelNotification: false,
           ),
           AndroidNotificationAction(
             'cancel',
-            'Cancel',
+            strings.cancel,
             showsUserInterface: false,
             cancelNotification: true,
           ),

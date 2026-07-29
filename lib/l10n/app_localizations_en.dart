@@ -419,4 +419,294 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permFix => 'Fix';
+
+  @override
+  String get searchHintExtended => 'Station, landmark, address…';
+
+  @override
+  String searchFailed(String message) {
+    return 'Search failed: $message';
+  }
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get savedToFavorites => 'Saved to favorites';
+
+  @override
+  String get searchEmptyHint => 'Search for a station, landmark, or address';
+
+  @override
+  String get importFromClipboard => 'Import from clipboard';
+
+  @override
+  String get deepLinkInvalid => 'Could not parse location from clipboard';
+
+  @override
+  String get deepLinkImported => 'Destination imported';
+
+  @override
+  String get mapTitle => 'Map';
+
+  @override
+  String get droppedPin => 'Dropped pin';
+
+  @override
+  String get lookingUpAddress => 'Looking up address…';
+
+  @override
+  String get setAlarm => 'Set Alarm';
+
+  @override
+  String get saveFavorite => 'Save Favorite';
+
+  @override
+  String get semCenterOnMap => 'Center map on your location';
+
+  @override
+  String get semSetAlarmFromPin => 'Set alarm for dropped pin';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get filterMissed => 'Missed';
+
+  @override
+  String get noHistoryTitle => 'No history yet';
+
+  @override
+  String get noHistoryMessage =>
+      'Completed and missed alarms will be logged here.';
+
+  @override
+  String get deleteEntryTitle => 'Delete entry?';
+
+  @override
+  String deleteEntryBody(String name) {
+    return 'Remove \"$name\" from history?';
+  }
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get triggerDistanceLabel => 'Trigger distance';
+
+  @override
+  String get snoozesLabel => 'Snoozes';
+
+  @override
+  String get notesLabel => 'Notes';
+
+  @override
+  String get outcomeCompleted => 'Completed';
+
+  @override
+  String get outcomeMissed => 'Missed';
+
+  @override
+  String get outcomeDismissed => 'Dismissed';
+
+  @override
+  String get outcomeSnoozed => 'Snoozed';
+
+  @override
+  String get semDeleteHistoryEntry => 'Delete history entry';
+
+  @override
+  String get tripsTitle => 'Trips';
+
+  @override
+  String get noTripsTitle => 'No trips yet';
+
+  @override
+  String get noTripsMessage => 'Your completed journeys will appear here.';
+
+  @override
+  String get startedLabel => 'Started';
+
+  @override
+  String get endedLabel => 'Ended';
+
+  @override
+  String get durationLabel => 'Duration';
+
+  @override
+  String get distanceLabel => 'Distance';
+
+  @override
+  String get maxSpeedLabel => 'Max speed';
+
+  @override
+  String get avgSpeedLabel => 'Avg speed';
+
+  @override
+  String get alarmIdLabel => 'Alarm ID';
+
+  @override
+  String get tripOutcomeCancelled => 'Cancelled';
+
+  @override
+  String get tripOutcomePassed => 'Passed';
+
+  @override
+  String get saveFavoriteTrip => 'Save as favorite trip';
+
+  @override
+  String get favoriteTripSaved => 'Favorite trip saved';
+
+  @override
+  String get createAlarmFromTrip => 'Create alarm from trip';
+
+  @override
+  String get semSaveFavoriteTrip => 'Save trip as favorite';
+
+  @override
+  String get semCreateAlarmFromTrip => 'Create new alarm from this trip';
+
+  @override
+  String versionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get kmhUnit => 'km/h';
+
+  @override
+  String get notifTrackingChannel => 'Active Alarm';
+
+  @override
+  String get notifTrackingChannelDesc =>
+      'Shows distance while alarm is tracking';
+
+  @override
+  String get notifAlarmChannel => 'Alarm Ring';
+
+  @override
+  String get notifAlarmChannelDesc => 'Alerts when you reach your destination';
+
+  @override
+  String get notifWarningsChannel => 'Warnings';
+
+  @override
+  String get notifGpsLostTitle => 'GPS signal lost';
+
+  @override
+  String get notifGpsLostBody => 'Location updates paused - check your GPS';
+
+  @override
+  String get notifLowBatteryTitle => 'Low battery';
+
+  @override
+  String get notifLowBatteryBody =>
+      'Charge your phone to keep the alarm running reliably';
+
+  @override
+  String notifToDestination(String distance) {
+    return '$distance to destination';
+  }
+
+  @override
+  String get widgetNoActiveAlarm => 'No active alarm';
+
+  @override
+  String get widgetTracking => 'Tracking…';
+
+  @override
+  String get widgetTapToOpen => 'Tap to open';
+
+  @override
+  String tileActiveDistance(String distance) {
+    return '$distance away';
+  }
+
+  @override
+  String get semSearchSubmit => 'Search for destination';
+
+  @override
+  String get semImportFromClipboard => 'Import destination from clipboard';
+
+  @override
+  String get metersUnit => 'm';
+
+  @override
+  String get mphUnit => 'mph';
+
+  @override
+  String get debugTitle => 'Debug';
+
+  @override
+  String get debugUnavailable => 'Debug screen unavailable';
+
+  @override
+  String get debugBackgroundService => 'Background service';
+
+  @override
+  String get debugBattery => 'Battery';
+
+  @override
+  String get debugActiveAlarmId => 'Active alarm ID';
+
+  @override
+  String get debugLoadingGps => 'Loading GPS state…';
+
+  @override
+  String get debugDistance => 'Distance';
+
+  @override
+  String get debugEta => 'ETA';
+
+  @override
+  String get debugSpeed => 'Speed';
+
+  @override
+  String get debugAccuracy => 'Accuracy';
+
+  @override
+  String get debugGpsLost => 'GPS lost';
+
+  @override
+  String get debugLowBattery => 'Low battery flag';
+
+  @override
+  String get debugPosition => 'Position';
+
+  @override
+  String get debugCharging => 'charging';
+
+  @override
+  String get debugDischarging => 'discharging';
+
+  @override
+  String get debugCopySnapshot => 'Copy snapshot';
+
+  @override
+  String get debugRefresh => 'Refresh';
+
+  @override
+  String get debugSnapshotCopied => 'Debug snapshot copied';
+
+  @override
+  String get fgsStartingTitle => 'Nomad Alarm';
+
+  @override
+  String get fgsStartingContent => 'Starting location tracking…';
+
+  @override
+  String get resumeAlarmAfterBoot => 'Resume alarm after reboot';
+
+  @override
+  String get resumeAlarmAfterBootSubtitle =>
+      'Relaunch tracking when the device restarts (uses more battery)';
 }

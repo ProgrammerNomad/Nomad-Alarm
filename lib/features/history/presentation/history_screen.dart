@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/history_entry.dart';
@@ -21,29 +22,30 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final entriesAsync = ref.watch(historyEntriesByTypeProvider(_filter));
     final useMetric =
         ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
 
     return NomadScaffold(
-      title: 'History',
+      title: l10n.historyTitle,
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: SegmentedButton<HistoryFilter>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: HistoryFilter.all,
-                  label: Text('All'),
+                  label: Text(l10n.filterAll),
                 ),
                 ButtonSegment(
                   value: HistoryFilter.completed,
-                  label: Text('Completed'),
+                  label: Text(l10n.filterCompleted),
                 ),
                 ButtonSegment(
                   value: HistoryFilter.missed,
-                  label: Text('Missed'),
+                  label: Text(l10n.filterMissed),
                 ),
               ],
               selected: {_filter},
@@ -55,19 +57,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           Expanded(
             child: entriesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(child: Text('Error: $error')),
+              error: (error, _) =>
+                  Center(child: Text(l10n.errorPrefix(error.toString()))),
               data: (entries) {
                 if (entries.isEmpty) {
-                  return const NomadEmptyState(
-                    title: 'No history yet',
-                    message:
-                        'Completed and missed alarms will be logged here.',
+                  return NomadEmptyState(
+                    title: l10n.noHistoryTitle,
+                    message: l10n.noHistoryMessage,
                   );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: entries.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final entry = entries[index];
                     return _HistoryListTile(
@@ -87,19 +90,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Future<void> _confirmDelete(BuildContext context, HistoryEntry entry) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete entry?'),
-        content: Text('Remove "${entry.destinationName}" from history?'),
+        title: Text(l10n.deleteEntryTitle),
+        content: Text(l10n.deleteEntryBody(entry.destinationName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -110,6 +114,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   void _showDetail(BuildContext context, HistoryEntry entry, bool useMetric) {
+    final l10n = context.l10n;
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -127,12 +132,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             _OutcomeBadge(type: entry.type),
             const SizedBox(height: 16),
             _DetailRow(
-              label: 'Date',
+              label: l10n.dateLabel,
               value: DateFormat.yMMMd().add_jm().format(entry.occurredAt),
             ),
             if (entry.triggerDistanceMeters != null)
               _DetailRow(
-                label: 'Trigger distance',
+                label: l10n.triggerDistanceLabel,
                 value: formatDistance(
                   entry.triggerDistanceMeters!,
                   useMetric: useMetric,
@@ -140,11 +145,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             if (entry.snoozeCount != null && entry.snoozeCount! > 0)
               _DetailRow(
-                label: 'Snoozes',
+                label: l10n.snoozesLabel,
                 value: '${entry.snoozeCount}',
               ),
             if (entry.notes != null && entry.notes!.isNotEmpty)
-              _DetailRow(label: 'Notes', value: entry.notes!),
+              _DetailRow(label: l10n.notesLabel, value: entry.notes!),
           ],
         ),
       ),
@@ -167,6 +172,7 @@ class _HistoryListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final date = DateFormat.MMMd().add_jm().format(entry.occurredAt);
     final trigger = entry.triggerDistanceMeters;
 
@@ -177,16 +183,20 @@ class _HistoryListTile extends StatelessWidget {
         onDelete();
         return false;
       },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.errorContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          Icons.delete_outline,
-          color: Theme.of(context).colorScheme.onErrorContainer,
+      background: Semantics(
+        label: l10n.semDeleteHistoryEntry,
+        button: true,
+        child: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.errorContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.delete_outline,
+            color: Theme.of(context).colorScheme.onErrorContainer,
+          ),
         ),
       ),
       child: Card(
@@ -222,11 +232,12 @@ class _OutcomeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final (label, color) = switch (type) {
-      HistoryType.completed => ('Completed', Colors.green.shade700),
-      HistoryType.missed => ('Missed', Colors.orange.shade800),
-      HistoryType.dismissed => ('Dismissed', Colors.blueGrey.shade700),
-      HistoryType.snoozed => ('Snoozed', Colors.blue.shade700),
+      HistoryType.completed => (l10n.outcomeCompleted, Colors.green.shade700),
+      HistoryType.missed => (l10n.outcomeMissed, Colors.orange.shade800),
+      HistoryType.dismissed => (l10n.outcomeDismissed, Colors.blueGrey.shade700),
+      HistoryType.snoozed => (l10n.outcomeSnoozed, Colors.blue.shade700),
     };
 
     return Container(

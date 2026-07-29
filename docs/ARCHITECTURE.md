@@ -278,7 +278,7 @@ abstract class RouteProvider {
 ```
 
 Default implementations:
-* Map: MapLibre + OSM tiles
+* Map: flutter_map + OSM tiles
 * Search: Nominatim
 * Route: OSRM
 

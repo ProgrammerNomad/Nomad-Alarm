@@ -16,6 +16,8 @@ class Favorite {
   late double longitude;
   String? address;
   String? icon;
+  int? linkedTripId;
+  String? routePolyline;
 
   late DateTime createdAt;
   int sortOrder = 0;

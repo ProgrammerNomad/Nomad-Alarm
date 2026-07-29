@@ -43,6 +43,7 @@ enum FavoriteCategory {
   airport,
   hotel,
   custom,
+  trip,
 }
 
 enum HistoryType {

@@ -1,4 +1,4 @@
-# Release QA Sign-off (v1.5.0)
+# Release QA Sign-off (v1.5.2)
 
 Manual verification matrix from [TESTING.md](TESTING.md). Run on a **physical Android device** before Play Store submission.
 
@@ -6,7 +6,7 @@ Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
 
 **Device:** _________________________  
 **Android version:** _________________________  
-**App version:** 1.5.0+2  
+**App version:** 1.5.2+4  
 **Tester:** _________________________  
 **Date:** _________________________  
 
@@ -14,11 +14,12 @@ Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
 
 | Check | Command | Pass |
 |-------|---------|------|
-| Clean build | `flutter clean && flutter pub get` | [x] |
-| Codegen | `dart run build_runner build --delete-conflicting-outputs` | [x] |
-| L10n | `flutter gen-l10n` | [x] |
-| Analyze | `flutter analyze` (zero issues) | [x] |
-| Unit + widget tests | `flutter test` (43 tests) | [x] |
+| Clean build | `flutter clean && flutter pub get` | [ ] |
+| Codegen | `dart run build_runner build --delete-conflicting-outputs` | [ ] |
+| L10n | `flutter gen-l10n` | [ ] |
+| Analyze | `flutter analyze` (zero issues) | [ ] |
+| Unit + widget tests | `flutter test` (55+ tests) | [ ] |
+| Integration smoke | `flutter test integration_test/` | [ ] |
 | Release AAB | `flutter build appbundle --release` | [ ] |
 
 ## Manual scenarios
@@ -37,16 +38,22 @@ Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
 | 10 | Offline active alarm (airplane mode) | [ ] |
 | 11 | History + trip logged after completion | [ ] |
 | 12 | Permission revoke / re-grant flows | [ ] |
-| 13 | Settings → Hindi → UI shows Hindi on Home, Settings, Welcome | [ ] |
+| 13 | Settings → Hindi → all tabs + Debug + About localized | [ ] |
+| 14 | Switch Hindi during active alarm → notification actions update | [ ] |
 
-## v1.5.0 add-ons
+## v1.5.x add-ons
 
 | # | Scenario | Pass |
 |---|----------|------|
-| 14 | Export backup → share JSON | [ ] |
-| 15 | Import backup on clean install | [ ] |
-| 16 | Small + medium home widgets show live distance | [ ] |
-| 17 | Widget tap opens active alarm / home | [ ] |
+| 15 | Export backup → share JSON | [ ] |
+| 16 | Import backup on clean install | [ ] |
+| 17 | Small + medium + large widgets show live distance | [ ] |
+| 18 | Widget tap opens active alarm / home | [ ] |
+| 19 | Share Google Maps link → alarm config prefilled | [ ] |
+| 20 | Quick Settings tile shows distance; tap opens active | [ ] |
+| 21 | Save favorite trip; create alarm from trip | [ ] |
+| 22 | Resume alarm after reboot (setting ON) | [ ] |
+| 23 | Reboot with setting OFF → no auto-launch | [ ] |
 
 ## Play Store assets
 

@@ -5,6 +5,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
+import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
@@ -16,11 +17,15 @@ class BackgroundAlarmService {
   BackgroundAlarmService._();
 
   static bool _configured = false;
+  static String _languageCode = 'en';
 
-  static Future<void> ensureConfigured() async {
-    if (_configured) {
+  static Future<void> ensureConfigured({String languageCode = 'en'}) async {
+    if (_configured && _languageCode == languageCode) {
       return;
     }
+    _languageCode = languageCode;
+    final strings = await NotificationL10n.load(languageCode);
+
     final service = FlutterBackgroundService();
     await service.configure(
       androidConfiguration: AndroidConfiguration(
@@ -28,8 +33,8 @@ class BackgroundAlarmService {
         autoStart: false,
         isForegroundMode: true,
         notificationChannelId: 'tracking',
-        initialNotificationTitle: 'Nomad Alarm',
-        initialNotificationContent: 'Starting location tracking…',
+        initialNotificationTitle: strings.fgsStartingTitle,
+        initialNotificationContent: strings.fgsStartingContent,
         foregroundServiceNotificationId: 888,
         foregroundServiceTypes: [AndroidForegroundType.location],
       ),
@@ -38,8 +43,19 @@ class BackgroundAlarmService {
     _configured = true;
   }
 
+  static Future<void> updateLanguageCode(String languageCode) async {
+    if (languageCode == _languageCode) {
+      return;
+    }
+    _configured = false;
+    final running = await isRunning();
+    if (!running) {
+      await ensureConfigured(languageCode: languageCode);
+    }
+  }
+
   static Future<void> startMonitoring(AlarmMonitorConfig config) async {
-    await ensureConfigured();
+    await ensureConfigured(languageCode: _languageCode);
     final service = FlutterBackgroundService();
     if (!await service.isRunning()) {
       await service.startService();

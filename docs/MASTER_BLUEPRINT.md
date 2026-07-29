@@ -111,7 +111,7 @@ Nomad Alarm solves all of these.
 * Isar
 
 ## Maps
-* **Default:** MapLibre, OpenStreetMap
+* **Default:** flutter_map, OpenStreetMap
 * **Optional:** Google Maps (BYO API), HERE Maps, Mapbox
 
 ## Search

@@ -7,9 +7,9 @@ abstract class FeatureFlags {
   static const bool osmMaps = true;
 
   static const bool homeScreenWidgets = true;
-  static const bool quickSettingsTile = false;
+  static const bool quickSettingsTile = true;
   static const bool backupRestore = true;
-  static const bool deepLinkImport = false;
+  static const bool deepLinkImport = true;
 
   static const bool googleMapsProvider = false;
   static const bool googlePlacesSearch = false;

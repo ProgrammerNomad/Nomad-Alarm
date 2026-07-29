@@ -240,6 +240,45 @@ See [Permissions](PERMISSIONS.md).
 
 ---
 
+## WidgetService
+
+**File:** `lib/services/widget_service.dart`
+
+### Responsibilities
+* Sync active alarm state to Android home screen widgets (small, medium, large)
+* Pass localized strings, distance, ETA, approach progress, and speed via `home_widget` shared prefs
+* Clear widget state when alarm ends
+
+---
+
+## TileService
+
+**File:** `lib/services/widget_service.dart` (`TileService` class)
+
+**Native:** `android/.../NomadAlarmTileService.kt`
+
+### Responsibilities
+* Mirror active alarm distance/subtitle on Quick Settings tile
+* Request native tile refresh via MethodChannel when alarm state changes
+* Tile tap opens active alarm or home screen
+
+---
+
+## DeepLinkService
+
+**File:** `lib/services/deep_link_service.dart`
+
+**Parser:** `lib/core/utils/deep_link_parser.dart`
+
+### Responsibilities
+* Handle cold/warm start geo and Google Maps URIs (`app_links`)
+* Parse clipboard text on Search screen
+* Normalize to `DestinationArgs` for alarm config routing
+
+Supported formats: `geo:`, `https://maps.google.com/...`, `https://www.google.com/maps/@...`, raw `lat,lng`.
+
+---
+
 ## BackupService
 
 **File:** `lib/services/backup_service.dart`

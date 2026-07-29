@@ -15,6 +15,7 @@ import 'package:nomad_alarm/repositories/history_repository.dart';
 import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/services/battery_monitor_service.dart';
+import 'package:nomad_alarm/services/boot_prefs_sync.dart';
 import 'package:nomad_alarm/services/flashlight_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
@@ -75,7 +76,7 @@ class AlarmService {
     required BatteryMonitorService batteryMonitorService,
     this.batteryProfile = BatteryProfile.balanced,
     this.onNavigateToAlarm,
-    this.languageCode = 'en',
+    String languageCode = 'en',
   })  : _alarmRepository = alarmRepository,
         _tripRepository = tripRepository,
         _historyRepository = historyRepository,
@@ -83,7 +84,8 @@ class AlarmService {
         _speechService = speechService,
         _flashlightService = flashlightService,
         _batteryMonitorService = batteryMonitorService,
-        _evaluator = AlarmEvaluator();
+        _evaluator = AlarmEvaluator(),
+        _languageCode = languageCode;
 
   final AlarmRepository _alarmRepository;
   final TripRepository _tripRepository;
@@ -94,8 +96,35 @@ class AlarmService {
   final BatteryMonitorService _batteryMonitorService;
   final AlarmEvaluator _evaluator;
   final AlarmTriggerHandler? onNavigateToAlarm;
-  final String languageCode;
+  String _languageCode;
   final BatteryProfile batteryProfile;
+
+  String get languageCode => _languageCode;
+
+  Future<void> updateLanguageCode(String code) async {
+    if (_languageCode == code) {
+      return;
+    }
+    _languageCode = code;
+    await BackgroundAlarmService.updateLanguageCode(code);
+    final state = _session?.lastState;
+    if (state != null) {
+      await _notificationService.updateTrackingNotification(state);
+      final alarm = await _alarmRepository.getById(state.alarmId);
+      await WidgetService.updateActiveAlarm(
+        active: state.status == AlarmStatus.active ||
+            state.status == AlarmStatus.paused ||
+            state.status == AlarmStatus.triggered,
+        destination: state.destinationName,
+        distanceMeters: state.distanceMeters,
+        etaMinutes: state.etaMinutes,
+        alarmId: state.alarmId,
+        triggerDistanceMeters: alarm?.triggerDistanceMeters,
+        speedKmh: state.speedKmh,
+        languageCode: _languageCode,
+      );
+    }
+  }
 
   _AlarmSession? _session;
   var _eventsBound = false;
@@ -161,6 +190,7 @@ class AlarmService {
     final trip = await _tripRepository.startTrip(alarm);
 
     await _startSession(alarm, tripId: trip.id);
+    await BootPrefsSync.setActiveAlarmId(alarm.id);
     await BackgroundAlarmService.startMonitoring(_monitorConfig(alarm));
     await _notificationService.showTrackingNotification(
       AlarmRuntimeState(
@@ -353,6 +383,7 @@ class AlarmService {
       await _notificationService.updateTrackingNotification(enriched);
     }
 
+    final alarm = await _alarmRepository.getById(enriched.alarmId);
     await WidgetService.updateActiveAlarm(
       active: enriched.status == AlarmStatus.active ||
           enriched.status == AlarmStatus.paused ||
@@ -361,6 +392,9 @@ class AlarmService {
       distanceMeters: enriched.distanceMeters,
       etaMinutes: enriched.etaMinutes,
       alarmId: enriched.alarmId,
+      triggerDistanceMeters: alarm?.triggerDistanceMeters,
+      speedKmh: enriched.speedKmh,
+      languageCode: _languageCode,
     );
 
     if (enriched.isGpsLost) {
@@ -459,7 +493,7 @@ class AlarmService {
       await _speechService.speakApproaching(
         destinationName: alarm.name,
         distanceMeters: state?.distanceMeters ?? alarm.triggerDistanceMeters,
-        languageCode: languageCode,
+        languageCode: _languageCode,
       );
     }
 
@@ -551,7 +585,8 @@ class AlarmService {
     await _session?.controller.close();
     _session = null;
     _evaluator.tracker.reset();
-    await WidgetService.clear();
+    await WidgetService.clear(languageCode: _languageCode);
+    await BootPrefsSync.setActiveAlarmId(null);
   }
 
   Future<void> dispose() async {

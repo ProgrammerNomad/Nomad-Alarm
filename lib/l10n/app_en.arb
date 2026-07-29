@@ -156,5 +156,122 @@
   "permGranted": "Granted",
   "permDenied": "Denied",
   "permPermanentlyDenied": "Permanently denied - open settings",
-  "permFix": "Fix"
+  "permFix": "Fix",
+  "searchHintExtended": "Station, landmark, address…",
+  "searchFailed": "Search failed: {message}",
+  "@searchFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "noResultsFound": "No results found",
+  "savedToFavorites": "Saved to favorites",
+  "searchEmptyHint": "Search for a station, landmark, or address",
+  "importFromClipboard": "Import from clipboard",
+  "deepLinkInvalid": "Could not parse location from clipboard",
+  "deepLinkImported": "Destination imported",
+  "mapTitle": "Map",
+  "droppedPin": "Dropped pin",
+  "lookingUpAddress": "Looking up address…",
+  "setAlarm": "Set Alarm",
+  "saveFavorite": "Save Favorite",
+  "semCenterOnMap": "Center map on your location",
+  "semSetAlarmFromPin": "Set alarm for dropped pin",
+  "historyTitle": "History",
+  "filterAll": "All",
+  "filterCompleted": "Completed",
+  "filterMissed": "Missed",
+  "noHistoryTitle": "No history yet",
+  "noHistoryMessage": "Completed and missed alarms will be logged here.",
+  "deleteEntryTitle": "Delete entry?",
+  "deleteEntryBody": "Remove \"{name}\" from history?",
+  "@deleteEntryBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "delete": "Delete",
+  "dateLabel": "Date",
+  "triggerDistanceLabel": "Trigger distance",
+  "snoozesLabel": "Snoozes",
+  "notesLabel": "Notes",
+  "outcomeCompleted": "Completed",
+  "outcomeMissed": "Missed",
+  "outcomeDismissed": "Dismissed",
+  "outcomeSnoozed": "Snoozed",
+  "semDeleteHistoryEntry": "Delete history entry",
+  "tripsTitle": "Trips",
+  "noTripsTitle": "No trips yet",
+  "noTripsMessage": "Your completed journeys will appear here.",
+  "startedLabel": "Started",
+  "endedLabel": "Ended",
+  "durationLabel": "Duration",
+  "distanceLabel": "Distance",
+  "maxSpeedLabel": "Max speed",
+  "avgSpeedLabel": "Avg speed",
+  "alarmIdLabel": "Alarm ID",
+  "tripOutcomeCancelled": "Cancelled",
+  "tripOutcomePassed": "Passed",
+  "saveFavoriteTrip": "Save as favorite trip",
+  "favoriteTripSaved": "Favorite trip saved",
+  "createAlarmFromTrip": "Create alarm from trip",
+  "semSaveFavoriteTrip": "Save trip as favorite",
+  "semCreateAlarmFromTrip": "Create new alarm from this trip",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "kmhUnit": "km/h",
+  "notifTrackingChannel": "Active Alarm",
+  "notifTrackingChannelDesc": "Shows distance while alarm is tracking",
+  "notifAlarmChannel": "Alarm Ring",
+  "notifAlarmChannelDesc": "Alerts when you reach your destination",
+  "notifWarningsChannel": "Warnings",
+  "notifGpsLostTitle": "GPS signal lost",
+  "notifGpsLostBody": "Location updates paused - check your GPS",
+  "notifLowBatteryTitle": "Low battery",
+  "notifLowBatteryBody": "Charge your phone to keep the alarm running reliably",
+  "notifToDestination": "{distance} to destination",
+  "@notifToDestination": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "widgetNoActiveAlarm": "No active alarm",
+  "widgetTracking": "Tracking…",
+  "widgetTapToOpen": "Tap to open",
+  "tileActiveDistance": "{distance} away",
+  "@tileActiveDistance": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "semSearchSubmit": "Search for destination",
+  "semImportFromClipboard": "Import destination from clipboard",
+  "metersUnit": "m",
+  "mphUnit": "mph",
+  "debugTitle": "Debug",
+  "debugUnavailable": "Debug screen unavailable",
+  "debugBackgroundService": "Background service",
+  "debugBattery": "Battery",
+  "debugActiveAlarmId": "Active alarm ID",
+  "debugLoadingGps": "Loading GPS state…",
+  "debugDistance": "Distance",
+  "debugEta": "ETA",
+  "debugSpeed": "Speed",
+  "debugAccuracy": "Accuracy",
+  "debugGpsLost": "GPS lost",
+  "debugLowBattery": "Low battery flag",
+  "debugPosition": "Position",
+  "debugCharging": "charging",
+  "debugDischarging": "discharging",
+  "debugCopySnapshot": "Copy snapshot",
+  "debugRefresh": "Refresh",
+  "debugSnapshotCopied": "Debug snapshot copied",
+  "fgsStartingTitle": "Nomad Alarm",
+  "fgsStartingContent": "Starting location tracking…",
+  "resumeAlarmAfterBoot": "Resume alarm after reboot",
+  "resumeAlarmAfterBootSubtitle": "Relaunch tracking when the device restarts (uses more battery)"
 }

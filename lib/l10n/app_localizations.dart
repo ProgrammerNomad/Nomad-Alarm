@@ -870,6 +870,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fix'**
   String get permFix;
+
+  /// No description provided for @searchHintExtended.
+  ///
+  /// In en, this message translates to:
+  /// **'Station, landmark, address…'**
+  String get searchHintExtended;
+
+  /// No description provided for @searchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed: {message}'**
+  String searchFailed(String message);
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @savedToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to favorites'**
+  String get savedToFavorites;
+
+  /// No description provided for @searchEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a station, landmark, or address'**
+  String get searchEmptyHint;
+
+  /// No description provided for @importFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from clipboard'**
+  String get importFromClipboard;
+
+  /// No description provided for @deepLinkInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not parse location from clipboard'**
+  String get deepLinkInvalid;
+
+  /// No description provided for @deepLinkImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination imported'**
+  String get deepLinkImported;
+
+  /// No description provided for @mapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mapTitle;
+
+  /// No description provided for @droppedPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropped pin'**
+  String get droppedPin;
+
+  /// No description provided for @lookingUpAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking up address…'**
+  String get lookingUpAddress;
+
+  /// No description provided for @setAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Alarm'**
+  String get setAlarm;
+
+  /// No description provided for @saveFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Favorite'**
+  String get saveFavorite;
+
+  /// No description provided for @semCenterOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Center map on your location'**
+  String get semCenterOnMap;
+
+  /// No description provided for @semSetAlarmFromPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Set alarm for dropped pin'**
+  String get semSetAlarmFromPin;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get filterCompleted;
+
+  /// No description provided for @filterMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get filterMissed;
+
+  /// No description provided for @noHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No history yet'**
+  String get noHistoryTitle;
+
+  /// No description provided for @noHistoryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed and missed alarms will be logged here.'**
+  String get noHistoryMessage;
+
+  /// No description provided for @deleteEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry?'**
+  String get deleteEntryTitle;
+
+  /// No description provided for @deleteEntryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\" from history?'**
+  String deleteEntryBody(String name);
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @triggerDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger distance'**
+  String get triggerDistanceLabel;
+
+  /// No description provided for @snoozesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Snoozes'**
+  String get snoozesLabel;
+
+  /// No description provided for @notesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesLabel;
+
+  /// No description provided for @outcomeCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get outcomeCompleted;
+
+  /// No description provided for @outcomeMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get outcomeMissed;
+
+  /// No description provided for @outcomeDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismissed'**
+  String get outcomeDismissed;
+
+  /// No description provided for @outcomeSnoozed.
+  ///
+  /// In en, this message translates to:
+  /// **'Snoozed'**
+  String get outcomeSnoozed;
+
+  /// No description provided for @semDeleteHistoryEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete history entry'**
+  String get semDeleteHistoryEntry;
+
+  /// No description provided for @tripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get tripsTitle;
+
+  /// No description provided for @noTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips yet'**
+  String get noTripsTitle;
+
+  /// No description provided for @noTripsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your completed journeys will appear here.'**
+  String get noTripsMessage;
+
+  /// No description provided for @startedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get startedLabel;
+
+  /// No description provided for @endedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get endedLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get durationLabel;
+
+  /// No description provided for @distanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distanceLabel;
+
+  /// No description provided for @maxSpeedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max speed'**
+  String get maxSpeedLabel;
+
+  /// No description provided for @avgSpeedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg speed'**
+  String get avgSpeedLabel;
+
+  /// No description provided for @alarmIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm ID'**
+  String get alarmIdLabel;
+
+  /// No description provided for @tripOutcomeCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get tripOutcomeCancelled;
+
+  /// No description provided for @tripOutcomePassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get tripOutcomePassed;
+
+  /// No description provided for @saveFavoriteTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as favorite trip'**
+  String get saveFavoriteTrip;
+
+  /// No description provided for @favoriteTripSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite trip saved'**
+  String get favoriteTripSaved;
+
+  /// No description provided for @createAlarmFromTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create alarm from trip'**
+  String get createAlarmFromTrip;
+
+  /// No description provided for @semSaveFavoriteTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save trip as favorite'**
+  String get semSaveFavoriteTrip;
+
+  /// No description provided for @semCreateAlarmFromTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new alarm from this trip'**
+  String get semCreateAlarmFromTrip;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String versionLabel(String version);
+
+  /// No description provided for @kmhUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'km/h'**
+  String get kmhUnit;
+
+  /// No description provided for @notifTrackingChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Alarm'**
+  String get notifTrackingChannel;
+
+  /// No description provided for @notifTrackingChannelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows distance while alarm is tracking'**
+  String get notifTrackingChannelDesc;
+
+  /// No description provided for @notifAlarmChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm Ring'**
+  String get notifAlarmChannel;
+
+  /// No description provided for @notifAlarmChannelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts when you reach your destination'**
+  String get notifAlarmChannelDesc;
+
+  /// No description provided for @notifWarningsChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Warnings'**
+  String get notifWarningsChannel;
+
+  /// No description provided for @notifGpsLostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS signal lost'**
+  String get notifGpsLostTitle;
+
+  /// No description provided for @notifGpsLostBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Location updates paused - check your GPS'**
+  String get notifGpsLostBody;
+
+  /// No description provided for @notifLowBatteryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Low battery'**
+  String get notifLowBatteryTitle;
+
+  /// No description provided for @notifLowBatteryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge your phone to keep the alarm running reliably'**
+  String get notifLowBatteryBody;
+
+  /// No description provided for @notifToDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} to destination'**
+  String notifToDestination(String distance);
+
+  /// No description provided for @widgetNoActiveAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'No active alarm'**
+  String get widgetNoActiveAlarm;
+
+  /// No description provided for @widgetTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking…'**
+  String get widgetTracking;
+
+  /// No description provided for @widgetTapToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open'**
+  String get widgetTapToOpen;
+
+  /// No description provided for @tileActiveDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} away'**
+  String tileActiveDistance(String distance);
+
+  /// No description provided for @semSearchSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for destination'**
+  String get semSearchSubmit;
+
+  /// No description provided for @semImportFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Import destination from clipboard'**
+  String get semImportFromClipboard;
+
+  /// No description provided for @metersUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get metersUnit;
+
+  /// No description provided for @mphUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'mph'**
+  String get mphUnit;
+
+  /// No description provided for @debugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug'**
+  String get debugTitle;
+
+  /// No description provided for @debugUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug screen unavailable'**
+  String get debugUnavailable;
+
+  /// No description provided for @debugBackgroundService.
+  ///
+  /// In en, this message translates to:
+  /// **'Background service'**
+  String get debugBackgroundService;
+
+  /// No description provided for @debugBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery'**
+  String get debugBattery;
+
+  /// No description provided for @debugActiveAlarmId.
+  ///
+  /// In en, this message translates to:
+  /// **'Active alarm ID'**
+  String get debugActiveAlarmId;
+
+  /// No description provided for @debugLoadingGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading GPS state…'**
+  String get debugLoadingGps;
+
+  /// No description provided for @debugDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get debugDistance;
+
+  /// No description provided for @debugEta.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA'**
+  String get debugEta;
+
+  /// No description provided for @debugSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get debugSpeed;
+
+  /// No description provided for @debugAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get debugAccuracy;
+
+  /// No description provided for @debugGpsLost.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS lost'**
+  String get debugGpsLost;
+
+  /// No description provided for @debugLowBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'Low battery flag'**
+  String get debugLowBattery;
+
+  /// No description provided for @debugPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get debugPosition;
+
+  /// No description provided for @debugCharging.
+  ///
+  /// In en, this message translates to:
+  /// **'charging'**
+  String get debugCharging;
+
+  /// No description provided for @debugDischarging.
+  ///
+  /// In en, this message translates to:
+  /// **'discharging'**
+  String get debugDischarging;
+
+  /// No description provided for @debugCopySnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy snapshot'**
+  String get debugCopySnapshot;
+
+  /// No description provided for @debugRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get debugRefresh;
+
+  /// No description provided for @debugSnapshotCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug snapshot copied'**
+  String get debugSnapshotCopied;
+
+  /// No description provided for @fgsStartingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nomad Alarm'**
+  String get fgsStartingTitle;
+
+  /// No description provided for @fgsStartingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting location tracking…'**
+  String get fgsStartingContent;
+
+  /// No description provided for @resumeAlarmAfterBoot.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume alarm after reboot'**
+  String get resumeAlarmAfterBoot;
+
+  /// No description provided for @resumeAlarmAfterBootSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Relaunch tracking when the device restarts (uses more battery)'**
+  String get resumeAlarmAfterBootSubtitle;
 }
 
 class _AppLocalizationsDelegate

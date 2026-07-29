@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/models/search_result.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
@@ -36,6 +37,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final positionAsync = ref.watch(currentPositionProvider);
     final mapService = ref.watch(mapServiceProvider);
 
@@ -48,7 +50,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map'),
+        title: Text(l10n.mapTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -118,9 +120,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _centerOnUser(position),
-        child: const Icon(Icons.gps_fixed),
+      floatingActionButton: Semantics(
+        label: l10n.semCenterOnMap,
+        button: true,
+        child: FloatingActionButton(
+          onPressed: () => _centerOnUser(position),
+          child: const Icon(Icons.gps_fixed),
+        ),
       ),
     );
   }
@@ -141,11 +147,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       return;
     }
 
+    final l10n = context.l10n;
     setState(() {
       _loadingPinAddress = false;
       _pinResult = result ??
           SearchResult(
-            name: 'Dropped pin',
+            name: l10n.droppedPin,
             latitude: point.latitude,
             longitude: point.longitude,
           );
@@ -186,7 +193,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         );
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saved to favorites')),
+        SnackBar(content: Text(context.l10n.savedToFavorites)),
       );
     }
   }
@@ -209,6 +216,7 @@ class _PinBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Material(
       elevation: 8,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
@@ -222,9 +230,9 @@ class _PinBottomSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: loading
-                      ? const Text('Looking up address…')
+                      ? Text(l10n.lookingUpAddress)
                       : Text(
-                          result?.displayAddress ?? 'Dropped pin',
+                          result?.displayAddress ?? l10n.droppedPin,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                 ),
@@ -235,16 +243,20 @@ class _PinBottomSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: loading ? null : onSetAlarm,
-              icon: const Icon(Icons.alarm_add),
-              label: const Text('Set Alarm'),
+            Semantics(
+              label: l10n.semSetAlarmFromPin,
+              button: true,
+              child: FilledButton.icon(
+                onPressed: loading ? null : onSetAlarm,
+                icon: const Icon(Icons.alarm_add),
+                label: Text(l10n.setAlarm),
+              ),
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: loading ? null : onSaveFavorite,
               icon: const Icon(Icons.favorite_border),
-              label: const Text('Save Favorite'),
+              label: Text(l10n.saveFavorite),
             ),
           ],
         ),

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/trip.dart';
+import 'package:nomad_alarm/providers/favorite_providers.dart';
 import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_empty_state.dart';
@@ -14,20 +18,22 @@ class TripsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final tripsAsync = ref.watch(tripsProvider);
     final useMetric =
         ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
 
     return NomadScaffold(
-      title: 'Trips',
+      title: l10n.tripsTitle,
       body: tripsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) =>
+            Center(child: Text(l10n.errorPrefix(error.toString()))),
         data: (trips) {
           if (trips.isEmpty) {
-            return const NomadEmptyState(
-              title: 'No trips yet',
-              message: 'Your completed journeys will appear here.',
+            return NomadEmptyState(
+              title: l10n.noTripsTitle,
+              message: l10n.noTripsMessage,
             );
           }
           return ListView.separated(
@@ -36,10 +42,14 @@ class TripsScreen extends ConsumerWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final trip = trips[index];
-              return _TripListTile(
-                trip: trip,
-                useMetric: useMetric,
-                onTap: () => _showTripDetail(context, trip, useMetric),
+              return Semantics(
+                label: trip.destinationName,
+                button: true,
+                child: _TripListTile(
+                  trip: trip,
+                  useMetric: useMetric,
+                  onTap: () => _showTripDetail(context, ref, trip, useMetric),
+                ),
               );
             },
           );
@@ -48,7 +58,13 @@ class TripsScreen extends ConsumerWidget {
     );
   }
 
-  void _showTripDetail(BuildContext context, Trip trip, bool useMetric) {
+  void _showTripDetail(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    bool useMetric,
+  ) {
+    final l10n = context.l10n;
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -56,7 +72,7 @@ class TripsScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               trip.destinationName,
@@ -66,22 +82,22 @@ class TripsScreen extends ConsumerWidget {
             _TripOutcomeBadge(outcome: trip.outcome),
             const SizedBox(height: 16),
             _DetailRow(
-              label: 'Started',
+              label: l10n.startedLabel,
               value: DateFormat.yMMMd().add_jm().format(trip.startedAt),
             ),
             if (trip.endedAt != null)
               _DetailRow(
-                label: 'Ended',
+                label: l10n.endedLabel,
                 value: DateFormat.yMMMd().add_jm().format(trip.endedAt!),
               ),
             if (trip.durationSeconds != null)
               _DetailRow(
-                label: 'Duration',
+                label: l10n.durationLabel,
                 value: _formatDuration(trip.durationSeconds!),
               ),
             if (trip.totalDistanceMeters != null)
               _DetailRow(
-                label: 'Distance',
+                label: l10n.distanceLabel,
                 value: formatDistance(
                   trip.totalDistanceMeters!,
                   useMetric: useMetric,
@@ -89,15 +105,53 @@ class TripsScreen extends ConsumerWidget {
               ),
             if (trip.maxSpeedKmh != null)
               _DetailRow(
-                label: 'Max speed',
-                value: '${trip.maxSpeedKmh!.toStringAsFixed(0)} km/h',
+                label: l10n.maxSpeedLabel,
+                value: '${trip.maxSpeedKmh!.toStringAsFixed(0)} ${l10n.kmhUnit}',
               ),
             if (trip.avgSpeedKmh != null)
               _DetailRow(
-                label: 'Avg speed',
-                value: '${trip.avgSpeedKmh!.toStringAsFixed(0)} km/h',
+                label: l10n.avgSpeedLabel,
+                value: '${trip.avgSpeedKmh!.toStringAsFixed(0)} ${l10n.kmhUnit}',
               ),
-            _DetailRow(label: 'Alarm ID', value: '${trip.alarmId}'),
+            _DetailRow(label: l10n.alarmIdLabel, value: '${trip.alarmId}'),
+            const SizedBox(height: 16),
+            Semantics(
+              label: l10n.semCreateAlarmFromTrip,
+              button: true,
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push(
+                    '/alarm/new',
+                    extra: DestinationArgs(
+                      name: trip.destinationName,
+                      latitude: trip.destLatitude,
+                      longitude: trip.destLongitude,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.alarm_add),
+                label: Text(l10n.createAlarmFromTrip),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Semantics(
+              label: l10n.semSaveFavoriteTrip,
+              button: true,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await ref.read(favoriteRepositoryProvider).saveFromTrip(trip);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.favoriteTripSaved)),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.favorite_border),
+                label: Text(l10n.saveFavoriteTrip),
+              ),
+            ),
           ],
         ),
       ),
@@ -191,11 +245,13 @@ class _TripOutcomeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final (label, color) = switch (outcome) {
-      TripOutcome.completed => ('Completed', Colors.green.shade700),
-      TripOutcome.cancelled => ('Cancelled', Colors.blueGrey.shade700),
-      TripOutcome.missed => ('Missed', Colors.orange.shade800),
-      TripOutcome.passed => ('Passed', Colors.deepOrange.shade700),
+      TripOutcome.completed => (l10n.outcomeCompleted, Colors.green.shade700),
+      TripOutcome.cancelled =>
+        (l10n.tripOutcomeCancelled, Colors.blueGrey.shade700),
+      TripOutcome.missed => (l10n.outcomeMissed, Colors.orange.shade800),
+      TripOutcome.passed => (l10n.tripOutcomePassed, Colors.deepOrange.shade700),
     };
 
     return Container(

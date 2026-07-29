@@ -2,6 +2,8 @@
 
 Phased plan to build Nomad Alarm from zero to release. Each phase has clear deliverables and acceptance criteria.
 
+**Status (2026-07-29):** Phases 0–7 implemented. v1.5.2 polish complete in code. Play Store publish and device QA sign-off remain your decision when ready.
+
 ---
 
 ## Phase 0 - Project Foundation
@@ -142,21 +144,43 @@ See [Permissions](PERMISSIONS.md).
 
 ---
 
-## Phase 7 - v1.5 Enhancements
+## Phase 7 - v1.5 Enhancements ✅ (implemented in v1.5.0–v1.5.1)
 
 **Goal:** Convenience features without compromising reliability.
 
 ### Tasks
-- [ ] Home screen widgets (small, medium, large)
-- [ ] Quick Settings tile (create/cancel alarm)
-- [ ] Favorite trips (save route + destination combo)
-- [ ] Share/import destination (geo URI, Google Maps links)
-- [ ] Backup/restore JSON export/import
-- [ ] Route import from shared links
+- [x] Home screen widgets (small, medium, large)
+- [x] Quick Settings tile (live distance; tap opens active alarm)
+- [x] Favorite trips (save route + destination combo)
+- [x] Share/import destination (geo URI, Google Maps links)
+- [x] Backup/restore JSON export/import
+- [x] Full en/hi UI + notification localization (v1.5.1)
+- [x] Medium widget progress bar + large widget (v1.5.1)
 
 ### Acceptance Criteria
-* Widget shows active alarm distance
-* Backup file restores alarms and favorites on new device
+* Widget shows active alarm distance ✅
+* Backup file restores alarms and favorites on new device ✅
+* Share Google Maps link → alarm config prefilled ✅
+* Hindi toggles Search, Map, History, Trips ✅
+
+---
+
+## Phase 7.5 - v1.5.2 Polish ✅
+
+**Goal:** Close remaining l10n gaps, runtime language sync, boot resume, and test coverage.
+
+### Tasks
+- [x] Debug, About version, active-alarm units, FGS startup l10n
+- [x] Runtime notification/widget/tile language sync on Settings change
+- [x] Boot receiver + `resumeAlarmAfterBoot` setting (default off)
+- [x] Widget tests (Search, History, Trips) + deep_link_service_test + app_launch integration test
+- [x] RELEASE_QA_SIGNOFF and docs synced for v1.5.2
+
+### Acceptance Criteria
+* Hindi toggles Debug and About version line ✅
+* Language change updates notification actions mid-session ✅
+* Boot resume opt-in relaunches app after reboot ✅
+* 55+ automated tests ✅
 
 ---
 

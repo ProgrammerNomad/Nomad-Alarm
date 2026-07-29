@@ -12,6 +12,7 @@ import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/repositories/backup_repository.dart';
+import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 import 'package:nomad_alarm/l10n/app_localizations.dart';
 
@@ -76,13 +77,16 @@ class SettingsScreen extends ConsumerWidget {
                   DropdownMenuItem(value: 'en', child: Text(l10n.english)),
                   DropdownMenuItem(value: 'hi', child: Text(l10n.hindi)),
                 ],
-                onChanged: (code) {
+                onChanged: (code) async {
                   if (code == null) {
                     return;
                   }
-                  ref.read(settingsControllerProvider.notifier).saveSettings(
+                  await ref.read(settingsControllerProvider.notifier).saveSettings(
                         settings..languageCode = code,
                       );
+                  await ref.read(notificationServiceProvider).setLanguageCode(code);
+                  await BackgroundAlarmService.updateLanguageCode(code);
+                  await ref.read(alarmServiceProvider).updateLanguageCode(code);
                 },
               ),
             ),
@@ -159,6 +163,16 @@ class SettingsScreen extends ConsumerWidget {
                   ref.invalidate(alarmServiceProvider);
                 },
               ),
+            ),
+            SwitchListTile(
+              title: Text(l10n.resumeAlarmAfterBoot),
+              subtitle: Text(l10n.resumeAlarmAfterBootSubtitle),
+              value: settings.resumeAlarmAfterBoot,
+              onChanged: (value) {
+                ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..resumeAlarmAfterBoot = value,
+                    );
+              },
             ),
             if (FeatureFlags.backupRestore) ...[
               _SectionHeader(title: l10n.data),

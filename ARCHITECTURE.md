@@ -16,7 +16,7 @@ For the full technical specification, see **[docs/ARCHITECTURE.md](docs/ARCHITEC
 | Data access | **Repository layer** |
 | Database | Isar (local only) |
 | Location | geolocator + foreground service |
-| Maps | MapLibre + OSM (default) |
+| Maps | flutter_map + OSM (default) |
 | Search | Nominatim (default) |
 | Routing | OSRM (default) |
 

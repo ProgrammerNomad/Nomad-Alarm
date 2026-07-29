@@ -28,9 +28,9 @@ abstract class FeatureFlags {
 
   /// v1.5 - enabled in v1.5.0
   static const bool homeScreenWidgets = true;
-  static const bool quickSettingsTile = false;
+  static const bool quickSettingsTile = true;
   static const bool backupRestore = true;
-  static const bool deepLinkImport = false;
+  static const bool deepLinkImport = true;
 
   /// v2.0 - false until ready
   static const bool googleMapsProvider = false;
@@ -62,9 +62,9 @@ abstract class FeatureFlags {
 | `locationAlarms` | `true` | v1.0 | Core alarm functionality |
 | `backgroundTracking` | `true` | v1.0 | Foreground service GPS |
 | `homeScreenWidgets` | `true` | v1.5 | Android widgets (small + medium) |
-| `quickSettingsTile` | `false` | v1.5 | Quick Settings tile |
+| `quickSettingsTile` | `true` | v1.5 | Quick Settings tile |
 | `backupRestore` | `true` | v1.5 | JSON export/import |
-| `deepLinkImport` | `false` | v1.5 | geo: / Google Maps links |
+| `deepLinkImport` | `true` | v1.5 | geo: / Google Maps links |
 | `googleMapsProvider` | `false` | v2.0 | BYO Google Maps |
 | `googlePlacesSearch` | `false` | v2.0 | BYO Places API |
 | `hereMapsProvider` | `false` | v2.0 | HERE integration |

@@ -37,6 +37,7 @@ class AppSettings {
 
   late bool persistentNotificationEnabled;
   late bool lockScreenInfoEnabled;
+  late bool resumeAlarmAfterBoot;
 
   static AppSettings defaults() {
     return AppSettings()
@@ -57,6 +58,7 @@ class AppSettings {
       ..hasCompletedPermissions = false
       ..debugLoggingEnabled = false
       ..persistentNotificationEnabled = true
-      ..lockScreenInfoEnabled = true;
+      ..lockScreenInfoEnabled = true
+      ..resumeAlarmAfterBoot = false;
   }
 }

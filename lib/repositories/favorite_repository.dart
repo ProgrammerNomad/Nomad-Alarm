@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:nomad_alarm/models/favorite.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/search_result.dart';
+import 'package:nomad_alarm/models/trip.dart';
 
 abstract class FavoriteRepository {
   Future<List<Favorite>> getAll();
@@ -13,7 +14,10 @@ abstract class FavoriteRepository {
     required double longitude,
     String? address,
     FavoriteCategory category = FavoriteCategory.custom,
+    int? linkedTripId,
+    String? routePolyline,
   });
+  Future<Favorite> saveFromTrip(Trip trip);
   Future<void> delete(int id);
 }
 
@@ -44,6 +48,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
     required double longitude,
     String? address,
     FavoriteCategory category = FavoriteCategory.custom,
+    int? linkedTripId,
+    String? routePolyline,
   }) async {
     final favorite = Favorite()
       ..name = name
@@ -51,6 +57,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
       ..longitude = longitude
       ..address = address
       ..category = category
+      ..linkedTripId = linkedTripId
+      ..routePolyline = routePolyline
       ..createdAt = DateTime.now()
       ..sortOrder = DateTime.now().millisecondsSinceEpoch;
 
@@ -58,6 +66,18 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
       await _isar.favorites.put(favorite);
     });
     return favorite;
+  }
+
+  @override
+  Future<Favorite> saveFromTrip(Trip trip) async {
+    return save(
+      name: trip.destinationName,
+      latitude: trip.destLatitude,
+      longitude: trip.destLongitude,
+      category: FavoriteCategory.trip,
+      linkedTripId: trip.id,
+      routePolyline: trip.routePolyline,
+    );
   }
 
   @override
