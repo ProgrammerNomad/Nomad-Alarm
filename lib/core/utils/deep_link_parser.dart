@@ -1,3 +1,4 @@
+import 'package:open_location_code/open_location_code.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 
 /// Parsed coordinates and optional label from a shared link or URI.
@@ -44,7 +45,36 @@ class DeepLinkParser {
       }
     }
 
-    return _parseRawCoordinates(trimmed);
+    return _parseRawCoordinates(trimmed) ?? _parsePlusCode(trimmed);
+  }
+
+  /// Plus Codes look like `9C3W+Q8` optionally followed by a city name.
+  static DeepLinkLocation? _parsePlusCode(String input) {
+    final match = RegExp(
+      r'^([23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3})(?:\s+(.*))?$',
+      caseSensitive: false,
+    ).firstMatch(input.trim());
+    if (match == null) {
+      return null;
+    }
+    final code = match.group(1)!;
+    final label = match.group(2);
+    try {
+      final area = PlusCode(code).decode();
+      return DeepLinkLocation(
+        latitude: area.center.latitude,
+        longitude: area.center.longitude,
+        name: label ?? code,
+        address: label != null ? 'Plus Code: $code' : code,
+      );
+    } catch (_) {
+      return DeepLinkLocation(
+        latitude: 0,
+        longitude: 0,
+        name: label ?? code,
+        address: 'Plus Code: $code',
+      );
+    }
   }
 
   static bool _isMapsHost(String host) {

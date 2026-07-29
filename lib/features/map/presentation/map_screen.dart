@@ -1,17 +1,24 @@
+import 'package:apple_maps_flutter/apple_maps_flutter.dart' as amaps;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:latlong2/latlong.dart';
+import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/models/search_result.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/favorite_providers.dart';
 import 'package:nomad_alarm/providers/location_providers.dart';
+import 'package:nomad_alarm/providers/map/map_provider.dart';
 import 'package:nomad_alarm/providers/search_providers.dart';
 import 'package:nomad_alarm/services/map_service.dart';
+import 'package:nomad_alarm/services/map_viewport_store.dart';
+import 'package:nomad_alarm/services/offline_tile_service.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({
@@ -31,6 +38,7 @@ class MapScreen extends ConsumerStatefulWidget {
 
 class _MapScreenState extends ConsumerState<MapScreen> {
   final _mapController = MapController();
+  gmaps.GoogleMapController? _googleMapController;
   LatLng? _droppedPin;
   SearchResult? _pinResult;
   bool _loadingPinAddress = false;
@@ -39,7 +47,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final positionAsync = ref.watch(currentPositionProvider);
-    final mapService = ref.watch(mapServiceProvider);
+    final mapProviderAsync = ref.watch(mapProviderProvider);
 
     final position = positionAsync.valueOrNull;
 
@@ -56,69 +64,59 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: initialCenter,
-              initialZoom: widget.initialZoom ?? MapService.defaultZoom,
-              minZoom: MapService.minZoom,
-              maxZoom: MapService.maxZoom,
-              onLongPress: (tapPosition, point) => _onLongPress(point),
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: mapService.tileUrl,
-                userAgentPackageName: 'com.nomad.alarm',
-              ),
-              if (position != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: LatLng(position.latitude, position.longitude),
-                      width: 40,
-                      height: 40,
-                      child: const Icon(
-                        Icons.my_location,
-                        color: Colors.blue,
-                        size: 32,
-                      ),
-                    ),
-                  ],
+      body: mapProviderAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
+        data: (mapProvider) => Stack(
+          children: [
+            _buildMap(mapProvider, initialCenter, position),
+            if (mapProvider.displayMode == MapDisplayMode.flutterMap &&
+                position != null)
+              Positioned(
+                right: 16,
+                top: 16,
+                child: Material(
+                  elevation: 2,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: l10n.mapTitle,
+                    icon: const Icon(Icons.explore),
+                    onPressed: () => _mapController.rotate(0),
+                  ),
                 ),
-              if (_droppedPin != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _droppedPin!,
-                      width: 40,
-                      height: 48,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.red,
-                        size: 40,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-          if (_droppedPin != null)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _PinBottomSheet(
-                result: _pinResult,
-                loading: _loadingPinAddress,
-                onSetAlarm: _setAlarmFromPin,
-                onSaveFavorite: _saveFavoriteFromPin,
-                onDismiss: () => setState(() {
-                  _droppedPin = null;
-                  _pinResult = null;
-                }),
               ),
-            ),
-        ],
+            if (mapProvider.attribution.isNotEmpty)
+              Positioned(
+                left: 8,
+                bottom: _droppedPin != null ? 180 : 8,
+                child: Material(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    child: Text(
+                      mapProvider.attribution,
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ),
+            if (_droppedPin != null)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _PinBottomSheet(
+                  result: _pinResult,
+                  loading: _loadingPinAddress,
+                  onSetAlarm: _setAlarmFromPin,
+                  onSaveFavorite: _saveFavoriteFromPin,
+                  onDismiss: () => setState(() {
+                    _droppedPin = null;
+                    _pinResult = null;
+                  }),
+                ),
+              ),
+          ],
+        ),
       ),
       floatingActionButton: Semantics(
         label: l10n.semCenterOnMap,
@@ -131,6 +129,111 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
+  Widget _buildMap(
+    MapProvider mapProvider,
+    LatLng initialCenter,
+    Position? position,
+  ) {
+    if (mapProvider.displayMode == MapDisplayMode.appleNative) {
+      return amaps.AppleMap(
+        initialCameraPosition: amaps.CameraPosition(
+          target: amaps.LatLng(initialCenter.latitude, initialCenter.longitude),
+          zoom: widget.initialZoom ?? MapService.defaultZoom,
+        ),
+        myLocationEnabled: true,
+        onLongPress: (point) => _onLongPress(
+          LatLng(point.latitude, point.longitude),
+        ),
+        annotations: {
+          if (_droppedPin != null)
+            amaps.Annotation(
+              annotationId: amaps.AnnotationId('pin'),
+              position: amaps.LatLng(_droppedPin!.latitude, _droppedPin!.longitude),
+            ),
+        },
+      );
+    }
+
+    if (mapProvider.displayMode == MapDisplayMode.googleNative) {
+      return gmaps.GoogleMap(
+        initialCameraPosition: gmaps.CameraPosition(
+          target: gmaps.LatLng(initialCenter.latitude, initialCenter.longitude),
+          zoom: widget.initialZoom ?? MapService.defaultZoom,
+        ),
+        myLocationEnabled: true,
+        trafficEnabled: true,
+        onMapCreated: (controller) => _googleMapController = controller,
+        onLongPress: (point) => _onLongPress(
+          LatLng(point.latitude, point.longitude),
+        ),
+        markers: {
+          if (_droppedPin != null)
+            gmaps.Marker(
+              markerId: const gmaps.MarkerId('pin'),
+              position: gmaps.LatLng(_droppedPin!.latitude, _droppedPin!.longitude),
+            ),
+        },
+      );
+    }
+
+    final tile = mapProvider.tileConfig!;
+    final zoom = widget.initialZoom ?? tile.defaultZoom;
+
+    final tileProvider = FeatureFlags.offlineMapTiles
+        ? const FMTCStore(OfflineTileService.storeName).getTileProvider()
+        : null;
+
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        initialCenter: initialCenter,
+        initialZoom: zoom,
+        minZoom: tile.minZoom,
+        maxZoom: tile.maxZoom,
+        onLongPress: (tapPosition, point) => _onLongPress(point),
+        onMapEvent: (_) => _persistViewport(),
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: tile.urlTemplate,
+          userAgentPackageName: 'com.nomad.alarm',
+          additionalOptions: tile.additionalOptions,
+          tileProvider: tileProvider,
+        ),
+        if (position != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: LatLng(position.latitude, position.longitude),
+                width: 40,
+                height: 40,
+                child: const Icon(
+                  Icons.my_location,
+                  color: Colors.blue,
+                  size: 32,
+                ),
+              ),
+            ],
+          ),
+        if (_droppedPin != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: _droppedPin!,
+                width: 40,
+                height: 48,
+                child: const Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  size: 40,
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
   Future<void> _onLongPress(LatLng point) async {
     setState(() {
       _droppedPin = point;
@@ -138,10 +241,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       _loadingPinAddress = true;
     });
 
-    final result = await ref.read(searchRepositoryProvider).reverseGeocode(
-          point.latitude,
-          point.longitude,
-        );
+    final repo = await ref.read(searchRepositoryProvider.future);
+    final result = await repo.reverseGeocode(
+      point.latitude,
+      point.longitude,
+    );
 
     if (!mounted) {
       return;
@@ -163,9 +267,26 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     if (position == null) {
       return;
     }
-    _mapController.move(
-      LatLng(position.latitude, position.longitude),
-      MapService.defaultZoom,
+    final target = LatLng(position.latitude, position.longitude);
+    if (_googleMapController != null) {
+      _googleMapController!.animateCamera(
+        gmaps.CameraUpdate.newLatLng(
+          gmaps.LatLng(target.latitude, target.longitude),
+        ),
+      );
+    } else {
+      _mapController.move(target, MapService.defaultZoom);
+    }
+  }
+
+  void _persistViewport() {
+    if (_googleMapController != null) {
+      return;
+    }
+    final bounds = _mapController.camera.visibleBounds;
+    MapViewportStore.saveBounds(
+      southWest: bounds.southWest,
+      northEast: bounds.northEast,
     );
   }
 

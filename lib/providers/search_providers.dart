@@ -6,19 +6,20 @@ import 'package:nomad_alarm/models/search_result.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/repositories/search_repository.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
-
-final searchRepositoryProvider = Provider<SearchRepository>((ref) {
+final searchRepositoryProvider = FutureProvider<SearchRepository>((ref) async {
   final isar = ref.watch(isarProvider);
+  final searchProvider = await ref.watch(searchProviderProvider.future);
   return SearchRepositoryImpl(
-    searchService: ref.watch(searchServiceProvider),
+    searchProvider: searchProvider,
     isar: isar,
   );
 });
 
 final recentSearchesProvider = StreamProvider<List<RecentSearch>>((ref) async* {
   final isarService = await ref.watch(isarServiceProvider.future);
+  final searchProvider = await ref.watch(searchProviderProvider.future);
   final repository = SearchRepositoryImpl(
-    searchService: ref.watch(searchServiceProvider),
+    searchProvider: searchProvider,
     isar: isarService.isar,
   );
   yield* repository.watchRecent(limit: 10);
@@ -32,10 +33,14 @@ class SearchController extends AsyncNotifier<List<SearchResult>> {
   Future<List<SearchResult>> build() async {
     ref.onDispose(() => _debounce?.cancel());
     await ref.watch(isarServiceProvider.future);
+    await ref.watch(searchRepositoryProvider.future);
+    await ref.watch(searchProviderProvider.future);
     return [];
   }
 
-  SearchRepository get _repo => ref.read(searchRepositoryProvider);
+  SearchRepository get _repo {
+    return ref.read(searchRepositoryProvider).requireValue;
+  }
 
   void search(String query) {
     _debounce?.cancel();

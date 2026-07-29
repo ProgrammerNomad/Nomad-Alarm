@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Nomad Alarm</string>
+    <string name="complication_label">Nomad Alarm</string>
+    <string name="complication_no_alarm">No active alarm</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<complication-data-source-config
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:updatePeriodMillis="300000">
+    <supportedTypes>
+        <shortText />
+        <longText />
+    </supportedTypes>
+</complication-data-source-config>

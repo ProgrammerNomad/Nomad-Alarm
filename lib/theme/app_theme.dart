@@ -3,9 +3,15 @@ import 'package:nomad_alarm/core/constants/ui_constants.dart';
 import 'package:nomad_alarm/theme/app_colors.dart';
 
 abstract class AppTheme {
-  static ThemeData light() => _build(_lightScheme);
+  static ThemeData light({bool highContrast = false}) =>
+      _build(_lightScheme, highContrast: highContrast);
 
-  static ThemeData dark() => _build(_darkScheme);
+  static ThemeData dark({bool highContrast = false}) =>
+      _build(_darkScheme, highContrast: highContrast);
+
+  static ThemeData lightHighContrast() => light(highContrast: true);
+
+  static ThemeData darkHighContrast() => dark(highContrast: true);
 
   static const ColorScheme _lightScheme = ColorScheme(
     brightness: Brightness.light,
@@ -63,42 +69,53 @@ abstract class AppTheme {
     surfaceTint: AppColors.primaryDark,
   );
 
-  static ThemeData _build(ColorScheme scheme) {
+  static ThemeData _build(ColorScheme scheme, {bool highContrast = false}) {
+    final effectiveScheme = highContrast
+        ? scheme.copyWith(
+            primary: scheme.primary.withValues(alpha: 1),
+            onSurface: scheme.brightness == Brightness.light
+                ? const Color(0xFF000000)
+                : const Color(0xFFFFFFFF),
+            outline: scheme.brightness == Brightness.light
+                ? const Color(0xFF000000)
+                : const Color(0xFFFFFFFF),
+          )
+        : scheme;
     return ThemeData(
       useMaterial3: true,
-      colorScheme: scheme,
+      colorScheme: effectiveScheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: scheme.surface,
-        foregroundColor: scheme.onSurface,
+        backgroundColor: effectiveScheme.surface,
+        foregroundColor: effectiveScheme.onSurface,
         elevation: 0,
         centerTitle: false,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: scheme.primary,
-        foregroundColor: scheme.onPrimary,
+        backgroundColor: effectiveScheme.primary,
+        foregroundColor: effectiveScheme.onPrimary,
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 80,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        indicatorColor: scheme.primaryContainer,
+        indicatorColor: effectiveScheme.primaryContainer,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: scheme.primary);
+            return IconThemeData(color: effectiveScheme.primary);
           }
-          return IconThemeData(color: scheme.onSurfaceVariant);
+          return IconThemeData(color: effectiveScheme.onSurfaceVariant);
         }),
       ),
       cardTheme: CardThemeData(
         elevation: 1,
-        color: scheme.surfaceContainerHighest,
+        color: effectiveScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: scheme.primary,
-          foregroundColor: scheme.onPrimary,
+          backgroundColor: effectiveScheme.primary,
+          foregroundColor: effectiveScheme.onPrimary,
           minimumSize: const Size(
             UiConstants.minTouchTarget,
             UiConstants.minTouchTarget,
@@ -109,7 +126,7 @@ abstract class AppTheme {
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: scheme.primary,
+        color: effectiveScheme.primary,
       ),
     );
   }

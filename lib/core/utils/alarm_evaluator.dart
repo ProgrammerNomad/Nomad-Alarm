@@ -1,6 +1,8 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
+import 'package:nomad_alarm/core/utils/eta_predictor.dart';
+import 'package:nomad_alarm/core/utils/smart_detection.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
@@ -59,18 +61,38 @@ class PassedDestinationTracker {
 }
 
 class AlarmEvaluator {
-  AlarmEvaluator({PassedDestinationTracker? tracker})
-      : _tracker = tracker ?? PassedDestinationTracker();
+  AlarmEvaluator({
+    PassedDestinationTracker? tracker,
+    EtaPredictor? etaPredictor,
+    SmartDetection? smartDetection,
+  })  : _tracker = tracker ?? PassedDestinationTracker(),
+        _etaPredictor = etaPredictor ?? EtaPredictor(),
+        _smartDetection = smartDetection ?? SmartDetection();
 
   final PassedDestinationTracker _tracker;
+  final EtaPredictor _etaPredictor;
+  final SmartDetection _smartDetection;
+  bool _wasInsideGeofence = false;
 
   PassedDestinationTracker get tracker => _tracker;
+
+  EtaPredictor get etaPredictor => _etaPredictor;
+
+  SmartDetection get smartDetection => _smartDetection;
+
+  void reset() {
+    _tracker.reset();
+    _etaPredictor.reset();
+    _smartDetection.reset();
+    _wasInsideGeofence = false;
+  }
 
   AlarmRuntimeState evaluate({
     required AlarmMonitorConfig config,
     required Position position,
     required AlarmStatus currentStatus,
     DateTime? snoozeSuppressedUntil,
+    double? routeEtaMinutes,
   }) {
     final distance = haversineMeters(
       position.latitude,
@@ -87,13 +109,46 @@ class AlarmEvaluator {
     _tracker.updatePassedDetection(distance);
     _tracker.recordFix(now);
 
+    _smartDetection.update(
+      speedKmh: speedKmh,
+      accuracyMeters: position.accuracy,
+      fixAt: now,
+    );
+
     final snoozeActive = snoozeSuppressedUntil != null &&
         now.isBefore(snoozeSuppressedUntil);
+
+    final insideGeofence = distance <= config.effectiveRadiusMeters;
+    final etaMinutes = _etaPredictor.predict(
+      distanceMeters: distance,
+      currentSpeedKmh: speedKmh,
+      routeEtaMinutes: routeEtaMinutes,
+    );
+
+    var shouldTrigger = false;
+    switch (config.alarmType) {
+      case AlarmType.distance:
+      case AlarmType.arrival:
+        shouldTrigger = insideGeofence;
+      case AlarmType.radius:
+      case AlarmType.geofence:
+        shouldTrigger = insideGeofence;
+      case AlarmType.departure:
+        shouldTrigger = _wasInsideGeofence && !insideGeofence;
+      case AlarmType.eta:
+        shouldTrigger =
+            etaMinutes != null && etaMinutes <= config.triggerDistanceMeters;
+      case AlarmType.speed:
+        final threshold = config.speedThresholdKmh ?? 0;
+        shouldTrigger = speedKmh >= threshold &&
+            distance <= config.triggerDistanceMeters * 2;
+    }
+    _wasInsideGeofence = insideGeofence;
 
     var status = currentStatus;
     if (!snoozeActive &&
         currentStatus == AlarmStatus.active &&
-        distance <= config.triggerDistanceMeters) {
+        shouldTrigger) {
       status = AlarmStatus.triggered;
     }
 
@@ -109,10 +164,11 @@ class AlarmEvaluator {
       speedKmh: speedKmh,
       accuracyMeters: position.accuracy,
       lastFixAt: now,
-      isGpsLost: gpsLost,
+      isGpsLost: gpsLost || _smartDetection.isLikelyTunnel,
       hasPassedDestination: _tracker.hasPassedDestination,
       status: status,
-      etaMinutes: estimateEtaMinutes(distance, speedKmh),
+      etaMinutes: etaMinutes,
+      isInternetLost: _smartDetection.isInternetLost,
     );
   }
 }

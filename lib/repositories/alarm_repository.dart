@@ -14,9 +14,11 @@ class AlarmDraft {
     this.triggerDistanceMeters = 500,
     this.travelMode = TravelMode.autoDetect,
     this.type = AlarmType.distance,
+    this.speedThresholdKmh,
     this.voiceEnabled = true,
     this.vibrationEnabled = true,
     this.flashlightEnabled = false,
+    this.ringtoneUri,
   });
 
   final String name;
@@ -27,9 +29,11 @@ class AlarmDraft {
   final double triggerDistanceMeters;
   final TravelMode travelMode;
   final AlarmType type;
+  final double? speedThresholdKmh;
   final bool voiceEnabled;
   final bool vibrationEnabled;
   final bool flashlightEnabled;
+  final String? ringtoneUri;
 
   factory AlarmDraft.fromSearchResult(
     SearchResult result, {
@@ -78,11 +82,13 @@ class AlarmRepositoryImpl implements AlarmRepository {
       ..placeId = draft.placeId
       ..type = draft.type
       ..triggerDistanceMeters = draft.triggerDistanceMeters
+      ..speedThresholdKmh = draft.speedThresholdKmh
       ..travelMode = draft.travelMode
       ..repeat = false
       ..voiceEnabled = draft.voiceEnabled
       ..vibrationEnabled = draft.vibrationEnabled
       ..flashlightEnabled = draft.flashlightEnabled
+      ..ringtoneUri = draft.ringtoneUri
       ..status = AlarmStatus.draft
       ..createdAt = now
       ..updatedAt = now;

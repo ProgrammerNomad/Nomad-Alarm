@@ -19,4 +19,11 @@ abstract class AlarmConstants {
 
   static const int lowBatteryThresholdPercent = 15;
   static const int lowBatteryCheckIntervalSec = 60;
+
+  static const int routeEtaRefreshSec = 60;
+  static const double tunnelAccuracyThresholdM = 80;
+  static const int tunnelAccuracySamples = 4;
+  static const int trainStoppedSamples = 6;
+  static const int internetLostRouteFailures = 3;
+  static const int internetLostAlertMinutes = 5;
 }

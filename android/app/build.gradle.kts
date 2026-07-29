@@ -64,5 +64,8 @@ flutter {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-wearable:18.2.0")
+    implementation("androidx.car.app:app:1.7.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
+

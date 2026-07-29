@@ -4,4 +4,5 @@
     <string name="widget_small_description">Active alarm distance (compact)</string>
     <string name="widget_medium_description">Active alarm with destination and ETA</string>
     <string name="widget_large_description">Active alarm with distance, speed, and progress</string>
+    <string name="google_maps_api_key"></string>
 </resources>

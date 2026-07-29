@@ -4,18 +4,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:nomad_alarm/models/recent_search.dart';
 import 'package:nomad_alarm/models/search_result.dart';
+import 'package:nomad_alarm/models/enums.dart';
+import 'package:nomad_alarm/providers/search/search_provider.dart';
 import 'package:nomad_alarm/repositories/search_repository.dart';
-import 'package:nomad_alarm/services/search_service.dart';
 
-class FakeSearchService extends SearchService {
-  FakeSearchService(this._results);
+class FakeSearchProvider extends SearchProvider {
+  FakeSearchProvider(this._results);
 
   final List<SearchResult> _results;
+
+  @override
+  SearchProviderType get type => SearchProviderType.nominatim;
 
   @override
   Future<List<SearchResult>> search(String query) async {
     return _results.where((r) => r.name.contains(query)).toList();
   }
+
+  @override
+  Future<SearchResult?> reverseGeocode(double latitude, double longitude) async {
+    return null;
+  }
+
+  @override
+  void dispose() {}
 }
 
 void main() {
@@ -35,7 +47,7 @@ void main() {
       name: 'search_test_${DateTime.now().microsecondsSinceEpoch}',
     );
     repository = SearchRepositoryImpl(
-      searchService: FakeSearchService([
+      searchProvider: FakeSearchProvider([
         const SearchResult(
           name: 'London',
           latitude: 51.5074,

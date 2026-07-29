@@ -182,36 +182,39 @@ See [Permissions](PERMISSIONS.md).
 
 ---
 
-## MapService
+## MapService / MapProvider
 
-**File:** `lib/services/map_service.dart`
+**Legacy file:** `lib/services/map_service.dart` (tile URL helpers)
+
+**Providers:** `lib/providers/map/` - `OsmMapProvider`, `GoogleMapProvider`, `MapboxMapProvider`, `HereMapProvider`
 
 ### Responsibilities
-* Provide map widget via selected `MapProvider`
-* Manage map layers (standard, satellite, terrain, dark)
-* Center on user location, animate to destination
-* Handle pin drop and coordinate reverse geocoding
+* Provide map tile config via selected `MapProvider`
+* Switch between `flutter_map` (OSM/Mapbox/HERE) and native `GoogleMap`
+* Center on user location, handle pin drop
+* Optional offline tiles via `OfflineTileService` + FMTC store
 
 ### Dependencies
-* MapLibre (default)
-* Optional Google Maps implementation
+* `flutter_map` (default OSM/Mapbox/HERE)
+* `google_maps_flutter` (Google native)
+* `flutter_map_tile_caching` (offline regions)
 
 ---
 
-## SearchService
+## SearchService / SearchProvider
 
-**File:** `lib/services/search_service.dart`
+**Legacy file:** `lib/services/search_service.dart` (Nominatim wrapper)
+
+**Providers:** `lib/providers/search/` - Nominatim, Google Places, Photon, Pelias, HERE
 
 ### Responsibilities
-* Forward geocoding search
+* Forward geocoding search via `SearchProvider` from settings
 * Reverse geocoding for coordinates
-* Parse Plus Codes and lat/lng input
-* Cache recent results in Isar
+* Offline fallback: recent searches + favorites when network fails
 
 ### Default Provider: Nominatim
-* Rate limit: max 1 req/s
+* Rate limit: max 1 req/s (`RequestThrottler`)
 * Include User-Agent header per OSM policy
-* Offline: return cached/recent only
 
 ---
 
@@ -219,13 +222,40 @@ See [Permissions](PERMISSIONS.md).
 
 **File:** `lib/services/route_service.dart`
 
+**Providers:** `lib/providers/route/` - OSRM, Google Directions, GraphHopper, Valhalla
+
 ### Responsibilities
 * Fetch route polyline between two points
-* Compute ETA based on travel mode
-* Fallback to straight-line ETA when offline
+* Compute route-based ETA (refreshed ~60s in foreground `AlarmService`)
+* Fallback to straight-line ETA when offline or routing unavailable
+* Store route polyline on active trip at alarm start
 
 ### Default Provider: OSRM
 * Public instance for dev; self-hosted or alternative for production scale
+
+---
+
+## ProviderFactory
+
+**File:** `lib/services/provider_factory.dart`
+
+Resolves `MapProvider`, `SearchProvider`, and `RouteProvider` from `AppSettings` + `FeatureFlags` + `ApiKeyStore`. Falls back to OSM/Nominatim/OSRM when keys are missing.
+
+---
+
+## ApiKeyStore
+
+**File:** `lib/services/api_key_store.dart`
+
+Encrypted BYO key storage via `flutter_secure_storage` (Android Keystore). Keys: Google Maps/Places/Directions, Mapbox, HERE, GraphHopper. **Excluded from JSON backup.**
+
+---
+
+## OfflineTileService
+
+**File:** `lib/services/offline_tile_service.dart`
+
+Wraps `flutter_map_tile_caching` - initialize store, download bounding-box regions, report cache size, clear cache.
 
 ---
 

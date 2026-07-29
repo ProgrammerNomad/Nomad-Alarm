@@ -22,98 +22,109 @@ const AppSettingsSchema = CollectionSchema(
       name: r'accentColor',
       type: IsarType.string,
     ),
-    r'batteryProfile': PropertySchema(
+    r'accessibilityHighContrast': PropertySchema(
       id: 1,
+      name: r'accessibilityHighContrast',
+      type: IsarType.bool,
+    ),
+    r'batteryProfile': PropertySchema(
+      id: 2,
       name: r'batteryProfile',
       type: IsarType.byte,
       enumMap: _AppSettingsbatteryProfileEnumValueMap,
     ),
     r'debugLoggingEnabled': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'debugLoggingEnabled',
       type: IsarType.bool,
     ),
     r'defaultFlashlightEnabled': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'defaultFlashlightEnabled',
       type: IsarType.bool,
     ),
     r'defaultTriggerDistanceMeters': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'defaultTriggerDistanceMeters',
       type: IsarType.double,
     ),
     r'defaultVibrationEnabled': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'defaultVibrationEnabled',
       type: IsarType.bool,
     ),
     r'defaultVoiceEnabled': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'defaultVoiceEnabled',
       type: IsarType.bool,
     ),
     r'fontFamily': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'fontFamily',
       type: IsarType.string,
     ),
     r'hasCompletedPermissions': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'hasCompletedPermissions',
       type: IsarType.bool,
     ),
     r'hasCompletedWelcome': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'hasCompletedWelcome',
       type: IsarType.bool,
     ),
     r'languageCode': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'languageCode',
       type: IsarType.string,
     ),
     r'lockScreenInfoEnabled': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'lockScreenInfoEnabled',
       type: IsarType.bool,
     ),
+    r'mapLayer': PropertySchema(
+      id: 13,
+      name: r'mapLayer',
+      type: IsarType.byte,
+      enumMap: _AppSettingsmapLayerEnumValueMap,
+    ),
     r'mapProvider': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'mapProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsmapProviderEnumValueMap,
     ),
     r'persistentNotificationEnabled': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'persistentNotificationEnabled',
       type: IsarType.bool,
     ),
     r'resumeAlarmAfterBoot': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'resumeAlarmAfterBoot',
       type: IsarType.bool,
     ),
     r'routeProvider': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'routeProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsrouteProviderEnumValueMap,
     ),
     r'searchProvider': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'searchProvider',
       type: IsarType.byte,
       enumMap: _AppSettingssearchProviderEnumValueMap,
     ),
     r'themeMode': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'themeMode',
       type: IsarType.byte,
       enumMap: _AppSettingsthemeModeEnumValueMap,
     ),
     r'useMetric': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'useMetric',
       type: IsarType.bool,
     )
@@ -151,24 +162,26 @@ void _appSettingsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.accentColor);
-  writer.writeByte(offsets[1], object.batteryProfile.index);
-  writer.writeBool(offsets[2], object.debugLoggingEnabled);
-  writer.writeBool(offsets[3], object.defaultFlashlightEnabled);
-  writer.writeDouble(offsets[4], object.defaultTriggerDistanceMeters);
-  writer.writeBool(offsets[5], object.defaultVibrationEnabled);
-  writer.writeBool(offsets[6], object.defaultVoiceEnabled);
-  writer.writeString(offsets[7], object.fontFamily);
-  writer.writeBool(offsets[8], object.hasCompletedPermissions);
-  writer.writeBool(offsets[9], object.hasCompletedWelcome);
-  writer.writeString(offsets[10], object.languageCode);
-  writer.writeBool(offsets[11], object.lockScreenInfoEnabled);
-  writer.writeByte(offsets[12], object.mapProvider.index);
-  writer.writeBool(offsets[13], object.persistentNotificationEnabled);
-  writer.writeBool(offsets[14], object.resumeAlarmAfterBoot);
-  writer.writeByte(offsets[15], object.routeProvider.index);
-  writer.writeByte(offsets[16], object.searchProvider.index);
-  writer.writeByte(offsets[17], object.themeMode.index);
-  writer.writeBool(offsets[18], object.useMetric);
+  writer.writeBool(offsets[1], object.accessibilityHighContrast);
+  writer.writeByte(offsets[2], object.batteryProfile.index);
+  writer.writeBool(offsets[3], object.debugLoggingEnabled);
+  writer.writeBool(offsets[4], object.defaultFlashlightEnabled);
+  writer.writeDouble(offsets[5], object.defaultTriggerDistanceMeters);
+  writer.writeBool(offsets[6], object.defaultVibrationEnabled);
+  writer.writeBool(offsets[7], object.defaultVoiceEnabled);
+  writer.writeString(offsets[8], object.fontFamily);
+  writer.writeBool(offsets[9], object.hasCompletedPermissions);
+  writer.writeBool(offsets[10], object.hasCompletedWelcome);
+  writer.writeString(offsets[11], object.languageCode);
+  writer.writeBool(offsets[12], object.lockScreenInfoEnabled);
+  writer.writeByte(offsets[13], object.mapLayer.index);
+  writer.writeByte(offsets[14], object.mapProvider.index);
+  writer.writeBool(offsets[15], object.persistentNotificationEnabled);
+  writer.writeBool(offsets[16], object.resumeAlarmAfterBoot);
+  writer.writeByte(offsets[17], object.routeProvider.index);
+  writer.writeByte(offsets[18], object.searchProvider.index);
+  writer.writeByte(offsets[19], object.themeMode.index);
+  writer.writeBool(offsets[20], object.useMetric);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -179,35 +192,39 @@ AppSettings _appSettingsDeserialize(
 ) {
   final object = AppSettings();
   object.accentColor = reader.readString(offsets[0]);
+  object.accessibilityHighContrast = reader.readBool(offsets[1]);
   object.batteryProfile = _AppSettingsbatteryProfileValueEnumMap[
-          reader.readByteOrNull(offsets[1])] ??
+          reader.readByteOrNull(offsets[2])] ??
       BatteryProfile.balanced;
-  object.debugLoggingEnabled = reader.readBool(offsets[2]);
-  object.defaultFlashlightEnabled = reader.readBool(offsets[3]);
-  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[4]);
-  object.defaultVibrationEnabled = reader.readBool(offsets[5]);
-  object.defaultVoiceEnabled = reader.readBool(offsets[6]);
-  object.fontFamily = reader.readString(offsets[7]);
-  object.hasCompletedPermissions = reader.readBool(offsets[8]);
-  object.hasCompletedWelcome = reader.readBool(offsets[9]);
+  object.debugLoggingEnabled = reader.readBool(offsets[3]);
+  object.defaultFlashlightEnabled = reader.readBool(offsets[4]);
+  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[5]);
+  object.defaultVibrationEnabled = reader.readBool(offsets[6]);
+  object.defaultVoiceEnabled = reader.readBool(offsets[7]);
+  object.fontFamily = reader.readString(offsets[8]);
+  object.hasCompletedPermissions = reader.readBool(offsets[9]);
+  object.hasCompletedWelcome = reader.readBool(offsets[10]);
   object.id = id;
-  object.languageCode = reader.readString(offsets[10]);
-  object.lockScreenInfoEnabled = reader.readBool(offsets[11]);
+  object.languageCode = reader.readString(offsets[11]);
+  object.lockScreenInfoEnabled = reader.readBool(offsets[12]);
+  object.mapLayer =
+      _AppSettingsmapLayerValueEnumMap[reader.readByteOrNull(offsets[13])] ??
+          MapLayerType.standard;
   object.mapProvider =
-      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[12])] ??
+      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[14])] ??
           MapProviderType.osm;
-  object.persistentNotificationEnabled = reader.readBool(offsets[13]);
-  object.resumeAlarmAfterBoot = reader.readBool(offsets[14]);
+  object.persistentNotificationEnabled = reader.readBool(offsets[15]);
+  object.resumeAlarmAfterBoot = reader.readBool(offsets[16]);
   object.routeProvider = _AppSettingsrouteProviderValueEnumMap[
-          reader.readByteOrNull(offsets[15])] ??
+          reader.readByteOrNull(offsets[17])] ??
       RouteProviderType.osrm;
   object.searchProvider = _AppSettingssearchProviderValueEnumMap[
-          reader.readByteOrNull(offsets[16])] ??
+          reader.readByteOrNull(offsets[18])] ??
       SearchProviderType.nominatim;
   object.themeMode =
-      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[17])] ??
+      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[19])] ??
           AppThemeMode.system;
-  object.useMetric = reader.readBool(offsets[18]);
+  object.useMetric = reader.readBool(offsets[20]);
   return object;
 }
 
@@ -221,50 +238,55 @@ P _appSettingsDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readBool(offset)) as P;
+    case 2:
       return (_AppSettingsbatteryProfileValueEnumMap[
               reader.readByteOrNull(offset)] ??
           BatteryProfile.balanced) as P;
-    case 2:
-      return (reader.readBool(offset)) as P;
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readDouble(offset)) as P;
-    case 5:
       return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readDouble(offset)) as P;
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readBool(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
     case 9:
       return (reader.readBool(offset)) as P;
     case 10:
-      return (reader.readString(offset)) as P;
-    case 11:
       return (reader.readBool(offset)) as P;
+    case 11:
+      return (reader.readString(offset)) as P;
     case 12:
+      return (reader.readBool(offset)) as P;
+    case 13:
+      return (_AppSettingsmapLayerValueEnumMap[reader.readByteOrNull(offset)] ??
+          MapLayerType.standard) as P;
+    case 14:
       return (_AppSettingsmapProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MapProviderType.osm) as P;
-    case 13:
-      return (reader.readBool(offset)) as P;
-    case 14:
-      return (reader.readBool(offset)) as P;
     case 15:
+      return (reader.readBool(offset)) as P;
+    case 16:
+      return (reader.readBool(offset)) as P;
+    case 17:
       return (_AppSettingsrouteProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           RouteProviderType.osrm) as P;
-    case 16:
+    case 18:
       return (_AppSettingssearchProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SearchProviderType.nominatim) as P;
-    case 17:
+    case 19:
       return (_AppSettingsthemeModeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           AppThemeMode.system) as P;
-    case 18:
+    case 20:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -281,17 +303,31 @@ const _AppSettingsbatteryProfileValueEnumMap = {
   1: BatteryProfile.aggressive,
   2: BatteryProfile.saver,
 };
+const _AppSettingsmapLayerEnumValueMap = {
+  'standard': 0,
+  'satellite': 1,
+  'dark': 2,
+  'terrain': 3,
+};
+const _AppSettingsmapLayerValueEnumMap = {
+  0: MapLayerType.standard,
+  1: MapLayerType.satellite,
+  2: MapLayerType.dark,
+  3: MapLayerType.terrain,
+};
 const _AppSettingsmapProviderEnumValueMap = {
   'osm': 0,
   'google': 1,
   'mapbox': 2,
   'here': 3,
+  'apple': 4,
 };
 const _AppSettingsmapProviderValueEnumMap = {
   0: MapProviderType.osm,
   1: MapProviderType.google,
   2: MapProviderType.mapbox,
   3: MapProviderType.here,
+  4: MapProviderType.apple,
 };
 const _AppSettingsrouteProviderEnumValueMap = {
   'osrm': 0,
@@ -555,6 +591,16 @@ extension AppSettingsQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'accentColor',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      accessibilityHighContrastEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'accessibilityHighContrast',
+        value: value,
       ));
     });
   }
@@ -1076,6 +1122,61 @@ extension AppSettingsQueryFilter
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition> mapLayerEqualTo(
+      MapLayerType value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'mapLayer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      mapLayerGreaterThan(
+    MapLayerType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'mapLayer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      mapLayerLessThan(
+    MapLayerType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'mapLayer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition> mapLayerBetween(
+    MapLayerType lower,
+    MapLayerType upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'mapLayer',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       mapProviderEqualTo(MapProviderType value) {
     return QueryBuilder.apply(this, (query) {
@@ -1351,6 +1452,20 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAccessibilityHighContrast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessibilityHighContrast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAccessibilityHighContrastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessibilityHighContrast', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByBatteryProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'batteryProfile', Sort.asc);
@@ -1501,6 +1616,18 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByMapLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mapLayer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByMapLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mapLayer', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByMapProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mapProvider', Sort.asc);
@@ -1603,6 +1730,20 @@ extension AppSettingsQuerySortThenBy
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByAccentColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'accentColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAccessibilityHighContrast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessibilityHighContrast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAccessibilityHighContrastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessibilityHighContrast', Sort.desc);
     });
   }
 
@@ -1768,6 +1909,18 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByMapLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mapLayer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByMapLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mapLayer', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByMapProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mapProvider', Sort.asc);
@@ -1868,6 +2021,13 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByAccessibilityHighContrast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'accessibilityHighContrast');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByBatteryProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'batteryProfile');
@@ -1944,6 +2104,12 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByMapLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'mapLayer');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByMapProvider() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mapProvider');
@@ -2000,6 +2166,13 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, String, QQueryOperations> accentColorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'accentColor');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      accessibilityHighContrastProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'accessibilityHighContrast');
     });
   }
 
@@ -2075,6 +2248,12 @@ extension AppSettingsQueryProperty
       lockScreenInfoEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lockScreenInfoEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, MapLayerType, QQueryOperations> mapLayerProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'mapLayer');
     });
   }
 

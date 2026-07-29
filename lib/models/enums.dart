@@ -59,11 +59,19 @@ enum AppThemeMode {
   dark,
 }
 
+enum MapLayerType {
+  standard,
+  satellite,
+  dark,
+  terrain,
+}
+
 enum MapProviderType {
   osm,
   google,
   mapbox,
   here,
+  apple,
 }
 
 enum SearchProviderType {

@@ -237,6 +237,9 @@ class BackupService {
         'defaultFlashlightEnabled': settings.defaultFlashlightEnabled,
         'batteryProfile': settings.batteryProfile.index,
         'resumeAlarmAfterBoot': settings.resumeAlarmAfterBoot,
+        'mapLayer': settings.mapLayer.index,
+        'lockScreenInfoEnabled': settings.lockScreenInfoEnabled,
+        'accessibilityHighContrast': settings.accessibilityHighContrast,
       };
 
   void _applySettingsFromJson(AppSettings settings, Map<String, dynamic> json) {
@@ -259,5 +262,12 @@ class BackupService {
         .values[json['batteryProfile'] as int? ?? settings.batteryProfile.index];
     settings.resumeAlarmAfterBoot =
         json['resumeAlarmAfterBoot'] as bool? ?? settings.resumeAlarmAfterBoot;
+    settings.mapLayer = MapLayerType
+        .values[json['mapLayer'] as int? ?? settings.mapLayer.index];
+    settings.lockScreenInfoEnabled =
+        json['lockScreenInfoEnabled'] as bool? ?? settings.lockScreenInfoEnabled;
+    settings.accessibilityHighContrast = json['accessibilityHighContrast']
+            as bool? ??
+        settings.accessibilityHighContrast;
   }
 }

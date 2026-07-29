@@ -23,6 +23,7 @@ class NotificationService {
 
   String _languageCode = 'en';
   NotificationL10n? _l10n;
+  bool _lockScreenInfoEnabled = true;
 
   Future<void> setLanguageCode(String languageCode) async {
     _languageCode = languageCode;
@@ -104,6 +105,14 @@ class NotificationService {
     onNotificationTap?.call(payload);
   }
 
+  void setLockScreenInfoEnabled(bool enabled) {
+    _lockScreenInfoEnabled = enabled;
+  }
+
+  NotificationVisibility get _trackingVisibility => _lockScreenInfoEnabled
+      ? NotificationVisibility.public
+      : NotificationVisibility.secret;
+
   Future<void> showTrackingNotification(AlarmRuntimeState state) async {
     final strings = await _strings();
     final distance = formatDistance(state.distanceMeters);
@@ -141,7 +150,7 @@ class NotificationService {
           priority: Priority.max,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.alarm,
-          visibility: NotificationVisibility.public,
+          visibility: _trackingVisibility,
           ongoing: true,
           autoCancel: false,
         ),
@@ -186,6 +195,24 @@ class NotificationService {
     );
   }
 
+  Future<void> showInternetLostAlert(int alarmId) async {
+    final strings = await _strings();
+    await _plugin.show(
+      303,
+      strings.internetLostTitle,
+      strings.internetLostBody,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          alertsChannelId,
+          strings.warningsChannelName,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+      payload: 'active:$alarmId',
+    );
+  }
+
   Future<void> cancelTrackingNotification() async {
     await _plugin.cancel(trackingNotificationId);
   }
@@ -211,6 +238,7 @@ class NotificationService {
         priority: Priority.low,
         ongoing: true,
         autoCancel: false,
+        visibility: _trackingVisibility,
         actions: [
           AndroidNotificationAction(
             'pause',

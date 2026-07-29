@@ -21,9 +21,9 @@ class NomadAlarmTileService : TileService() {
         val active = prefs.getBoolean("tile_active", prefs.getBoolean("active", false))
         val alarmId = prefs.getInt("tile_alarm_id", prefs.getInt("alarmId", -1))
         val route = if (active && alarmId > 0) {
-            "/alarm/active/$alarmId"
+            "/tile/cancel/$alarmId"
         } else {
-            "/home"
+            "/search"
         }
         val uri = Uri.parse("nomadalarm://tile?route=$route")
         val intent = HomeWidgetLaunchIntent.getActivity(this, MainActivity::class.java, uri)

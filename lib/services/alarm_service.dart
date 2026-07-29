@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
@@ -18,6 +19,8 @@ import 'package:nomad_alarm/services/battery_monitor_service.dart';
 import 'package:nomad_alarm/services/boot_prefs_sync.dart';
 import 'package:nomad_alarm/services/flashlight_service.dart';
 import 'package:nomad_alarm/services/notification_service.dart';
+import 'package:nomad_alarm/services/ringtone_service.dart';
+import 'package:nomad_alarm/services/route_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 import 'package:nomad_alarm/services/widget_service.dart';
 
@@ -76,7 +79,9 @@ class AlarmService {
     required BatteryMonitorService batteryMonitorService,
     this.batteryProfile = BatteryProfile.balanced,
     this.onNavigateToAlarm,
+    RouteService? routeService,
     String languageCode = 'en',
+    bool lockScreenInfoEnabled = true,
   })  : _alarmRepository = alarmRepository,
         _tripRepository = tripRepository,
         _historyRepository = historyRepository,
@@ -84,8 +89,11 @@ class AlarmService {
         _speechService = speechService,
         _flashlightService = flashlightService,
         _batteryMonitorService = batteryMonitorService,
+        _routeService = routeService,
         _evaluator = AlarmEvaluator(),
-        _languageCode = languageCode;
+        _languageCode = languageCode {
+    _notificationService.setLockScreenInfoEnabled(lockScreenInfoEnabled);
+  }
 
   final AlarmRepository _alarmRepository;
   final TripRepository _tripRepository;
@@ -94,12 +102,22 @@ class AlarmService {
   final SpeechService _speechService;
   final FlashlightService _flashlightService;
   final BatteryMonitorService _batteryMonitorService;
+  final RouteService? _routeService;
+  final RingtoneService _ringtoneService = RingtoneService();
   final AlarmEvaluator _evaluator;
   final AlarmTriggerHandler? onNavigateToAlarm;
   String _languageCode;
   final BatteryProfile batteryProfile;
 
+  static const _routeRefreshInterval = Duration(seconds: 60);
+  DateTime? _lastRouteFetchAt;
+  double? _cachedRouteEtaMinutes;
+
   String get languageCode => _languageCode;
+
+  void updateLockScreenInfoEnabled(bool enabled) {
+    _notificationService.setLockScreenInfoEnabled(enabled);
+  }
 
   Future<void> updateLanguageCode(String code) async {
     if (_languageCode == code) {
@@ -348,8 +366,11 @@ class AlarmService {
       alarmId: alarm.id,
       controller: controller,
       tripId: preserveTripId,
+      travelMode: alarm.travelMode,
     );
-    _evaluator.tracker.reset();
+    _evaluator.reset();
+    _lastRouteFetchAt = null;
+    _cachedRouteEtaMinutes = null;
   }
 
   Future<void> _handleBackgroundState(AlarmRuntimeState state) async {
@@ -371,7 +392,7 @@ class AlarmService {
       );
     }
 
-    final enriched = await _enrichWithBattery(state);
+    final enriched = await _enrichWithRouteEta(await _enrichWithBattery(state));
     _emitState(enriched);
 
     final tripId = _session?.tripId;
@@ -404,6 +425,11 @@ class AlarmService {
     if (enriched.isLowBattery && !(_session?.lowBatteryNotified ?? false)) {
       _session?.lowBatteryNotified = true;
       await _notificationService.showLowBatteryAlert(enriched.alarmId);
+    }
+
+    if (enriched.isInternetLost && !(_session?.internetLostNotified ?? false)) {
+      _session?.internetLostNotified = true;
+      await _notificationService.showInternetLostAlert(enriched.alarmId);
     }
 
     if (enriched.status == AlarmStatus.triggered) {
@@ -501,7 +527,56 @@ class AlarmService {
       await _flashlightService.startStrobe();
     }
 
+    await _ringtoneService.play(alarm.ringtoneUri);
+
     onNavigateToAlarm?.call(alarmId, isRing: true);
+  }
+
+  Future<AlarmRuntimeState> _enrichWithRouteEta(AlarmRuntimeState state) async {
+    final routeService = _routeService;
+    if (routeService == null ||
+        state.latitude == null ||
+        state.longitude == null ||
+        state.destLatitude == null ||
+        state.destLongitude == null) {
+      return state;
+    }
+
+    final now = DateTime.now();
+    if (_lastRouteFetchAt != null &&
+        now.difference(_lastRouteFetchAt!) < _routeRefreshInterval &&
+        _cachedRouteEtaMinutes != null) {
+      return state.copyWith(etaMinutes: _cachedRouteEtaMinutes);
+    }
+
+    try {
+      final result = await routeService.route(
+        from: LatLng(state.latitude!, state.longitude!),
+        to: LatLng(state.destLatitude!, state.destLongitude!),
+        travelMode: _session?.travelMode ?? TravelMode.autoDetect,
+      );
+      _lastRouteFetchAt = now;
+      _cachedRouteEtaMinutes = result?.durationMinutes;
+
+      final polyline = result?.storablePolyline;
+      final tripId = _session?.tripId;
+      if (polyline != null &&
+          tripId != null &&
+          !(_session?.routePolylineStored ?? false)) {
+        await _tripRepository.updateRoutePolyline(tripId, polyline);
+        _session?.routePolylineStored = true;
+      }
+
+      if (_cachedRouteEtaMinutes != null) {
+        _evaluator.smartDetection.recordRouteSuccess();
+        return state.copyWith(etaMinutes: _cachedRouteEtaMinutes);
+      }
+      _evaluator.smartDetection.recordRouteSuccess();
+    } catch (_) {
+      _evaluator.smartDetection.recordRouteFailure(now);
+      // Fall back to straight-line ETA from background isolate.
+    }
+    return state;
   }
 
   Future<AlarmRuntimeState> _enrichWithBattery(AlarmRuntimeState state) async {
@@ -584,12 +659,16 @@ class AlarmService {
     _session?.snoozeTimer?.cancel();
     await _session?.controller.close();
     _session = null;
-    _evaluator.tracker.reset();
+    _evaluator.reset();
+    _lastRouteFetchAt = null;
+    _cachedRouteEtaMinutes = null;
     await WidgetService.clear(languageCode: _languageCode);
     await BootPrefsSync.setActiveAlarmId(null);
   }
 
   Future<void> dispose() async {
+    await _ringtoneService.stop();
+    _ringtoneService.dispose();
     await _disposeSession();
   }
 }
@@ -599,11 +678,13 @@ class _AlarmSession {
     required this.alarmId,
     required this.controller,
     this.tripId,
+    this.travelMode = TravelMode.autoDetect,
   });
 
   final int alarmId;
   final StreamController<AlarmRuntimeState> controller;
   final int? tripId;
+  final TravelMode travelMode;
   final _TripStatsTracker tripTracker = _TripStatsTracker();
   Timer? snoozeTimer;
   DateTime? snoozeSuppressedUntil;
@@ -611,5 +692,7 @@ class _AlarmSession {
   int snoozeCount = 0;
   bool passedHandled = false;
   bool lowBatteryNotified = false;
+  bool internetLostNotified = false;
+  bool routePolylineStored = false;
   DateTime? lastBatteryCheck;
 }

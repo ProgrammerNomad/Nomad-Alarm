@@ -8,9 +8,68 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+---
+
+## [3.1.0] - 2026-07-29
+
+### Added
+* Lock screen info toggle wired to notification visibility
+* Internet-lost smart detection + alert notification
+* Family sharing multi-alarm bundle export/import
+* Map terrain layer, compass reset, Google traffic overlay
+* Apple Maps provider (iOS)
+* Voice search on Search screen
+* Quick Settings tile create (search) / cancel actions
+* Bundled Wear OS complication module + Data Layer sync
+* Android Auto minimal navigation template
+* iOS notification authorization scaffold
+* High contrast accessibility theme
+* Arabic/Hebrew l10n keys expanded
+
+### Changed
+* Version bumped to 3.1.0+7
+* Docs synced: FEATURE_FLAGS, RELEASE_QA v3.1
+
+---
+
+## [3.0.0] - 2026-07-29
+
+### Added
+* **v2.1 polish** - background route ETA, map viewport offline download, trip polyline map, map layers, TravelMode routing profiles
+* **Smart ETA** - on-device speed/route blending (`EtaPredictor`); tunnel/train-stop heuristics
+* **Extended alarm types** - geofence, radius, ETA, speed, departure in evaluator + config UI
+* **Group travel** - share/import alarm JSON via `GroupTravelService`
+* **Ecosystem hooks** - Wear OS + Android Auto MethodChannels; iOS location background keys
+* **Custom ringtone** - `RingtoneService` via `audioplayers`
+* **Plus Codes** - parse stub in `DeepLinkParser`
+* **Cloud backup upload** - optional HTTPS endpoint (`CloudBackupService`)
+* **CI** - GitHub Actions analyze + test workflow
+
+### Changed
+* Version bumped to 3.0.0+6
+* Feature flags enabled: `aiEtaPrediction`, `groupTravel`, `wearOs`, `androidAuto`, `cloudBackup`, `familySharing`
+* Tracking notifications use public lock-screen visibility
+
+---
+
+### Added
+* **Multi-provider maps** - OSM (default), Google Maps native, Mapbox, HERE via Settings → Map
+* **Multi-provider search** - Nominatim (default), Google Places, Photon, Pelias, HERE with offline fallback to recents/favorites
+* **Route service** - OSRM (default), Google Directions, GraphHopper, Valhalla; optional route-based ETA when online
+* **BYO API keys** - encrypted storage (`flutter_secure_storage`); Settings → API Keys with test connection
+* **Offline map tiles** - region download and cache clear via `flutter_map_tile_caching`
+* Provider abstractions (`MapProvider`, `SearchProvider`, `RouteProvider`) and `ProviderFactory`
+* Map Settings and API Keys screens; l10n (en + hi) for provider names and attribution
+* Unit tests: provider factory, API key store, OSRM/Nominatim/Photon parsers; widget test for Map Settings
+
+### Changed
+* Version bumped to 2.0.0+5
+* Search repository uses `SearchProvider`; route polyline stored on active trip when route available
+* Feature flags enabled: `googleMapsProvider`, `googlePlacesSearch`, `mapboxProvider`, `hereMapsProvider`, `offlineMapTiles`
+
 ### Fixed
-* Android splash hang on x86 emulators - pin `path_provider_android` to 2.2.23 (pre-JNI); show retry UI if bootstrap fails
-* Isar `libisar.so` not found on emulator - import `isar_flutter_libs` in `main.dart`; repair pub cache if `jniLibs` missing, then `flutter clean` rebuild
+* Android splash hang on x86 emulators - pin `path_provider_android` to 2.2.23; retry UI if bootstrap fails
+* Isar `libisar.so` not found on emulator - import `isar_flutter_libs` in `main.dart`
 
 ---
 

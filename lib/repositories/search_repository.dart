@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
-import 'package:nomad_alarm/models/recent_search.dart';
-import 'package:nomad_alarm/models/search_result.dart';
-import 'package:nomad_alarm/services/search_service.dart';
+import 'package:nomad_alarm/models/favorite.dart';
+import 'package:nomad_alarm/models/recent_search.dart';import 'package:nomad_alarm/models/search_result.dart';
+import 'package:nomad_alarm/providers/search/search_provider.dart';
 
 abstract class SearchRepository {
   Future<List<SearchResult>> search(String query);
@@ -13,21 +13,77 @@ abstract class SearchRepository {
 
 class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl({
-    required SearchService searchService,
+    required SearchProvider searchProvider,
     required Isar isar,
-  })  : _searchService = searchService,
+  })  : _searchProvider = searchProvider,
         _isar = isar;
 
-  final SearchService _searchService;
+  final SearchProvider _searchProvider;
   final Isar _isar;
 
   @override
-  Future<List<SearchResult>> search(String query) =>
-      _searchService.search(query);
+  Future<List<SearchResult>> search(String query) async {
+    try {
+      return await _searchProvider.search(query);
+    } catch (_) {
+      return _offlineFallback(query);
+    }
+  }
+
+  Future<List<SearchResult>> _offlineFallback(String query) async {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      return [];
+    }
+    final results = <SearchResult>[];
+    final seen = <String>{};
+
+    final recent = await getRecent(limit: 50);
+    for (final entry in recent) {
+      if (entry.query.toLowerCase().contains(normalized) ||
+          entry.resultName.toLowerCase().contains(normalized)) {
+        final key = '${entry.latitude},${entry.longitude}';
+        if (seen.add(key)) {
+          results.add(
+            SearchResult(
+              name: entry.resultName,
+              latitude: entry.latitude,
+              longitude: entry.longitude,
+              address: entry.address,
+            ),
+          );
+        }
+      }
+    }
+
+    final favorites = await _isar.favorites.where().findAll();
+    for (final fav in favorites) {
+      if (fav.name.toLowerCase().contains(normalized) ||
+          (fav.address?.toLowerCase().contains(normalized) ?? false)) {
+        final key = '${fav.latitude},${fav.longitude}';
+        if (seen.add(key)) {
+          results.add(
+            SearchResult(
+              name: fav.name,
+              latitude: fav.latitude,
+              longitude: fav.longitude,
+              address: fav.address,
+            ),
+          );
+        }
+      }
+    }
+    return results;
+  }
 
   @override
-  Future<SearchResult?> reverseGeocode(double latitude, double longitude) =>
-      _searchService.reverseGeocode(latitude, longitude);
+  Future<SearchResult?> reverseGeocode(double latitude, double longitude) async {
+    try {
+      return await _searchProvider.reverseGeocode(latitude, longitude);
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   Future<List<RecentSearch>> getRecent({int limit = 10}) async {

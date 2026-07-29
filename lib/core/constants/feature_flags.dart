@@ -11,18 +11,19 @@ abstract class FeatureFlags {
   static const bool backupRestore = true;
   static const bool deepLinkImport = true;
 
-  static const bool googleMapsProvider = false;
-  static const bool googlePlacesSearch = false;
-  static const bool hereMapsProvider = false;
-  static const bool mapboxProvider = false;
-  static const bool offlineMapTiles = false;
+  static const bool googleMapsProvider = true;
+  static const bool googlePlacesSearch = true;
+  static const bool hereMapsProvider = true;
+  static const bool mapboxProvider = true;
+  static const bool offlineMapTiles = true;
 
-  static const bool wearOs = false;
-  static const bool androidAuto = false;
-  static const bool aiEtaPrediction = false;
-  static const bool groupTravel = false;
-  static const bool familySharing = false;
-  static const bool cloudBackup = false;
+  static const bool wearOs = true;
+  static const bool androidAuto = true;
+  static const bool aiEtaPrediction = true;
+  static const bool groupTravel = true;
+  static const bool familySharing = true;
+  static const bool cloudBackup = true;
+  static const bool voiceSearch = true;
 
   static const bool debugScreen = kDebugMode;
   static const bool mockLocation = kDebugMode;

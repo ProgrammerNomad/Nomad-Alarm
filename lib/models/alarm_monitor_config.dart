@@ -13,6 +13,10 @@ class AlarmMonitorConfig {
     this.voiceEnabled = true,
     this.vibrationEnabled = true,
     this.batteryProfile = BatteryProfile.balanced,
+    this.alarmType = AlarmType.distance,
+    this.radiusMeters,
+    this.speedThresholdKmh,
+    this.travelMode = TravelMode.autoDetect,
   });
 
   final int alarmId;
@@ -24,6 +28,10 @@ class AlarmMonitorConfig {
   final bool voiceEnabled;
   final bool vibrationEnabled;
   final BatteryProfile batteryProfile;
+  final AlarmType alarmType;
+  final double? radiusMeters;
+  final double? speedThresholdKmh;
+  final TravelMode travelMode;
 
   factory AlarmMonitorConfig.fromAlarm(
     Alarm alarm, {
@@ -39,6 +47,10 @@ class AlarmMonitorConfig {
       voiceEnabled: alarm.voiceEnabled,
       vibrationEnabled: alarm.vibrationEnabled,
       batteryProfile: batteryProfile,
+      alarmType: alarm.type,
+      radiusMeters: alarm.radiusMeters,
+      speedThresholdKmh: alarm.speedThresholdKmh,
+      travelMode: alarm.travelMode,
     );
   }
 
@@ -55,6 +67,14 @@ class AlarmMonitorConfig {
       batteryProfile: json['batteryProfile'] != null
           ? BatteryProfile.values[json['batteryProfile'] as int]
           : BatteryProfile.balanced,
+      alarmType: json['alarmType'] != null
+          ? AlarmType.values[json['alarmType'] as int]
+          : AlarmType.distance,
+      radiusMeters: (json['radiusMeters'] as num?)?.toDouble(),
+      speedThresholdKmh: (json['speedThresholdKmh'] as num?)?.toDouble(),
+      travelMode: json['travelMode'] != null
+          ? TravelMode.values[json['travelMode'] as int]
+          : TravelMode.autoDetect,
     );
   }
 
@@ -68,5 +88,12 @@ class AlarmMonitorConfig {
         'voiceEnabled': voiceEnabled,
         'vibrationEnabled': vibrationEnabled,
         'batteryProfile': batteryProfile.index,
+        'alarmType': alarmType.index,
+        'radiusMeters': radiusMeters,
+        'speedThresholdKmh': speedThresholdKmh,
+        'travelMode': travelMode.index,
       };
+
+  double get effectiveRadiusMeters =>
+      radiusMeters ?? triggerDistanceMeters;
 }

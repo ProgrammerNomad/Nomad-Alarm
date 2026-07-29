@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/services/android_auto_service.dart';
+import 'package:nomad_alarm/services/wear_os_service.dart';
 import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 
@@ -83,6 +85,22 @@ class WidgetService {
         languageCode: languageCode,
         alarmId: alarmId,
       );
+    }
+
+    await WearOsService.syncActiveAlarm(
+      active: active,
+      destination: active ? destination : null,
+      distanceMeters: active ? distanceMeters : null,
+      etaMinutes: etaMinutes,
+    );
+    if (active) {
+      await AndroidAutoService.updateNavigationState(
+        destination: destination,
+        distanceLabel: distance,
+        etaLabel: eta.isNotEmpty && eta != '-' ? eta : null,
+      );
+    } else {
+      await AndroidAutoService.clear();
     }
   }
 

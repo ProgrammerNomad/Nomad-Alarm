@@ -709,4 +709,297 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get resumeAlarmAfterBootSubtitle =>
       'Relaunch tracking when the device restarts (uses more battery)';
+
+  @override
+  String get mapsSection => 'Maps & routing';
+
+  @override
+  String get mapSettingsTitle => 'Map settings';
+
+  @override
+  String get mapSettingsSubtitle => 'Providers, offline tiles, API keys';
+
+  @override
+  String get mapProvidersSection => 'Providers';
+
+  @override
+  String get mapProviderLabel => 'Map provider';
+
+  @override
+  String get searchProviderLabel => 'Search provider';
+
+  @override
+  String get routeProviderLabel => 'Route provider';
+
+  @override
+  String get mapProviderOsm => 'OpenStreetMap';
+
+  @override
+  String get mapProviderGoogle => 'Google Maps';
+
+  @override
+  String get mapProviderMapbox => 'Mapbox';
+
+  @override
+  String get mapProviderHere => 'HERE';
+
+  @override
+  String get searchProviderNominatim => 'Nominatim (OSM)';
+
+  @override
+  String get searchProviderGooglePlaces => 'Google Places';
+
+  @override
+  String get searchProviderPhoton => 'Photon';
+
+  @override
+  String get searchProviderPelias => 'Pelias';
+
+  @override
+  String get searchProviderHere => 'HERE';
+
+  @override
+  String get routeProviderOsrm => 'OSRM';
+
+  @override
+  String get routeProviderGoogle => 'Google Directions';
+
+  @override
+  String get routeProviderGraphhopper => 'GraphHopper';
+
+  @override
+  String get routeProviderValhalla => 'Valhalla';
+
+  @override
+  String get apiKeysTitle => 'API keys';
+
+  @override
+  String get apiKeysIntro =>
+      'Keys are stored encrypted on device and never included in backups.';
+
+  @override
+  String get apiKeySaved => 'API key saved';
+
+  @override
+  String get apiKeyTest => 'Test';
+
+  @override
+  String get apiKeyTestSuccess => 'Connection successful';
+
+  @override
+  String get apiKeyTestFailure => 'Connection failed - check the key';
+
+  @override
+  String get apiKeyGoogleMaps => 'Google Maps SDK';
+
+  @override
+  String get apiKeyGooglePlaces => 'Google Places';
+
+  @override
+  String get apiKeyGoogleDirections => 'Google Directions';
+
+  @override
+  String get apiKeyMapbox => 'Mapbox access token';
+
+  @override
+  String get apiKeyHere => 'HERE API key';
+
+  @override
+  String get apiKeyGraphhopper => 'GraphHopper API key';
+
+  @override
+  String get apiKeyGoogleMapsHint =>
+      'Also add to AndroidManifest for native map';
+
+  @override
+  String get apiKeyGooglePlacesHint => 'Places API key';
+
+  @override
+  String get apiKeyGoogleDirectionsHint => 'Directions API key';
+
+  @override
+  String get apiKeyMapboxHint => 'pk.… token';
+
+  @override
+  String get apiKeyHereHint => 'HERE REST API key';
+
+  @override
+  String get apiKeyGraphhopperHint => 'Optional for higher limits';
+
+  @override
+  String get saveKey => 'Save';
+
+  @override
+  String get mapOfflineSection => 'Offline tiles';
+
+  @override
+  String get mapOfflineCacheSize => 'Cache size';
+
+  @override
+  String get mapOfflineDownload => 'Download sample region';
+
+  @override
+  String get mapOfflineDownloadSubtitle =>
+      'London area, zoom 10–16 (OSM/Mapbox/HERE tiles)';
+
+  @override
+  String get mapOfflineDownloadComplete => 'Offline region downloaded';
+
+  @override
+  String get mapOfflineClearCache => 'Clear offline cache';
+
+  @override
+  String get mapOfflineCacheCleared => 'Offline cache cleared';
+
+  @override
+  String get mapOfflineGoogleUnsupported =>
+      'Offline tiles are not available for Google native map';
+
+  @override
+  String get mapLayerLabel => 'Map layer';
+
+  @override
+  String get mapLayerStandard => 'Standard';
+
+  @override
+  String get mapLayerSatellite => 'Satellite';
+
+  @override
+  String get mapLayerDark => 'Dark';
+
+  @override
+  String get alarmTypeLabel => 'Alarm type';
+
+  @override
+  String get alarmTypeDistance => 'Distance';
+
+  @override
+  String get alarmTypeArrival => 'Arrival (geofence enter)';
+
+  @override
+  String get alarmTypeDeparture => 'Departure (geofence exit)';
+
+  @override
+  String get alarmTypeRadius => 'Radius';
+
+  @override
+  String get alarmTypeEta => 'ETA';
+
+  @override
+  String get alarmTypeSpeed => 'Speed';
+
+  @override
+  String get alarmTypeGeofence => 'Geofence';
+
+  @override
+  String get travelModeLabel => 'Travel mode';
+
+  @override
+  String get travelModeTrain => 'Train';
+
+  @override
+  String get travelModeBus => 'Bus';
+
+  @override
+  String get travelModeMetro => 'Metro';
+
+  @override
+  String get travelModeCar => 'Car';
+
+  @override
+  String get travelModeWalking => 'Walking';
+
+  @override
+  String get travelModeCycling => 'Cycling';
+
+  @override
+  String get travelModeAuto => 'Auto detect';
+
+  @override
+  String get speedThresholdLabel => 'Speed threshold';
+
+  @override
+  String get etaTriggerMinutes => 'Alert when ETA below (minutes)';
+
+  @override
+  String get shareAlarmConfig => 'Share alarm';
+
+  @override
+  String get shareAlarmConfigSuccess => 'Alarm config copied to clipboard';
+
+  @override
+  String get groupTravelTitle => 'Group travel';
+
+  @override
+  String get customRingtone => 'Custom ringtone';
+
+  @override
+  String get pickRingtone => 'Pick ringtone';
+
+  @override
+  String get arabic => 'Arabic';
+
+  @override
+  String get hebrew => 'Hebrew';
+
+  @override
+  String get cloudBackupUpload => 'Upload backup to cloud';
+
+  @override
+  String get cloudBackupUrlHint => 'HTTPS upload URL';
+
+  @override
+  String get cloudBackupSuccess => 'Backup uploaded successfully';
+
+  @override
+  String get cloudBackupFailed => 'Cloud upload failed';
+
+  @override
+  String get importAlarmConfig => 'Alarm config imported';
+
+  @override
+  String get lockScreenInfo => 'Show on lock screen';
+
+  @override
+  String get lockScreenInfoSubtitle =>
+      'Display distance and ETA on lock screen notifications';
+
+  @override
+  String get notifInternetLostTitle => 'Internet connection lost';
+
+  @override
+  String get notifInternetLostBody =>
+      'Route ETA may be unavailable until connection returns';
+
+  @override
+  String get shareAllAlarms => 'Share active alarms';
+
+  @override
+  String get importAlarmBundle => 'Import alarm bundle';
+
+  @override
+  String alarmBundleImported(int count) {
+    return 'Imported $count alarms';
+  }
+
+  @override
+  String get mapLayerTerrain => 'Terrain';
+
+  @override
+  String get mapProviderApple => 'Apple Maps';
+
+  @override
+  String get highContrast => 'High contrast';
+
+  @override
+  String get highContrastSubtitle => 'Increase contrast for readability';
+
+  @override
+  String get voiceSearchHint => 'Speak destination name';
+
+  @override
+  String get tileTapToCancel => 'Tap to cancel alarm';
+
+  @override
+  String get tileTapToCreate => 'Tap to create alarm';
 }

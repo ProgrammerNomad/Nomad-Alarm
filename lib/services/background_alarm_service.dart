@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
 import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
@@ -11,6 +12,7 @@ import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
+import 'package:nomad_alarm/providers/route/osrm_route_provider.dart';
 
 /// Background GPS monitoring via Android foreground service.
 class BackgroundAlarmService {
@@ -38,7 +40,10 @@ class BackgroundAlarmService {
         foregroundServiceNotificationId: 888,
         foregroundServiceTypes: [AndroidForegroundType.location],
       ),
-      iosConfiguration: IosConfiguration(),
+      iosConfiguration: IosConfiguration(
+        autoStart: false,
+        onForeground: backgroundServiceOnStart,
+      ),
     );
     _configured = true;
   }
@@ -114,6 +119,9 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   var currentStatus = AlarmStatus.active;
   DateTime? snoozeSuppressedUntil;
   final evaluator = AlarmEvaluator();
+  final routeProvider = OsrmRouteProvider();
+  DateTime? lastRouteFetchAt;
+  double? cachedRouteEtaMinutes;
   StreamSubscription<Position>? subscription;
   var paused = false;
   var lastDistanceMeters = double.infinity;
@@ -125,7 +133,10 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     subscription = null;
     config = null;
     activeSettings = null;
-    evaluator.tracker.reset();
+    evaluator.reset();
+    routeProvider.dispose();
+    lastRouteFetchAt = null;
+    cachedRouteEtaMinutes = null;
     service.invoke('stopped');
     service.stopSelf();
   }
@@ -149,17 +160,45 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     ).listen((position) => onPosition!(position));
   }
 
+  Future<double?> resolveRouteEta(
+    AlarmMonitorConfig cfg,
+    Position position,
+  ) async {
+    final now = DateTime.now();
+    if (lastRouteFetchAt != null &&
+        now.difference(lastRouteFetchAt!).inSeconds <
+            AlarmConstants.routeEtaRefreshSec &&
+        cachedRouteEtaMinutes != null) {
+      return cachedRouteEtaMinutes;
+    }
+    try {
+      final result = await routeProvider.route(
+        from: LatLng(position.latitude, position.longitude),
+        to: LatLng(cfg.destLatitude, cfg.destLongitude),
+        travelMode: cfg.travelMode,
+      );
+      lastRouteFetchAt = now;
+      cachedRouteEtaMinutes = result?.durationMinutes;
+      return cachedRouteEtaMinutes;
+    } catch (_) {
+      return null;
+    }
+  }
+
   onPosition = (Position position) async {
     final activeConfig = config;
     if (activeConfig == null || paused) {
       return;
     }
 
+    final routeEta = await resolveRouteEta(activeConfig, position);
+
     final state = evaluator.evaluate(
       config: activeConfig,
       position: position,
       currentStatus: currentStatus,
       snoozeSuppressedUntil: snoozeSuppressedUntil,
+      routeEtaMinutes: routeEta,
     );
 
     lastDistanceMeters = state.distanceMeters;
@@ -195,7 +234,9 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     paused = false;
     snoozeSuppressedUntil = null;
     lastDistanceMeters = double.infinity;
-    evaluator.tracker.reset();
+    evaluator.reset();
+    lastRouteFetchAt = null;
+    cachedRouteEtaMinutes = null;
 
     await startGpsStream(config!, lastDistanceMeters);
   });

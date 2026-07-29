@@ -82,7 +82,7 @@ flutter run
 
 ## Tech Stack
 
-Flutter · Riverpod · go_router · Isar · geolocator · MapLibre · OpenStreetMap · Nominatim · OSRM
+Flutter · Riverpod · go_router · Isar · geolocator · flutter_map · OpenStreetMap · Nominatim · OSRM
 
 Package: `com.nomad.alarm`
 

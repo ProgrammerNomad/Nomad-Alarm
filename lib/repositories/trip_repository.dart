@@ -20,6 +20,7 @@ abstract class TripRepository {
   Future<Trip> startTrip(Alarm alarm);
   Future<Trip> endTrip(int tripId, TripOutcome outcome, {TripStats? stats});
   Future<void> updateStats(int tripId, TripStats stats);
+  Future<void> updateRoutePolyline(int tripId, String polyline);
   Future<List<Trip>> getAll({int? limit, int? offset});
   Future<Trip?> getById(int id);
   Future<Trip?> getActiveTrip();
@@ -107,6 +108,18 @@ class TripRepositoryImpl implements TripRepository {
     if (stats.avgSpeedKmh != null) {
       trip.avgSpeedKmh = stats.avgSpeedKmh;
     }
+  }
+
+  @override
+  Future<void> updateRoutePolyline(int tripId, String polyline) async {
+    final trip = await getById(tripId);
+    if (trip == null || trip.endedAt != null) {
+      return;
+    }
+    trip.routePolyline = polyline;
+    await _isar.writeTxn(() async {
+      await _isar.trips.put(trip);
+    });
   }
 
   @override

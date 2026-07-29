@@ -1,12 +1,10 @@
-# Release QA Sign-off (v1.5.2)
+# Release QA Sign-off (v3.1.0)
 
 Manual verification matrix from [TESTING.md](TESTING.md). Run on a **physical Android device** before Play Store submission.
 
-Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
-
 **Device:** _________________________  
 **Android version:** _________________________  
-**App version:** 1.5.2+4  
+**App version:** 3.1.0+7  
 **Tester:** _________________________  
 **Date:** _________________________  
 
@@ -18,11 +16,11 @@ Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
 | Codegen | `dart run build_runner build --delete-conflicting-outputs` | [ ] |
 | L10n | `flutter gen-l10n` | [ ] |
 | Analyze | `flutter analyze` (zero issues) | [ ] |
-| Unit + widget tests | `flutter test` (55+ tests) | [ ] |
+| Unit + widget tests | `flutter test` (95+ tests) | [ ] |
 | Integration smoke | `flutter test integration_test/` | [ ] |
 | Release AAB | `flutter build appbundle --release` | [ ] |
 
-## Manual scenarios
+## Manual scenarios (v1 core)
 
 | # | Scenario | Pass |
 |---|----------|------|
@@ -38,34 +36,27 @@ Build locally per [LOCAL_BUILD.md](LOCAL_BUILD.md) - no CI required.
 | 10 | Offline active alarm (airplane mode) | [ ] |
 | 11 | History + trip logged after completion | [ ] |
 | 12 | Permission revoke / re-grant flows | [ ] |
-| 13 | Settings → Hindi → all tabs + Debug + About localized | [ ] |
-| 14 | Switch Hindi during active alarm → notification actions update | [ ] |
 
-## v1.5.x add-ons
+## v2/v3 add-ons
 
 | # | Scenario | Pass |
 |---|----------|------|
-| 15 | Export backup → share JSON | [ ] |
-| 16 | Import backup on clean install | [ ] |
-| 17 | Small + medium + large widgets show live distance | [ ] |
-| 18 | Widget tap opens active alarm / home | [ ] |
-| 19 | Share Google Maps link → alarm config prefilled | [ ] |
-| 20 | Quick Settings tile shows distance; tap opens active | [ ] |
-| 21 | Save favorite trip; create alarm from trip | [ ] |
-| 22 | Resume alarm after reboot (setting ON) | [ ] |
-| 23 | Reboot with setting OFF → no auto-launch | [ ] |
-
-## Play Store assets
-
-| Item | Path | Pass |
-|------|------|------|
-| 4–8 screenshots | `docs/play-store/screenshots/` | [ ] |
-| Feature graphic 1024×500 | `docs/play-store/feature_graphic.png` | [ ] |
+| 13 | Switch map/search/route providers in Settings | [ ] |
+| 14 | Offline tile download from map viewport | [ ] |
+| 15 | Trip detail shows route polyline map | [ ] |
+| 16 | Extended alarm types (geofence, ETA, speed) | [ ] |
+| 17 | Group travel / family bundle share + import | [ ] |
+| 18 | Lock screen info toggle hides notification details | [ ] |
+| 19 | Internet-lost alert during active alarm | [ ] |
+| 20 | Voice search mic on Search screen | [ ] |
+| 21 | Quick Settings tile: inactive → search, active → cancel | [ ] |
+| 22 | Wear complication shows distance/ETA (optional) | [ ] |
+| 23 | Android Auto navigation template (DHU) | [ ] |
+| 24 | Arabic/Hebrew RTL layout smoke test | [ ] |
+| 25 | iOS background alarm on physical iPhone | [ ] |
 
 ## Sign-off
 
 - [ ] All manual scenarios passed on physical device
-- [ ] Play Store assets captured
-- [ ] Signed AAB uploaded to Play Console (internal track minimum)
 
 **Signed:** _________________________ **Date:** _________________________

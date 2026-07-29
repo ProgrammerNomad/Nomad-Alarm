@@ -15,6 +15,8 @@ class AppSettings {
   @enumerated
   late MapProviderType mapProvider;
   @enumerated
+  late MapLayerType mapLayer;
+  @enumerated
   late SearchProviderType searchProvider;
   @enumerated
   late RouteProviderType routeProvider;
@@ -37,6 +39,7 @@ class AppSettings {
 
   late bool persistentNotificationEnabled;
   late bool lockScreenInfoEnabled;
+  late bool accessibilityHighContrast;
   late bool resumeAlarmAfterBoot;
 
   static AppSettings defaults() {
@@ -45,6 +48,7 @@ class AppSettings {
       ..accentColor = 'blue'
       ..fontFamily = 'roboto'
       ..mapProvider = MapProviderType.osm
+      ..mapLayer = MapLayerType.standard
       ..searchProvider = SearchProviderType.nominatim
       ..routeProvider = RouteProviderType.osrm
       ..useMetric = true
@@ -59,6 +63,7 @@ class AppSettings {
       ..debugLoggingEnabled = false
       ..persistentNotificationEnabled = true
       ..lockScreenInfoEnabled = true
+      ..accessibilityHighContrast = false
       ..resumeAlarmAfterBoot = false;
   }
 }

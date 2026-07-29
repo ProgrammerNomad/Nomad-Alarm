@@ -708,4 +708,296 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get resumeAlarmAfterBootSubtitle =>
       'डिवाइस रीस्टार्ट पर ट्रैकिंग फिर शुरू करें (अधिक बैटरी)';
+
+  @override
+  String get mapsSection => 'मानचित्र और रूट';
+
+  @override
+  String get mapSettingsTitle => 'मानचित्र सेटिंग्स';
+
+  @override
+  String get mapSettingsSubtitle => 'प्रदाता, ऑफ़लाइन टाइल, API कुंजी';
+
+  @override
+  String get mapProvidersSection => 'प्रदाता';
+
+  @override
+  String get mapProviderLabel => 'मानचित्र प्रदाता';
+
+  @override
+  String get searchProviderLabel => 'खोज प्रदाता';
+
+  @override
+  String get routeProviderLabel => 'रूट प्रदाता';
+
+  @override
+  String get mapProviderOsm => 'OpenStreetMap';
+
+  @override
+  String get mapProviderGoogle => 'Google Maps';
+
+  @override
+  String get mapProviderMapbox => 'Mapbox';
+
+  @override
+  String get mapProviderHere => 'HERE';
+
+  @override
+  String get searchProviderNominatim => 'Nominatim (OSM)';
+
+  @override
+  String get searchProviderGooglePlaces => 'Google Places';
+
+  @override
+  String get searchProviderPhoton => 'Photon';
+
+  @override
+  String get searchProviderPelias => 'Pelias';
+
+  @override
+  String get searchProviderHere => 'HERE';
+
+  @override
+  String get routeProviderOsrm => 'OSRM';
+
+  @override
+  String get routeProviderGoogle => 'Google Directions';
+
+  @override
+  String get routeProviderGraphhopper => 'GraphHopper';
+
+  @override
+  String get routeProviderValhalla => 'Valhalla';
+
+  @override
+  String get apiKeysTitle => 'API कुंजी';
+
+  @override
+  String get apiKeysIntro =>
+      'कुंजी एन्क्रिप्टेड रूप में डिवाइस पर संग्रहीत हैं; बैकअप में शामिल नहीं।';
+
+  @override
+  String get apiKeySaved => 'API कुंजी सहेजी गई';
+
+  @override
+  String get apiKeyTest => 'जाँचें';
+
+  @override
+  String get apiKeyTestSuccess => 'कनेक्शन सफल';
+
+  @override
+  String get apiKeyTestFailure => 'कनेक्शन विफल - कुंजी जाँचें';
+
+  @override
+  String get apiKeyGoogleMaps => 'Google Maps SDK';
+
+  @override
+  String get apiKeyGooglePlaces => 'Google Places';
+
+  @override
+  String get apiKeyGoogleDirections => 'Google Directions';
+
+  @override
+  String get apiKeyMapbox => 'Mapbox टोकन';
+
+  @override
+  String get apiKeyHere => 'HERE API कुंजी';
+
+  @override
+  String get apiKeyGraphhopper => 'GraphHopper API कुंजी';
+
+  @override
+  String get apiKeyGoogleMapsHint =>
+      'नेटिव मानचित्र के लिए AndroidManifest में भी जोड़ें';
+
+  @override
+  String get apiKeyGooglePlacesHint => 'Places API कुंजी';
+
+  @override
+  String get apiKeyGoogleDirectionsHint => 'Directions API कुंजी';
+
+  @override
+  String get apiKeyMapboxHint => 'pk.… टोकन';
+
+  @override
+  String get apiKeyHereHint => 'HERE REST API कुंजी';
+
+  @override
+  String get apiKeyGraphhopperHint => 'उच्च सीमा के लिए वैकल्पिक';
+
+  @override
+  String get saveKey => 'सहेजें';
+
+  @override
+  String get mapOfflineSection => 'ऑफ़लाइन टाइल';
+
+  @override
+  String get mapOfflineCacheSize => 'कैश आकार';
+
+  @override
+  String get mapOfflineDownload => 'नमूना क्षेत्र डाउनलोड';
+
+  @override
+  String get mapOfflineDownloadSubtitle => 'लंदन क्षेत्र, ज़ूम 10–16';
+
+  @override
+  String get mapOfflineDownloadComplete => 'ऑफ़लाइन क्षेत्र डाउनलोड हो गया';
+
+  @override
+  String get mapOfflineClearCache => 'ऑफ़लाइन कैश साफ़ करें';
+
+  @override
+  String get mapOfflineCacheCleared => 'ऑफ़लाइन कैश साफ़ हो गया';
+
+  @override
+  String get mapOfflineGoogleUnsupported =>
+      'Google नेटिव मानचित्र के लिए ऑफ़लाइन टाइल उपलब्ध नहीं';
+
+  @override
+  String get mapLayerLabel => 'मानचित्र परत';
+
+  @override
+  String get mapLayerStandard => 'मानक';
+
+  @override
+  String get mapLayerSatellite => 'उपग्रह';
+
+  @override
+  String get mapLayerDark => 'डार्क';
+
+  @override
+  String get alarmTypeLabel => 'अलार्म प्रकार';
+
+  @override
+  String get alarmTypeDistance => 'दूरी';
+
+  @override
+  String get alarmTypeArrival => 'आगमन';
+
+  @override
+  String get alarmTypeDeparture => 'प्रस्थान';
+
+  @override
+  String get alarmTypeRadius => 'त्रिज्या';
+
+  @override
+  String get alarmTypeEta => 'ETA';
+
+  @override
+  String get alarmTypeSpeed => 'गति';
+
+  @override
+  String get alarmTypeGeofence => 'जियोफेंस';
+
+  @override
+  String get travelModeLabel => 'यात्रा मोड';
+
+  @override
+  String get travelModeTrain => 'ट्रेन';
+
+  @override
+  String get travelModeBus => 'बस';
+
+  @override
+  String get travelModeMetro => 'मेट्रो';
+
+  @override
+  String get travelModeCar => 'कार';
+
+  @override
+  String get travelModeWalking => 'पैदल';
+
+  @override
+  String get travelModeCycling => 'साइकिल';
+
+  @override
+  String get travelModeAuto => 'ऑटो';
+
+  @override
+  String get speedThresholdLabel => 'गति सीमा';
+
+  @override
+  String get etaTriggerMinutes => 'ETA सीमा (मिनट)';
+
+  @override
+  String get shareAlarmConfig => 'अलार्म साझा करें';
+
+  @override
+  String get shareAlarmConfigSuccess => 'अलार्म कॉन्फ़िग क्लिपबोर्ड पर';
+
+  @override
+  String get groupTravelTitle => 'समूह यात्रा';
+
+  @override
+  String get customRingtone => 'कस्टम रिंगटोन';
+
+  @override
+  String get pickRingtone => 'रिंगटोन चुनें';
+
+  @override
+  String get arabic => 'अरबी';
+
+  @override
+  String get hebrew => 'हिब्रू';
+
+  @override
+  String get cloudBackupUpload => 'क्लाउड पर बैकअप अपलोड करें';
+
+  @override
+  String get cloudBackupUrlHint => 'HTTPS अपलोड URL';
+
+  @override
+  String get cloudBackupSuccess => 'बैकअप सफलतापूर्वक अपलोड हुआ';
+
+  @override
+  String get cloudBackupFailed => 'क्लाउड अपलोड विफल';
+
+  @override
+  String get importAlarmConfig => 'अलार्म कॉन्फ़िग आयात किया गया';
+
+  @override
+  String get lockScreenInfo => 'लॉक स्क्रीन पर दिखाएँ';
+
+  @override
+  String get lockScreenInfoSubtitle =>
+      'लॉक स्क्रीन सूचना में दूरी और ETA दिखाएँ';
+
+  @override
+  String get notifInternetLostTitle => 'इंटरनेट कनेक्शन खो गया';
+
+  @override
+  String get notifInternetLostBody =>
+      'कनेक्शन वापस आने तक रूट ETA उपलब्ध नहीं हो सकता';
+
+  @override
+  String get shareAllAlarms => 'सक्रिय अलार्म साझा करें';
+
+  @override
+  String get importAlarmBundle => 'अलार्म बंडल आयात करें';
+
+  @override
+  String alarmBundleImported(int count) {
+    return '$count अलार्म आयात किए गए';
+  }
+
+  @override
+  String get mapLayerTerrain => 'भू-आकृति';
+
+  @override
+  String get mapProviderApple => 'Apple Maps';
+
+  @override
+  String get highContrast => 'उच्च कंट्रास्ट';
+
+  @override
+  String get highContrastSubtitle => 'पठनीयता के लिए कंट्रास्ट बढ़ाएँ';
+
+  @override
+  String get voiceSearchHint => 'गंतव्य का नाम बोलें';
+
+  @override
+  String get tileTapToCancel => 'अलार्म रद्द करने के लिए टैप करें';
+
+  @override
+  String get tileTapToCreate => 'अलार्म बनाने के लिए टैप करें';
 }

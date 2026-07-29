@@ -98,6 +98,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
     final widgetRoute = _routeFromWidgetUri(widgetUri);
     if (widgetRoute != null) {
+      if (widgetRoute.startsWith('/tile/cancel/')) {
+        final id = int.tryParse(widgetRoute.split('/').last);
+        if (id != null) {
+          await ref.read(alarmServiceProvider).cancelAlarm(id);
+        }
+        if (!mounted) {
+          return;
+        }
+        context.go('/home');
+        return;
+      }
       context.go(widgetRoute);
       return;
     }

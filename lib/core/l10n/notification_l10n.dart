@@ -25,6 +25,8 @@ class NotificationL10n {
   String get gpsLostBody => _l10n.notifGpsLostBody;
   String get lowBatteryTitle => _l10n.notifLowBatteryTitle;
   String get lowBatteryBody => _l10n.notifLowBatteryBody;
+  String get internetLostTitle => _l10n.notifInternetLostTitle;
+  String get internetLostBody => _l10n.notifInternetLostBody;
   String toDestination(String distance) => _l10n.notifToDestination(distance);
   String get pause => _l10n.pause;
   String get cancel => _l10n.cancel;

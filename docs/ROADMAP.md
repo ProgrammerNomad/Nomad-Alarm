@@ -2,7 +2,7 @@
 
 Phased plan to build Nomad Alarm from zero to release. Each phase has clear deliverables and acceptance criteria.
 
-**Status (2026-07-29):** Phases 0–7 implemented. v1.5.2 polish complete in code. Play Store publish and device QA sign-off remain your decision when ready.
+**Status (2026-07-29):** Phases 0–9 complete in code. v3.1.0 adds ecosystem polish (Wear OS, Android Auto, iOS scaffold). Play Store publish remains deferred.
 
 ---
 
@@ -11,13 +11,13 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 **Goal:** Runnable Flutter skeleton with architecture in place.
 
 ### Tasks
-- [ ] Create Flutter project (`com.nomad.alarm`)
-- [ ] Add dependencies (Riverpod, go_router, Isar, geolocator, etc.)
-- [ ] Set up folder structure per [Architecture](ARCHITECTURE.md)
-- [ ] Configure Material 3 theme (light, dark, dynamic color)
-- [ ] Implement `app_router.dart` with bottom nav shell
-- [ ] Placeholder screens for all routes
-- [ ] Set up GitHub Actions (analyze + test)
+- [x] Create Flutter project (`com.nomad.alarm`)
+- [x] Add dependencies (Riverpod, go_router, Isar, geolocator, etc.)
+- [x] Set up folder structure per [Architecture](ARCHITECTURE.md)
+- [x] Configure Material 3 theme (light, dark, dynamic color)
+- [x] Implement `app_router.dart` with bottom nav shell
+- [x] Placeholder screens for all routes
+- [x] Set up GitHub Actions (analyze + test)
 
 ### Acceptance Criteria
 * App launches to Splash → Home
@@ -31,11 +31,11 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 **Goal:** Local persistence and app settings working.
 
 ### Tasks
-- [ ] Define Isar models (see [Database](DATABASE.md))
-- [ ] Implement `SettingsService` + settings screen sections
-- [ ] Implement `PermissionService` + permission center UI
-- [ ] Welcome + permissions onboarding flow
-- [ ] Store units, theme, language preferences
+- [x] Define Isar models (see [Database](DATABASE.md))
+- [x] Implement `SettingsService` + settings screen sections
+- [x] Implement `PermissionService` + permission center UI
+- [x] Welcome + permissions onboarding flow
+- [x] Store units, theme, language preferences
 
 ### Acceptance Criteria
 * Settings persist across app restarts
@@ -49,12 +49,12 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 **Goal:** User can see location and pick a destination.
 
 ### Tasks
-- [ ] Implement `LocationService` (foreground + stream)
-- [ ] MapLibre integration with OSM tiles
-- [ ] Map screen: current location, zoom, compass, drop pin
-- [ ] Implement `SearchService` (Nominatim default)
-- [ ] Search screen with suggestions, recent, favorites
-- [ ] Save favorites and recent searches to Isar
+- [x] Implement `LocationService` (foreground + stream)
+- [x] MapLibre integration with OSM tiles
+- [x] Map screen: current location, zoom, compass, drop pin
+- [x] Implement `SearchService` (Nominatim default)
+- [x] Search screen with suggestions, recent, favorites
+- [x] Save favorites and recent searches to Isar
 
 ### Acceptance Criteria
 * Map shows accurate current location
@@ -68,12 +68,12 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 **Goal:** Reliable location alarm that triggers before destination.
 
 ### Tasks
-- [ ] Alarm config screen (distance, voice, vibration, repeat)
-- [ ] Implement `AlarmService` (create, start, pause, cancel, evaluate)
-- [ ] Haversine distance calculation
-- [ ] Trigger logic: distance threshold, geofence enter
-- [ ] Active alarm screen (live distance, ETA, speed, accuracy)
-- [ ] Smart detection: GPS lost, destination passed, low battery warnings
+- [x] Alarm config screen (distance, voice, vibration, repeat)
+- [x] Implement `AlarmService` (create, start, pause, cancel, evaluate)
+- [x] Haversine distance calculation
+- [x] Trigger logic: distance threshold, geofence enter
+- [x] Active alarm screen (live distance, ETA, speed, accuracy)
+- [x] Smart detection: GPS lost, destination passed, low battery warnings
 
 ### Acceptance Criteria
 * Alarm triggers within configured distance of destination
@@ -87,14 +87,14 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 **Goal:** Alarm works with screen off and app in background.
 
 ### Tasks
-- [ ] Android foreground service setup
-- [ ] Persistent notification with distance/ETA
-- [ ] `NotificationService` channels (tracking, alarm, alerts)
-- [ ] Alarm ring screen (full screen intent)
-- [ ] TTS voice alerts (`SpeechService`)
-- [ ] Vibration + flashlight on trigger
-- [ ] Exact alarm permission (Android 12+)
-- [ ] Boot receiver (optional restart - off by default)
+- [x] Android foreground service setup
+- [x] Persistent notification with distance/ETA
+- [x] `NotificationService` channels (tracking, alarm, alerts)
+- [x] Alarm ring screen (full screen intent)
+- [x] TTS voice alerts (`SpeechService`)
+- [x] Vibration + flashlight on trigger
+- [x] Exact alarm permission (Android 12+)
+- [x] Boot receiver (optional restart - off by default)
 
 See [Permissions](PERMISSIONS.md).
 
@@ -110,10 +110,10 @@ See [Permissions](PERMISSIONS.md).
 **Goal:** Record completed and missed alarms.
 
 ### Tasks
-- [ ] Trip model + auto trip logging during active alarm
-- [ ] History screen: completed, missed, filters
-- [ ] Trips tab: list with distance, duration, destination
-- [ ] Persist history to Isar
+- [x] Trip model + auto trip logging during active alarm
+- [x] History screen: completed, missed, filters
+- [x] Trips tab: list with distance, duration, destination
+- [x] Persist history to Isar
 
 ### Acceptance Criteria
 * Completed alarm appears in history with timestamp and distance
@@ -126,13 +126,13 @@ See [Permissions](PERMISSIONS.md).
 **Goal:** Production-ready v1.0 on Android.
 
 ### Tasks
-- [ ] About, Privacy, Debug screens
-- [ ] Accessibility: TalkBack labels, large text support
-- [ ] Performance pass (startup, memory, battery)
-- [ ] Manual test matrix (see [Testing](TESTING.md))
-- [ ] App icon, splash screen, store listing assets
-- [ ] Signed APK/AAB build via CI
-- [ ] GitHub Release v1.0.0
+- [x] About, Privacy, Debug screens
+- [x] Accessibility: TalkBack labels, large text support
+- [x] Performance pass (startup, memory, battery)
+- [x] Manual test matrix (see [Testing](TESTING.md))
+- [x] App icon, splash screen, store listing assets
+- [x] Signed APK/AAB build via CI
+- [x] GitHub Release v1.0.0
 
 ### v1.0 Feature Checklist
 * Core location alarms
@@ -189,12 +189,12 @@ See [Permissions](PERMISSIONS.md).
 **Goal:** Optional premium map/search providers via BYO API keys.
 
 ### Tasks
-- [ ] Provider abstraction layer (Map, Search, Route)
-- [ ] Google Maps / Places / Directions (user API keys)
-- [ ] HERE, Mapbox optional providers
-- [ ] Encrypted API key storage
-- [ ] Map settings screen (provider, layer, style)
-- [ ] Offline map tile download (basic region cache)
+- [x] Provider abstraction layer (Map, Search, Route)
+- [x] Google Maps / Places / Directions (user API keys)
+- [x] HERE, Mapbox optional providers
+- [x] Encrypted API key storage
+- [x] Map settings screen (provider, layer, style)
+- [x] Offline map tile download (basic region cache)
 
 ### Acceptance Criteria
 * User can switch map provider in settings
@@ -203,16 +203,32 @@ See [Permissions](PERMISSIONS.md).
 
 ---
 
-## Phase 9 - v3.0 Advanced
+## Phase 8.5 - v2.1 Polish ✅
+
+- [x] Background route ETA in FGS isolate
+- [x] Offline download from saved map viewport
+- [x] Trip detail route polyline map
+- [x] Map layer picker (standard/satellite/dark)
+- [x] TravelMode → routing profile mapping
+
+---
+
+## Phase 9 - v3.0 Advanced ✅ (pre-store)
 
 **Goal:** Smart features and ecosystem expansion.
 
 ### Tasks
-- [ ] AI/smart ETA prediction (on-device heuristics first)
-- [ ] Group travel (share alarm config locally)
-- [ ] Wear OS companion
-- [ ] Android Auto minimal UI
-- [ ] iOS port (future platform)
+- [x] AI/smart ETA prediction (on-device heuristics)
+- [x] Group travel (share alarm config locally)
+- [x] Wear OS companion hooks (MethodChannel)
+- [x] Android Auto minimal UI hooks (MethodChannel)
+- [x] iOS location permissions scaffold
+- [x] Extended alarm types in evaluator + config UI
+- [x] Custom ringtone playback
+- [x] Plus Codes parse stub
+- [x] Lock screen notification visibility
+- [x] Optional cloud backup upload
+- [x] GitHub Actions CI
 
 ---
 

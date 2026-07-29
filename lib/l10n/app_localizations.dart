@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_he.dart';
 import 'app_localizations_hi.dart';
 
 // ignore_for_file: type=lint
@@ -94,7 +96,9 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
     Locale('en'),
+    Locale('he'),
     Locale('hi'),
   ];
 
@@ -1422,6 +1426,576 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Relaunch tracking when the device restarts (uses more battery)'**
   String get resumeAlarmAfterBootSubtitle;
+
+  /// No description provided for @mapsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Maps & routing'**
+  String get mapsSection;
+
+  /// No description provided for @mapSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map settings'**
+  String get mapSettingsTitle;
+
+  /// No description provided for @mapSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Providers, offline tiles, API keys'**
+  String get mapSettingsSubtitle;
+
+  /// No description provided for @mapProvidersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Providers'**
+  String get mapProvidersSection;
+
+  /// No description provided for @mapProviderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Map provider'**
+  String get mapProviderLabel;
+
+  /// No description provided for @searchProviderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search provider'**
+  String get searchProviderLabel;
+
+  /// No description provided for @routeProviderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Route provider'**
+  String get routeProviderLabel;
+
+  /// No description provided for @mapProviderOsm.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenStreetMap'**
+  String get mapProviderOsm;
+
+  /// No description provided for @mapProviderGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps'**
+  String get mapProviderGoogle;
+
+  /// No description provided for @mapProviderMapbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapbox'**
+  String get mapProviderMapbox;
+
+  /// No description provided for @mapProviderHere.
+  ///
+  /// In en, this message translates to:
+  /// **'HERE'**
+  String get mapProviderHere;
+
+  /// No description provided for @searchProviderNominatim.
+  ///
+  /// In en, this message translates to:
+  /// **'Nominatim (OSM)'**
+  String get searchProviderNominatim;
+
+  /// No description provided for @searchProviderGooglePlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Places'**
+  String get searchProviderGooglePlaces;
+
+  /// No description provided for @searchProviderPhoton.
+  ///
+  /// In en, this message translates to:
+  /// **'Photon'**
+  String get searchProviderPhoton;
+
+  /// No description provided for @searchProviderPelias.
+  ///
+  /// In en, this message translates to:
+  /// **'Pelias'**
+  String get searchProviderPelias;
+
+  /// No description provided for @searchProviderHere.
+  ///
+  /// In en, this message translates to:
+  /// **'HERE'**
+  String get searchProviderHere;
+
+  /// No description provided for @routeProviderOsrm.
+  ///
+  /// In en, this message translates to:
+  /// **'OSRM'**
+  String get routeProviderOsrm;
+
+  /// No description provided for @routeProviderGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Directions'**
+  String get routeProviderGoogle;
+
+  /// No description provided for @routeProviderGraphhopper.
+  ///
+  /// In en, this message translates to:
+  /// **'GraphHopper'**
+  String get routeProviderGraphhopper;
+
+  /// No description provided for @routeProviderValhalla.
+  ///
+  /// In en, this message translates to:
+  /// **'Valhalla'**
+  String get routeProviderValhalla;
+
+  /// No description provided for @apiKeysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'API keys'**
+  String get apiKeysTitle;
+
+  /// No description provided for @apiKeysIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Keys are stored encrypted on device and never included in backups.'**
+  String get apiKeysIntro;
+
+  /// No description provided for @apiKeySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'API key saved'**
+  String get apiKeySaved;
+
+  /// No description provided for @apiKeyTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get apiKeyTest;
+
+  /// No description provided for @apiKeyTestSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection successful'**
+  String get apiKeyTestSuccess;
+
+  /// No description provided for @apiKeyTestFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed - check the key'**
+  String get apiKeyTestFailure;
+
+  /// No description provided for @apiKeyGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps SDK'**
+  String get apiKeyGoogleMaps;
+
+  /// No description provided for @apiKeyGooglePlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Places'**
+  String get apiKeyGooglePlaces;
+
+  /// No description provided for @apiKeyGoogleDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Directions'**
+  String get apiKeyGoogleDirections;
+
+  /// No description provided for @apiKeyMapbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapbox access token'**
+  String get apiKeyMapbox;
+
+  /// No description provided for @apiKeyHere.
+  ///
+  /// In en, this message translates to:
+  /// **'HERE API key'**
+  String get apiKeyHere;
+
+  /// No description provided for @apiKeyGraphhopper.
+  ///
+  /// In en, this message translates to:
+  /// **'GraphHopper API key'**
+  String get apiKeyGraphhopper;
+
+  /// No description provided for @apiKeyGoogleMapsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Also add to AndroidManifest for native map'**
+  String get apiKeyGoogleMapsHint;
+
+  /// No description provided for @apiKeyGooglePlacesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Places API key'**
+  String get apiKeyGooglePlacesHint;
+
+  /// No description provided for @apiKeyGoogleDirectionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions API key'**
+  String get apiKeyGoogleDirectionsHint;
+
+  /// No description provided for @apiKeyMapboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'pk.… token'**
+  String get apiKeyMapboxHint;
+
+  /// No description provided for @apiKeyHereHint.
+  ///
+  /// In en, this message translates to:
+  /// **'HERE REST API key'**
+  String get apiKeyHereHint;
+
+  /// No description provided for @apiKeyGraphhopperHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional for higher limits'**
+  String get apiKeyGraphhopperHint;
+
+  /// No description provided for @saveKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveKey;
+
+  /// No description provided for @mapOfflineSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline tiles'**
+  String get mapOfflineSection;
+
+  /// No description provided for @mapOfflineCacheSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache size'**
+  String get mapOfflineCacheSize;
+
+  /// No description provided for @mapOfflineDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download sample region'**
+  String get mapOfflineDownload;
+
+  /// No description provided for @mapOfflineDownloadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'London area, zoom 10–16 (OSM/Mapbox/HERE tiles)'**
+  String get mapOfflineDownloadSubtitle;
+
+  /// No description provided for @mapOfflineDownloadComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline region downloaded'**
+  String get mapOfflineDownloadComplete;
+
+  /// No description provided for @mapOfflineClearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear offline cache'**
+  String get mapOfflineClearCache;
+
+  /// No description provided for @mapOfflineCacheCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline cache cleared'**
+  String get mapOfflineCacheCleared;
+
+  /// No description provided for @mapOfflineGoogleUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline tiles are not available for Google native map'**
+  String get mapOfflineGoogleUnsupported;
+
+  /// No description provided for @mapLayerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Map layer'**
+  String get mapLayerLabel;
+
+  /// No description provided for @mapLayerStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get mapLayerStandard;
+
+  /// No description provided for @mapLayerSatellite.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite'**
+  String get mapLayerSatellite;
+
+  /// No description provided for @mapLayerDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get mapLayerDark;
+
+  /// No description provided for @alarmTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm type'**
+  String get alarmTypeLabel;
+
+  /// No description provided for @alarmTypeDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get alarmTypeDistance;
+
+  /// No description provided for @alarmTypeArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival (geofence enter)'**
+  String get alarmTypeArrival;
+
+  /// No description provided for @alarmTypeDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure (geofence exit)'**
+  String get alarmTypeDeparture;
+
+  /// No description provided for @alarmTypeRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Radius'**
+  String get alarmTypeRadius;
+
+  /// No description provided for @alarmTypeEta.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA'**
+  String get alarmTypeEta;
+
+  /// No description provided for @alarmTypeSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get alarmTypeSpeed;
+
+  /// No description provided for @alarmTypeGeofence.
+  ///
+  /// In en, this message translates to:
+  /// **'Geofence'**
+  String get alarmTypeGeofence;
+
+  /// No description provided for @travelModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel mode'**
+  String get travelModeLabel;
+
+  /// No description provided for @travelModeTrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Train'**
+  String get travelModeTrain;
+
+  /// No description provided for @travelModeBus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bus'**
+  String get travelModeBus;
+
+  /// No description provided for @travelModeMetro.
+  ///
+  /// In en, this message translates to:
+  /// **'Metro'**
+  String get travelModeMetro;
+
+  /// No description provided for @travelModeCar.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get travelModeCar;
+
+  /// No description provided for @travelModeWalking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking'**
+  String get travelModeWalking;
+
+  /// No description provided for @travelModeCycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get travelModeCycling;
+
+  /// No description provided for @travelModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto detect'**
+  String get travelModeAuto;
+
+  /// No description provided for @speedThresholdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed threshold'**
+  String get speedThresholdLabel;
+
+  /// No description provided for @etaTriggerMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert when ETA below (minutes)'**
+  String get etaTriggerMinutes;
+
+  /// No description provided for @shareAlarmConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Share alarm'**
+  String get shareAlarmConfig;
+
+  /// No description provided for @shareAlarmConfigSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm config copied to clipboard'**
+  String get shareAlarmConfigSuccess;
+
+  /// No description provided for @groupTravelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group travel'**
+  String get groupTravelTitle;
+
+  /// No description provided for @customRingtone.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom ringtone'**
+  String get customRingtone;
+
+  /// No description provided for @pickRingtone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick ringtone'**
+  String get pickRingtone;
+
+  /// No description provided for @arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get arabic;
+
+  /// No description provided for @hebrew.
+  ///
+  /// In en, this message translates to:
+  /// **'Hebrew'**
+  String get hebrew;
+
+  /// No description provided for @cloudBackupUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload backup to cloud'**
+  String get cloudBackupUpload;
+
+  /// No description provided for @cloudBackupUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTPS upload URL'**
+  String get cloudBackupUrlHint;
+
+  /// No description provided for @cloudBackupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup uploaded successfully'**
+  String get cloudBackupSuccess;
+
+  /// No description provided for @cloudBackupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud upload failed'**
+  String get cloudBackupFailed;
+
+  /// No description provided for @importAlarmConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm config imported'**
+  String get importAlarmConfig;
+
+  /// No description provided for @lockScreenInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on lock screen'**
+  String get lockScreenInfo;
+
+  /// No description provided for @lockScreenInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display distance and ETA on lock screen notifications'**
+  String get lockScreenInfoSubtitle;
+
+  /// No description provided for @notifInternetLostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet connection lost'**
+  String get notifInternetLostTitle;
+
+  /// No description provided for @notifInternetLostBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Route ETA may be unavailable until connection returns'**
+  String get notifInternetLostBody;
+
+  /// No description provided for @shareAllAlarms.
+  ///
+  /// In en, this message translates to:
+  /// **'Share active alarms'**
+  String get shareAllAlarms;
+
+  /// No description provided for @importAlarmBundle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import alarm bundle'**
+  String get importAlarmBundle;
+
+  /// No description provided for @alarmBundleImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} alarms'**
+  String alarmBundleImported(int count);
+
+  /// No description provided for @mapLayerTerrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Terrain'**
+  String get mapLayerTerrain;
+
+  /// No description provided for @mapProviderApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Maps'**
+  String get mapProviderApple;
+
+  /// No description provided for @highContrast.
+  ///
+  /// In en, this message translates to:
+  /// **'High contrast'**
+  String get highContrast;
+
+  /// No description provided for @highContrastSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase contrast for readability'**
+  String get highContrastSubtitle;
+
+  /// No description provided for @voiceSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak destination name'**
+  String get voiceSearchHint;
+
+  /// No description provided for @tileTapToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to cancel alarm'**
+  String get tileTapToCancel;
+
+  /// No description provided for @tileTapToCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to create alarm'**
+  String get tileTapToCreate;
 }
 
 class _AppLocalizationsDelegate
@@ -1435,7 +2009,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'hi'].contains(locale.languageCode);
+      <String>['ar', 'en', 'he', 'hi'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1444,8 +2018,12 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
+    case 'he':
+      return AppLocalizationsHe();
     case 'hi':
       return AppLocalizationsHi();
   }

@@ -32,10 +32,16 @@ class NomadAlarmApp extends ConsumerWidget {
       error: (_, _) => const Locale('en'),
     );
 
+    final highContrast = settingsAsync.when(
+      data: (settings) => settings.accessibilityHighContrast,
+      loading: () => false,
+      error: (_, _) => false,
+    );
+
     return MaterialApp.router(
       title: AppConstants.appName,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: highContrast ? AppTheme.lightHighContrast() : AppTheme.light(),
+      darkTheme: highContrast ? AppTheme.darkHighContrast() : AppTheme.dark(),
       themeMode: themeMode,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,

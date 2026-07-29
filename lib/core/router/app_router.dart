@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/router/alarm_config_args.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/features/about/presentation/about_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/active_alarm_screen.dart';
@@ -12,6 +13,8 @@ import 'package:nomad_alarm/features/map/presentation/map_screen.dart';
 import 'package:nomad_alarm/features/permission/presentation/permissions_screen.dart';
 import 'package:nomad_alarm/features/privacy/presentation/privacy_screen.dart';
 import 'package:nomad_alarm/features/search/presentation/search_screen.dart';
+import 'package:nomad_alarm/features/settings/presentation/api_keys_screen.dart';
+import 'package:nomad_alarm/features/settings/presentation/map_settings_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/permission_center_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/settings_screen.dart';
 import 'package:nomad_alarm/features/splash/presentation/splash_screen.dart';
@@ -79,6 +82,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PermissionCenterScreen(),
       ),
       GoRoute(
+        path: '/settings/map',
+        builder: (context, state) => const MapSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/api-keys',
+        builder: (context, state) => const ApiKeysScreen(),
+      ),
+      GoRoute(
         path: '/about',
         builder: (context, state) => const AboutScreen(),
       ),
@@ -111,6 +122,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/alarm/new',
         builder: (context, state) {
           final extra = state.extra;
+          if (extra is AlarmConfigArgs) {
+            return AlarmConfigScreen(
+              destination: extra.destination,
+              importedDraft: extra.importedDraft,
+            );
+          }
           return AlarmConfigScreen(
             destination: extra is DestinationArgs ? extra : null,
           );

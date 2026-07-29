@@ -1,11 +1,12 @@
-# Local build (no CI)
+# Local build
 
-Nomad Alarm uses **local builds only**. GitHub Actions workflow was removed.
+Nomad Alarm supports **local builds** on your machine. GitHub Actions runs analyze + unit/widget tests on push/PR; integration and iOS builds are local.
 
 ## Prerequisites
 
 - Flutter SDK (see `pubspec.yaml` SDK constraint)
 - Android SDK / `key.properties` for signed release (see `android/key.properties.example`)
+- macOS + Xcode for iOS device builds (optional)
 
 ## Every build
 
@@ -41,3 +42,16 @@ Outputs:
 ## Before Play Store upload
 
 Complete [RELEASE_QA_SIGNOFF.md](RELEASE_QA_SIGNOFF.md) on a physical device and add screenshots per [play-store/ASSETS_README.md](play-store/ASSETS_README.md).
+
+## iOS (device, no App Store prep)
+
+On macOS with Xcode installed:
+
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter build ios --no-codesign
+open ios/Runner.xcworkspace
+```
+
+In Xcode: select your Team, enable **Background Modes → Location updates**, run on a physical iPhone. Grant **Always** location when prompted during an active alarm. Verify tracking continues 30+ minutes with screen off.

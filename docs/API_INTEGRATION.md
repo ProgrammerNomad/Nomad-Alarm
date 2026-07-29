@@ -8,7 +8,7 @@ Nomad Alarm works **fully offline and free** with open providers. Optional paid 
 
 | Capability | Default (Free) | Optional |
 |------------|----------------|----------|
-| Map tiles | OpenStreetMap via MapLibre | Google Maps, Mapbox, HERE |
+| Map tiles | OpenStreetMap via flutter_map | Google Maps, Mapbox, HERE |
 | Search | Nominatim | Google Places, Photon, Pelias, HERE |
 | Routing/ETA | OSRM | Google Directions, GraphHopper, Valhalla |
 
@@ -18,7 +18,7 @@ Switch providers in **Settings → Maps** without reinstalling.
 
 ## Default Stack (No API Key)
 
-### MapLibre + OpenStreetMap
+### flutter_map + OpenStreetMap
 
 * Vector/raster tiles from OSM tile servers
 * Respect [OSM Tile Usage Policy](https://operations.osmfoundation.org/policies/tiles/)

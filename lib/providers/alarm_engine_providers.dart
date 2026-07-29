@@ -4,6 +4,7 @@ import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/history_trip_providers.dart';
+import 'package:nomad_alarm/providers/map_service_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/alarm_service.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
@@ -44,6 +45,11 @@ final alarmServiceProvider = Provider<AlarmService>((ref) {
     batteryMonitorService: ref.watch(batteryMonitorServiceProvider),
     batteryProfile: settings?.batteryProfile ?? BatteryProfile.balanced,
     languageCode: settings?.languageCode ?? 'en',
+    lockScreenInfoEnabled: settings?.lockScreenInfoEnabled ?? true,
+    routeService: ref.watch(settingsControllerProvider).maybeWhen(
+          data: (_) => ref.watch(routeServiceProvider),
+          orElse: () => null,
+        ),
     onNavigateToAlarm: (alarmId, {isRing = false}) {
       if (isRing) {
         router.go('/alarm/ring/$alarmId');

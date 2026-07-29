@@ -12,6 +12,7 @@ import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_empty_state.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
+import 'package:nomad_alarm/shared/widgets/trip_route_map.dart';
 
 class TripsScreen extends ConsumerWidget {
   const TripsScreen({super.key});
@@ -103,6 +104,14 @@ class TripsScreen extends ConsumerWidget {
                   useMetric: useMetric,
                 ),
               ),
+            if (trip.routePolyline != null) ...[
+              const SizedBox(height: 12),
+              TripRouteMap(
+                destLatitude: trip.destLatitude,
+                destLongitude: trip.destLongitude,
+                routePolyline: trip.routePolyline,
+              ),
+            ],
             if (trip.maxSpeedKmh != null)
               _DetailRow(
                 label: l10n.maxSpeedLabel,
