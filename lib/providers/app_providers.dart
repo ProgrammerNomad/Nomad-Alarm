@@ -46,11 +46,16 @@ final bootstrapProvider = FutureProvider<bool>((ref) async {
   );
   await BootPrefsSync.initialize();
   await BootPrefsSync.syncResumeAfterBoot(settings.resumeAlarmAfterBoot);
+  ref.read(alarmServiceProvider);
+
+  return true;
+});
+
+/// Non-critical init deferred until after splash (widgets, tiles, offline maps).
+final deferredInitProvider = FutureProvider<void>((ref) async {
+  await ref.watch(bootstrapProvider.future);
   await WidgetService.initialize();
   await TileService.initialize();
   await DeepLinkService.initialize();
   await OfflineTileService.initialize();
-  ref.read(alarmServiceProvider);
-
-  return true;
 });

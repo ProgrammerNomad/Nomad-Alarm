@@ -5,6 +5,7 @@ import 'package:nomad_alarm/l10n/app_localizations.dart';
 import 'package:nomad_alarm/core/constants/app_constants.dart';
 import 'package:nomad_alarm/core/router/app_router.dart';
 import 'package:nomad_alarm/models/enums.dart';
+import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/theme/app_theme.dart';
 
@@ -13,6 +14,7 @@ class NomadAlarmApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(deferredInitProvider);
     final router = ref.watch(routerProvider);
     final settingsAsync = ref.watch(appSettingsProvider);
 

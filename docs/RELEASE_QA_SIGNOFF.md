@@ -6,13 +6,13 @@ nav_order: 2
 nav_exclude: true
 permalink: /RELEASE_QA_SIGNOFF/
 ---
-# Release QA Sign-off (v3.1.0)
+# Release QA Sign-off (v3.1.2)
 
 Manual verification matrix from [TESTING.md](TESTING.md). Run on a **physical Android device** before Play Store submission.
 
 **Device:** _________________________  
 **Android version:** _________________________  
-**App version:** 3.1.1+8  
+**App version:** 3.1.2+9  
 **Tester:** _________________________  
 **Date:** _________________________  
 

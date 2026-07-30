@@ -9,6 +9,7 @@ import 'package:nomad_alarm/services/isar_service.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/deep_link_service.dart';
 import 'package:nomad_alarm/services/widget_service.dart';
+import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_logo.dart';
 import 'package:nomad_alarm/theme/app_colors.dart';
 
@@ -126,13 +127,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) {
       return;
     }
+    if (running.isNotEmpty &&
+        !await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
+      await ref.read(alarmServiceProvider).suspendActiveAlarmsIfLocationDenied();
+      if (!mounted) {
+        return;
+      }
+      context.go('/permissions');
+      return;
+    }
     if (running.isNotEmpty) {
+      if (!mounted) {
+        return;
+      }
       final alarm = running.first;
       if (alarm.status == AlarmStatus.triggered) {
         context.go('/alarm/ring/${alarm.id}');
       } else {
         context.go('/alarm/active/${alarm.id}');
       }
+      return;
+    }
+    if (!mounted) {
       return;
     }
     context.go('/home');

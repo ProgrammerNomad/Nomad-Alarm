@@ -10,6 +10,13 @@ permalink: /PLAY_PREP/
 
 Complete these steps once [GitHub Pages](https://programmernomad.github.io/Nomad-Alarm/) is live.
 
+## Code ready (v3.1.2)
+
+- [x] Docs site live (privacy, terms, data safety)
+- [x] FGS permission gating + safe alarm resume
+- [x] `flutter analyze` clean, 96 tests pass locally
+- [ ] **Your turn:** manual QA on physical device ([QA Sign-off]({{ '/RELEASE_QA_SIGNOFF/' | relative_url }}))
+
 ## Enable GitHub Pages
 
 1. Repository **Settings → Pages**

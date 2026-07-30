@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
+import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:nomad_alarm/services/background_alarm_service.dart';
 
 class ActiveAlarmScreen extends ConsumerStatefulWidget {
   const ActiveAlarmScreen({
@@ -35,7 +37,23 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
     }
     if (alarm.status == AlarmStatus.active &&
         ref.read(alarmServiceProvider).activeAlarmId != widget.alarmId) {
-      await ref.read(alarmServiceProvider).startAlarm(widget.alarmId);
+      if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
+        await ref.read(alarmServiceProvider).suspendActiveAlarmsIfLocationDenied();
+        if (mounted) {
+          context.go('/permissions');
+        }
+        return;
+      }
+      try {
+        await ref.read(alarmServiceProvider).startAlarm(widget.alarmId);
+      } on PermissionException catch (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.userMessage)),
+          );
+          context.go('/permissions');
+        }
+      }
     }
   }
 

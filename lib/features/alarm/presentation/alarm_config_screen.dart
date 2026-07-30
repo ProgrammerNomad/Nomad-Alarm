@@ -217,7 +217,8 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 DropdownButtonFormField<AlarmType>(
-                  value: _alarmType,
+                  key: ValueKey(_alarmType),
+                  initialValue: _alarmType,
                   decoration: const InputDecoration(border: OutlineInputBorder()),
                   items: AlarmType.values
                       .map(
@@ -239,7 +240,8 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 DropdownButtonFormField<TravelMode>(
-                  value: _travelMode,
+                  key: ValueKey(_travelMode),
+                  initialValue: _travelMode,
                   decoration: const InputDecoration(border: OutlineInputBorder()),
                   items: TravelMode.values
                       .map(

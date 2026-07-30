@@ -181,7 +181,7 @@ Use Android Battery Historian or Settings → Battery → App usage.
 
 GitHub Actions deploys the docs site only (`.github/workflows/pages.yml`) on `docs/**` changes.
 
-Flutter checks (`flutter gen-l10n`, `flutter analyze`, `flutter test`) run **locally** before release — see [Local Build](LOCAL_BUILD.md) and [QA Sign-off](RELEASE_QA_SIGNOFF.md). Integration tests also run locally (`flutter test integration_test/`).
+Flutter checks (`flutter gen-l10n`, `flutter analyze`, `flutter test`) run **locally** before release - see [Local Build](LOCAL_BUILD.md) and [QA Sign-off](RELEASE_QA_SIGNOFF.md). Integration tests also run locally (`flutter test integration_test/`).
 
 ---
 

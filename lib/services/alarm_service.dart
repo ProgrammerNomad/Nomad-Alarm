@@ -23,6 +23,7 @@ import 'package:nomad_alarm/services/ringtone_service.dart';
 import 'package:nomad_alarm/services/route_service.dart';
 import 'package:nomad_alarm/services/speech_service.dart';
 import 'package:nomad_alarm/services/widget_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 typedef AlarmTriggerHandler = void Function(int alarmId, {bool isRing});
 
@@ -149,6 +150,27 @@ class AlarmService {
 
   int? get activeAlarmId => _session?.alarmId;
 
+  /// Pauses active alarms in the database when location permission was revoked.
+  Future<void> suspendActiveAlarmsIfLocationDenied() async {
+    if (await Permission.locationWhenInUse.isGranted) {
+      return;
+    }
+    final running = await _alarmRepository.getRunning();
+    for (final alarm in running) {
+      if (alarm.status == AlarmStatus.active) {
+        alarm.status = AlarmStatus.paused;
+        alarm.updatedAt = DateTime.now();
+        await _alarmRepository.update(alarm);
+      }
+    }
+    if (await BackgroundAlarmService.isRunning()) {
+      await BackgroundAlarmService.stopMonitoring();
+    }
+    if (_session != null) {
+      await _disposeSession();
+    }
+  }
+
   void bindBackgroundEvents() {
     if (_eventsBound) {
       return;
@@ -190,6 +212,12 @@ class AlarmService {
 
   Future<void> startAlarm(int alarmId) async {
     bindBackgroundEvents();
+
+    if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
+      throw const PermissionException(
+        'Location permission is required to start an alarm.',
+      );
+    }
 
     final alarm = await _alarmRepository.getById(alarmId);
     if (alarm == null) {
@@ -246,6 +274,12 @@ class AlarmService {
   }
 
   Future<void> resumeAlarm(int alarmId) async {
+    if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
+      throw const PermissionException(
+        'Location permission is required to resume an alarm.',
+      );
+    }
+
     final alarm = await _alarmRepository.getById(alarmId);
     if (alarm == null) {
       return;

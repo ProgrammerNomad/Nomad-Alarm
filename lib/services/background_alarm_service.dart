@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
+import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
@@ -13,6 +14,7 @@ import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/route/osrm_route_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Background GPS monitoring via Android foreground service.
 class BackgroundAlarmService {
@@ -59,11 +61,28 @@ class BackgroundAlarmService {
     }
   }
 
+  static Future<bool> hasLocationPermissionForForegroundService() async {
+    return Permission.locationWhenInUse.isGranted;
+  }
+
   static Future<void> startMonitoring(AlarmMonitorConfig config) async {
+    if (!await hasLocationPermissionForForegroundService()) {
+      throw const PermissionException(
+        'Location permission is required to track your alarm.',
+      );
+    }
+
     await ensureConfigured(languageCode: _languageCode);
     final service = FlutterBackgroundService();
     if (!await service.isRunning()) {
-      await service.startService();
+      try {
+        await service.startService();
+      } catch (error) {
+        throw PermissionException(
+          'Could not start background tracking. Check location permissions.',
+          debugMessage: error.toString(),
+        );
+      }
     }
     service.invoke('start', config.toJson());
   }
@@ -79,6 +98,11 @@ class BackgroundAlarmService {
   }
 
   static Future<void> resumeMonitoring(AlarmMonitorConfig config) async {
+    if (!await hasLocationPermissionForForegroundService()) {
+      throw const PermissionException(
+        'Location permission is required to resume tracking.',
+      );
+    }
     FlutterBackgroundService().invoke('resume', config.toJson());
   }
 

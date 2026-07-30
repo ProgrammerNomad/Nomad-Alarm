@@ -9,7 +9,7 @@ permalink: /ROADMAP/
 
 Phased plan to build Nomad Alarm from zero to release. Each phase has clear deliverables and acceptance criteria.
 
-**Status (2026-07-30):** Phases 0–9 complete in code. v3.1.0 adds ecosystem polish (Wear OS, Android Auto, iOS scaffold). Phase 10 (docs site + Play Store) in progress.
+**Status (2026-07-30):** Phases 0–9 complete in code. v3.1.2 adds launch stability fixes. Phase 10 (docs site live + Play Store submission) in progress.
 
 ---
 
@@ -24,7 +24,7 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 - [x] Configure Material 3 theme (light, dark, dynamic color)
 - [x] Implement `app_router.dart` with bottom nav shell
 - [x] Placeholder screens for all routes
-- [x] Set up GitHub Actions (analyze + test)
+- [x] Set up GitHub Actions (docs site deploy only; Flutter checks local)
 
 ### Acceptance Criteria
 * App launches to Splash → Home
@@ -261,12 +261,13 @@ See [Permissions](PERMISSIONS.md).
 **Goal:** Public documentation site and Google Play submission.
 
 ### Tasks
-- [x] Jekyll + GitHub Pages site (`docs/` - privacy, terms, data safety)
-- [x] Sync developer docs to v3.1.0+7
-- [ ] Complete manual QA sign-off ([RELEASE_QA_SIGNOFF](RELEASE_QA_SIGNOFF.md))
-- [ ] Store screenshots + feature graphic
+- [x] Jekyll + GitHub Pages site (`docs/` - privacy, terms, data safety) - live at [programmernomad.github.io/Nomad-Alarm](https://programmernomad.github.io/Nomad-Alarm/)
+- [x] Sync developer docs to v3.1.2
+- [x] Launch crash fix: FGS permission gating + deferred bootstrap (v3.1.2)
+- [ ] Complete manual QA sign-off ([RELEASE_QA_SIGNOFF](RELEASE_QA_SIGNOFF.md)) - **on physical device**
+- [ ] Store screenshots + feature graphic - see [Store Assets](play-store/ASSETS_README/)
 - [ ] Background location demo video for Play Console
-- [ ] Signed AAB + internal testing track
+- [ ] Signed AAB + internal testing track - see [Local Build](LOCAL_BUILD.md)
 
 ---
 

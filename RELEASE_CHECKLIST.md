@@ -41,7 +41,7 @@ See [Versioning](VERSIONING.md) and [Play Store](docs/PLAY_STORE.md).
 
 ## Build
 
-Local builds - see [docs/LOCAL_BUILD.md](docs/LOCAL_BUILD.md). CI runs analyze + test; docs deploy via GitHub Actions (`pages.yml`).
+Local builds - see [docs/LOCAL_BUILD.md](docs/LOCAL_BUILD.md). Docs deploy via GitHub Actions (`pages.yml`). Flutter analyze and tests run locally before release.
 
 - [ ] AAB builds successfully
 - [ ] APK builds successfully (for GitHub Release)

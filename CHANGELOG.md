@@ -10,6 +10,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [3.1.2] - 2026-07-30
+
+### Fixed
+* Gate location foreground service on runtime permission (prevents launch crash when resuming stale alarms)
+* Suspend active alarms and redirect to permissions when location is revoked
+* Defer widget, tile, and offline-map init off splash critical path (reduces emulator ANR)
+* `DropdownButtonFormField` deprecations in alarm config screen
+
+### Changed
+* Removed Flutter CI workflow; docs deploy via GitHub Pages only
+* Developer docs: local-only analyze/test, Windows cross-drive Kotlin cache notes
+* Version bumped to 3.1.2+9
+
+---
+
 ## [3.1.1] - 2026-07-30
 
 ### Added

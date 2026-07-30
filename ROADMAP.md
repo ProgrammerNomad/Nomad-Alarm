@@ -70,7 +70,22 @@ High-level release timeline for Nomad Alarm. For the full phased implementation 
 * Arabic and Hebrew full UI
 * Jekyll docs site + Play Console legal pages
 
-**Next:** Play Store submission - see [docs/PLAY_PREP.md](docs/PLAY_PREP.md)
+**Next:** Play Store submission - see [docs/PLAY_PREP.md](docs/PLAY_PREP.md). Docs site live; v3.1.2 fixes launch/FGS permission crash.
+
+---
+
+## v4+ backlog (post-launch)
+
+Prioritize based on user feedback after Play Store release:
+
+1. **iOS App Store** - background location alarm parity (scaffold exists)
+2. **Full Wear OS app** - interactive watch UI beyond complication
+3. **Google Drive backup** - OAuth scope beyond optional HTTPS upload
+4. **Live Activities (iOS)** - lock screen / Dynamic Island ETA
+5. **Color blind mode** - accessibility theme extension
+6. **Emergency shortcut** - ring screen call/contact
+
+See [docs/MASTER_BLUEPRINT.md](docs/MASTER_BLUEPRINT.md) "Still future".
 
 ---
 

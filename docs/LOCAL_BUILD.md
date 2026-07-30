@@ -76,3 +76,23 @@ bundle exec jekyll serve --baseurl "" --livereload
 ```
 
 Open http://localhost:4000 - legal pages at `/privacy-policy/`, `/terms/`, etc.
+
+## Windows troubleshooting
+
+### Kotlin "different roots" cache warnings (C: vs D:)
+
+If the project is on `D:` but Pub cache is on `C:`, Gradle may log Kotlin incremental cache errors. The APK often still builds. Fixes:
+
+1. Move the repo to the same drive as `%LOCALAPPDATA%\Pub\Cache`, **or**
+2. Set `PUB_CACHE=D:\pub-cache` and run `flutter pub get`, **or**
+3. `flutter clean`, `cd android && .\gradlew --stop`, rebuild
+
+Optional: add `kotlin.incremental=false` to `android/gradle.properties` for slower but quieter builds.
+
+### Emulator install storage
+
+`INSTALL_FAILED_INSUFFICIENT_STORAGE` - wipe emulator data or uninstall old APK builds.
+
+### Launch crash after reinstall
+
+If the app crashes on splash with FGS SecurityException, clear app storage (stale running alarm + missing runtime location). Fixed in v3.1.2+ by permission gating - pull latest and retest.
