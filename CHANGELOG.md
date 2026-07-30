@@ -10,6 +10,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [3.1.1] - 2026-07-30
+
+### Added
+* Jekyll documentation site (GitHub Pages) with privacy policy, terms, data safety, open-source pages
+* Play prep checklist (`docs/PLAY_PREP.md`)
+
+### Changed
+* Developer docs synced to v3.1.0+7 code reality
+* In-app privacy policy URL points to GitHub Pages (`programmernomad.github.io/Nomad-Alarm/privacy-policy/`)
+* Version bumped to 3.1.1+8
+
+---
+
 ## [3.1.0] - 2026-07-29
 
 ### Added
@@ -52,9 +65,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.0.0] - 2026-07-28
+
 ### Added
-* **Multi-provider maps** - OSM (default), Google Maps native, Mapbox, HERE via Settings → Map
-* **Multi-provider search** - Nominatim (default), Google Places, Photon, Pelias, HERE with offline fallback to recents/favorites
+* **Multi-provider maps** - OSM (default), Google Maps native, Mapbox, HERE via Settings → Map - Nominatim (default), Google Places, Photon, Pelias, HERE with offline fallback to recents/favorites
 * **Route service** - OSRM (default), Google Directions, GraphHopper, Valhalla; optional route-based ETA when online
 * **BYO API keys** - encrypted storage (`flutter_secure_storage`); Settings → API Keys with test connection
 * **Offline map tiles** - region download and cache clear via `flutter_map_tile_caching`
@@ -160,7 +174,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v3.1.0...v3.1.1
+[3.1.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v2.0.0...v3.0.0
+[2.0.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.2...v2.0.0
 [1.5.2]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ProgrammerNomad/Nomad-Alarm/compare/v1.0.0...v1.5.0

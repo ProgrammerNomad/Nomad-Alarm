@@ -1,3 +1,10 @@
+---
+layout: default
+title: Design System
+parent: Design
+nav_order: 1
+permalink: /DESIGN_SYSTEM/
+---
 # Design System
 
 Material 3 design specification for Nomad Alarm. All UI must follow these tokens for consistency across screens, widgets, and notifications.

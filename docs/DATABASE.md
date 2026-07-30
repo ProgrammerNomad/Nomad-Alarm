@@ -1,3 +1,10 @@
+---
+layout: default
+title: Database
+parent: Developer
+nav_order: 15
+permalink: /DATABASE/
+---
 # Database Schema
 
 Nomad Alarm uses **Isar** as the local database. All data stays on device.
@@ -216,6 +223,9 @@ class AppSettings {
   // Notifications
   late bool persistentNotificationEnabled;
   late bool lockScreenInfoEnabled;
+
+  // Accessibility (v3.1)
+  late bool accessibilityHighContrast;
 }
 ```
 

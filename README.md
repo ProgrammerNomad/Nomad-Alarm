@@ -1,5 +1,8 @@
 # Nomad Alarm
 
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://programmernomad.github.io/Nomad-Alarm/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 > A privacy-first location alarm that wakes you before reaching your destination.
 
 Nomad Alarm is a free, open-source, offline-first Flutter app for commuters and travelers. Set a destination, choose how far before arrival you want to be alerted, and the app monitors GPS in the background - even with the screen off - so you never miss your stop.
@@ -10,7 +13,9 @@ Nomad Alarm is a free, open-source, offline-first Flutter app for commuters and 
 
 ## Documentation
 
-**Start here:** [docs/README.md](docs/README.md) (recommended reading order)
+**Public site:** [programmernomad.github.io/Nomad-Alarm](https://programmernomad.github.io/Nomad-Alarm/) - privacy policy, terms, developer docs
+
+**Developer index:** [docs/README.md](docs/README.md) (recommended reading order)
 
 ### Core
 

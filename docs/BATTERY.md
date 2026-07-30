@@ -1,3 +1,10 @@
+---
+layout: default
+title: Battery
+parent: Reference
+nav_order: 5
+permalink: /BATTERY/
+---
 # Battery Strategy
 
 How Nomad Alarm balances **reliable alarms** with **battery efficiency**.

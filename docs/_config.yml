@@ -1,0 +1,38 @@
+title: Nomad Alarm
+description: Privacy-first open-source location alarm for commuters and travelers.
+url: https://programmernomad.github.io
+baseurl: /Nomad-Alarm
+
+remote_theme: just-the-docs/just-the-docs@v0.10.0
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-feed
+
+color_scheme: light
+
+search_enabled: true
+heading_anchors: true
+
+aux_links:
+  GitHub:
+    - https://github.com/ProgrammerNomad/Nomad-Alarm
+  Play Store:
+    - "#"
+
+footer_content: "Nomad Alarm is free and open source under the MIT License."
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - play-store/screenshots
+  - README.md
+  - _add_front_matter.ps1
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Screens
+parent: Developer
+nav_order: 17
+permalink: /SCREENS/
+---
 # Screen Specifications
 
 Detailed UI specs for every screen in Nomad Alarm.
@@ -87,7 +94,7 @@ Each step: icon, plain-language explanation, Grant / Skip / Open Settings.
 | Element | Behavior |
 |---------|----------|
 | Search field | Autofocus, debounce 300 ms |
-| Voice button | Platform speech-to-text (future v1.5) |
+| Voice button | `speech_to_text` mic when `FeatureFlags.voiceSearch` (v3.1) |
 | Suggestions | Live results from SearchService |
 | Recent | Below suggestions when query empty |
 | Favorites | Quick pick section |

@@ -1,10 +1,18 @@
+---
+layout: default
+title: QA Sign-off
+parent: Release
+nav_order: 2
+nav_exclude: true
+permalink: /RELEASE_QA_SIGNOFF/
+---
 # Release QA Sign-off (v3.1.0)
 
 Manual verification matrix from [TESTING.md](TESTING.md). Run on a **physical Android device** before Play Store submission.
 
 **Device:** _________________________  
 **Android version:** _________________________  
-**App version:** 3.1.0+7  
+**App version:** 3.1.1+8  
 **Tester:** _________________________  
 **Date:** _________________________  
 
@@ -16,7 +24,7 @@ Manual verification matrix from [TESTING.md](TESTING.md). Run on a **physical An
 | Codegen | `dart run build_runner build --delete-conflicting-outputs` | [ ] |
 | L10n | `flutter gen-l10n` | [ ] |
 | Analyze | `flutter analyze` (zero issues) | [ ] |
-| Unit + widget tests | `flutter test` (95+ tests) | [ ] |
+| Unit + widget tests | `flutter test` (96+ tests) | [ ] |
 | Integration smoke | `flutter test integration_test/` | [ ] |
 | Release AAB | `flutter build appbundle --release` | [ ] |
 

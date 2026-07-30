@@ -27,12 +27,21 @@ See [Versioning](VERSIONING.md) and [Play Store](docs/PLAY_STORE.md).
 - [ ] Version bumped in `pubspec.yaml`
 - [ ] [ROADMAP.md](ROADMAP.md) milestones marked if applicable
 - [ ] New features documented in relevant `docs/` files
+- [ ] GitHub Pages site updated (push to `main` triggers `pages.yml`)
+
+### Hosted policy URLs (Play Store)
+
+| Page | URL |
+|------|-----|
+| Privacy | https://programmernomad.github.io/Nomad-Alarm/privacy-policy/ |
+| Terms | https://programmernomad.github.io/Nomad-Alarm/terms/ |
+| Data safety | https://programmernomad.github.io/Nomad-Alarm/data-safety/ |
 
 ---
 
 ## Build
 
-Local builds only - see [docs/LOCAL_BUILD.md](docs/LOCAL_BUILD.md). No GitHub Actions required.
+Local builds - see [docs/LOCAL_BUILD.md](docs/LOCAL_BUILD.md). CI runs analyze + test; docs deploy via GitHub Actions (`pages.yml`).
 
 - [ ] AAB builds successfully
 - [ ] APK builds successfully (for GitHub Release)

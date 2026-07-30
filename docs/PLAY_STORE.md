@@ -1,6 +1,26 @@
+---
+layout: default
+title: Play Store
+parent: Release
+nav_order: 1
+permalink: /PLAY_STORE/
+---
 # Play Store Checklist
 
-Google Play submission requirements for Nomad Alarm v1.0.
+Google Play submission requirements for Nomad Alarm v3.1.
+
+**Public docs site:** [programmernomad.github.io/Nomad-Alarm](https://programmernomad.github.io/Nomad-Alarm/)
+
+---
+
+## Hosted URLs (Play Console)
+
+| Field | URL |
+|-------|-----|
+| Privacy policy | https://programmernomad.github.io/Nomad-Alarm/privacy-policy/ |
+| Terms of service | https://programmernomad.github.io/Nomad-Alarm/terms/ |
+| Data safety reference | https://programmernomad.github.io/Nomad-Alarm/data-safety/ |
+| Open source | https://programmernomad.github.io/Nomad-Alarm/open-source/ |
 
 ---
 
@@ -16,8 +36,10 @@ Google Play submission requirements for Nomad Alarm v1.0.
 - [ ] APK size < 30 MB
 
 ### Legal & Policy
-- [ ] [Privacy Policy URL](../SECURITY.md) hosted publicly (GitHub Pages or site)
-- [ ] MIT [LICENSE](../LICENSE) included
+- [ ] [Privacy Policy](https://programmernomad.github.io/Nomad-Alarm/privacy-policy/) live on GitHub Pages
+- [ ] [Terms of Service](https://programmernomad.github.io/Nomad-Alarm/terms/) live on GitHub Pages
+- [ ] [Data Safety](https://programmernomad.github.io/Nomad-Alarm/data-safety/) page matches Play Console form
+- [ ] MIT [LICENSE](https://github.com/ProgrammerNomad/Nomad-Alarm/blob/main/LICENSE) included
 - [ ] Open source dependencies licenses in About screen
 - [ ] No ads SDK
 - [ ] No analytics SDK
@@ -207,5 +229,5 @@ flutter build appbundle --release
 
 * [Permissions](PERMISSIONS.md)
 * [Release Checklist](../RELEASE_CHECKLIST.md)
-* [Privacy](../SECURITY.md)
+* [Privacy Policy](https://programmernomad.github.io/Nomad-Alarm/privacy-policy/)
 * [Assets](ASSETS.md)

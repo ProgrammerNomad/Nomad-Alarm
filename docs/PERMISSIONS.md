@@ -1,3 +1,10 @@
+---
+layout: default
+title: Permissions
+parent: Developer
+nav_order: 18
+permalink: /PERMISSIONS/
+---
 # Permissions & Android Configuration
 
 Complete guide for Android permissions, foreground service, and manifest setup.

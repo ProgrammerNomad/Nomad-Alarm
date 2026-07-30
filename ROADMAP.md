@@ -10,7 +10,7 @@ High-level release timeline for Nomad Alarm. For the full phased implementation 
 
 **Includes:**
 * Distance-based location alarms
-* Map with OpenStreetMap (MapLibre)
+* Map with OpenStreetMap (flutter_map)
 * Place search (Nominatim)
 * Background GPS tracking (foreground service)
 * Persistent notification with live distance
@@ -48,19 +48,29 @@ High-level release timeline for Nomad Alarm. For the full phased implementation 
 * HERE and Mapbox optional support
 * Map settings screen
 * Basic offline tile caching
-* Wear OS exploration
+* Wear OS complication (bundled module)
 
 ---
 
-## v3.0 - Smart & Social
+## v3.0 - Smart & Social (shipped)
 
 **Includes:**
 * On-device smart ETA improvements
 * Group travel (local alarm sharing)
-* Family sharing (optional)
-* Android Auto
-* Advanced automation rules
-* iOS port planning
+* Extended alarm types, custom ringtone, cloud backup upload
+
+---
+
+## v3.1 - Ecosystem & docs (shipped)
+
+**Includes:**
+* Wear OS complication module + Data Layer
+* Android Auto read-only navigation template
+* Voice search, family alarm bundles, high contrast theme
+* Arabic and Hebrew full UI
+* Jekyll docs site + Play Console legal pages
+
+**Next:** Play Store submission - see [docs/PLAY_PREP.md](docs/PLAY_PREP.md)
 
 ---
 

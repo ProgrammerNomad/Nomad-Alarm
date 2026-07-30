@@ -1,3 +1,10 @@
+---
+layout: default
+title: User Flows
+parent: Design
+nav_order: 2
+permalink: /USER_FLOWS/
+---
 # User Flows
 
 End-to-end UX flows for Nomad Alarm. Use with [Screens](SCREENS.md) and [Design System](DESIGN_SYSTEM.md).

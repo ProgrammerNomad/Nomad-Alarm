@@ -1,3 +1,10 @@
+---
+layout: default
+title: Local Build
+parent: Developer
+nav_order: 20
+permalink: /LOCAL_BUILD/
+---
 # Local build
 
 Nomad Alarm supports **local builds** on your machine. GitHub Actions runs analyze + unit/widget tests on push/PR; integration and iOS builds are local.
@@ -55,3 +62,17 @@ open ios/Runner.xcworkspace
 ```
 
 In Xcode: select your Team, enable **Background Modes → Location updates**, run on a physical iPhone. Grant **Always** location when prompted during an active alarm. Verify tracking continues 30+ minutes with screen off.
+
+## Documentation site (Jekyll)
+
+Public site deploys to GitHub Pages on push to `main` when `docs/**` changes.
+
+Local preview:
+
+```powershell
+cd docs
+bundle install
+bundle exec jekyll serve --baseurl "" --livereload
+```
+
+Open http://localhost:4000 - legal pages at `/privacy-policy/`, `/terms/`, etc.

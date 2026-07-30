@@ -1,8 +1,15 @@
+---
+layout: default
+title: Roadmap
+parent: Developer
+nav_order: 14
+permalink: /ROADMAP/
+---
 # Implementation Roadmap
 
 Phased plan to build Nomad Alarm from zero to release. Each phase has clear deliverables and acceptance criteria.
 
-**Status (2026-07-29):** Phases 0–9 complete in code. v3.1.0 adds ecosystem polish (Wear OS, Android Auto, iOS scaffold). Play Store publish remains deferred.
+**Status (2026-07-30):** Phases 0–9 complete in code. v3.1.0 adds ecosystem polish (Wear OS, Android Auto, iOS scaffold). Phase 10 (docs site + Play Store) in progress.
 
 ---
 
@@ -50,7 +57,7 @@ Phased plan to build Nomad Alarm from zero to release. Each phase has clear deli
 
 ### Tasks
 - [x] Implement `LocationService` (foreground + stream)
-- [x] MapLibre integration with OSM tiles
+- [x] flutter_map integration with OSM tiles
 - [x] Map screen: current location, zoom, compass, drop pin
 - [x] Implement `SearchService` (Nominatim default)
 - [x] Search screen with suggestions, recent, favorites
@@ -180,7 +187,7 @@ See [Permissions](PERMISSIONS.md).
 * Hindi toggles Debug and About version line ✅
 * Language change updates notification actions mid-session ✅
 * Boot resume opt-in relaunches app after reboot ✅
-* 55+ automated tests ✅
+* 96+ automated tests ✅
 
 ---
 
@@ -220,8 +227,8 @@ See [Permissions](PERMISSIONS.md).
 ### Tasks
 - [x] AI/smart ETA prediction (on-device heuristics)
 - [x] Group travel (share alarm config locally)
-- [x] Wear OS companion hooks (MethodChannel)
-- [x] Android Auto minimal UI hooks (MethodChannel)
+- [x] Wear OS bundled complication module + Data Layer sync
+- [x] Android Auto Car App (`NavigationTemplate` read-only)
 - [x] iOS location permissions scaffold
 - [x] Extended alarm types in evaluator + config UI
 - [x] Custom ringtone playback
@@ -245,7 +252,21 @@ See [Permissions](PERMISSIONS.md).
 | P2 | Backup/restore | v1.5 |
 | P3 | Google Maps BYO | v2.0 |
 | P3 | Offline maps | v2.0 |
-| P4 | Wear OS, group travel | v3.0 |
+| P4 | Wear OS complication, group travel | v3.0–v3.1 |
+
+---
+
+## Phase 10 - Play Store & docs site (in progress)
+
+**Goal:** Public documentation site and Google Play submission.
+
+### Tasks
+- [x] Jekyll + GitHub Pages site (`docs/` - privacy, terms, data safety)
+- [x] Sync developer docs to v3.1.0+7
+- [ ] Complete manual QA sign-off ([RELEASE_QA_SIGNOFF](RELEASE_QA_SIGNOFF.md))
+- [ ] Store screenshots + feature graphic
+- [ ] Background location demo video for Play Console
+- [ ] Signed AAB + internal testing track
 
 ---
 

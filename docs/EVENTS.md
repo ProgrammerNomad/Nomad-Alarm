@@ -1,3 +1,10 @@
+---
+layout: default
+title: Events
+parent: Reference
+nav_order: 4
+permalink: /EVENTS/
+---
 # Internal Events
 
 Local-only event logging for debugging and development. **Nothing is uploaded.** No Google Analytics, Firebase, or third-party telemetry.

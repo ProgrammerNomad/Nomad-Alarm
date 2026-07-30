@@ -1,3 +1,10 @@
+---
+layout: default
+title: Error Handling
+parent: Reference
+nav_order: 3
+permalink: /ERROR_HANDLING/
+---
 # Error Handling Guide
 
 How Nomad Alarm handles failures gracefully. Goal: **never silently fail during an active alarm**.
@@ -132,7 +139,7 @@ Link to system exact alarm settings
 ### Map Load Error
 
 ```
-Detect: tile load failure / MapLibre init error
+Detect: tile load failure / flutter_map init error
         │
         ▼
 Show inline error on map area

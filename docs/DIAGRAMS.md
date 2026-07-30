@@ -1,3 +1,10 @@
+---
+layout: default
+title: Diagrams
+parent: Design
+nav_order: 3
+permalink: /DIAGRAMS/
+---
 # Diagrams
 
 Visual reference for architecture, flows, state, and project structure. Rendered as Mermaid in GitHub and most Markdown viewers.

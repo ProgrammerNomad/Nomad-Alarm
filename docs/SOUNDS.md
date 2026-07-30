@@ -1,3 +1,10 @@
+---
+layout: default
+title: Sounds
+parent: Design
+nav_order: 5
+permalink: /SOUNDS/
+---
 # Sound Specification
 
 Audio, voice, vibration, and flashlight behavior for Nomad Alarm alerts.

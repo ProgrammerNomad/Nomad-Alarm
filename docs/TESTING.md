@@ -1,3 +1,10 @@
+---
+layout: default
+title: Testing
+parent: Developer
+nav_order: 19
+permalink: /TESTING/
+---
 # Testing Guide
 
 Testing strategy for Nomad Alarm - focused on reliability of the core alarm flow.
@@ -172,17 +179,19 @@ Use Android Battery Historian or Settings → Battery → App usage.
 
 ## CI Pipeline
 
-GitHub Actions on every PR:
+GitHub Actions on every push/PR (`.github/workflows/ci.yml`):
 
 ```yaml
+- flutter pub get
+- dart run build_runner build
+- flutter gen-l10n
 - flutter analyze
-- flutter test
-- flutter build apk --debug
+- flutter test          # 96+ tests
 ```
 
-On release tag:
-* Build signed AAB
-* Attach to GitHub Release
+Docs site deploy (`.github/workflows/pages.yml`) on `docs/**` changes.
+
+Release builds (signed AAB) are **local** - see [Local Build](LOCAL_BUILD.md). Integration tests run locally (`flutter test integration_test/`).
 
 ---
 
@@ -204,7 +213,9 @@ test/
     └── mock_alarm_service.dart
 
 integration_test/
-└── alarm_flow_test.dart
+├── alarm_flow_test.dart
+├── group_travel_import_test.dart
+└── provider_switch_test.dart
 ```
 
 ---

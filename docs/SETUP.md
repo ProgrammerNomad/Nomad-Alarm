@@ -1,3 +1,10 @@
+---
+layout: default
+title: Setup Guide
+parent: Developer
+nav_order: 13
+permalink: /SETUP/
+---
 # Development Setup
 
 Guide to set up the Nomad Alarm development environment from scratch.
@@ -8,8 +15,8 @@ Guide to set up the Nomad Alarm development environment from scratch.
 
 | Tool | Version |
 |------|---------|
-| Flutter SDK | 3.24+ (stable) |
-| Dart SDK | 3.5+ (bundled with Flutter) |
+| Flutter SDK | 3.11+ (stable; see `pubspec.yaml`) |
+| Dart SDK | ^3.11.4 (bundled with Flutter) |
 | Android Studio | Latest |
 | Android SDK | API 34+ (compile), min SDK 24 |
 | JDK | 17 |
@@ -70,7 +77,8 @@ dependencies:
   flutter_local_notifications: ^18.0.1
 
   # Maps
-  maplibre_gl: ^0.20.0
+  flutter_map: ^7.0.0
+  latlong2: ^0.9.1
 
   # Voice & storage
   flutter_tts: ^4.2.0

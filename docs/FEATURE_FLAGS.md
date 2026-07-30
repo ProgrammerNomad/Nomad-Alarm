@@ -1,3 +1,10 @@
+---
+layout: default
+title: Feature Flags
+parent: Reference
+nav_order: 2
+permalink: /FEATURE_FLAGS/
+---
 # Feature Flags
 
 Local feature flags for gradual rollout and future features. All flags stored in `AppSettings` or compile-time constants - **no remote config server**.
@@ -78,6 +85,18 @@ abstract class FeatureFlags {
 | `familySharing` | `true` | v3.1 | Multi-alarm bundle share/import |
 | `cloudBackup` | `true` | v3.0 | Optional HTTPS backup upload |
 | `voiceSearch` | `true` | v3.1 | Speech-to-text on Search screen |
+
+---
+
+## Runtime toggles (`AppSettings`)
+
+Stored in Isar; included in backup/restore:
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `lockScreenInfoEnabled` | `true` | Show distance/ETA on lock screen notifications (`NotificationVisibility.public`) |
+| `accessibilityHighContrast` | `false` | High contrast light/dark theme |
+| `resumeAlarmAfterBoot` | `false` | Relaunch tracking after device reboot |
 
 ---
 

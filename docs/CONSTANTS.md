@@ -1,3 +1,10 @@
+---
+layout: default
+title: Constants
+parent: Reference
+nav_order: 1
+permalink: /CONSTANTS/
+---
 # Constants
 
 Central constants for Nomad Alarm. Implement in `lib/core/constants/`.

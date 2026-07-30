@@ -1,3 +1,10 @@
+---
+layout: default
+title: Services
+parent: Developer
+nav_order: 16
+permalink: /SERVICES/
+---
 # Services Specification
 
 Each service is a singleton registered via Riverpod `Provider`. Services encapsulate platform and business logic; they do not depend on Flutter widgets.
@@ -342,6 +349,56 @@ Main isolate                    Background isolate
 ```
 
 Communication: `ReceivePort` / service invoke methods.
+
+---
+
+## WearOsService (v3.1)
+
+**File:** `lib/services/wear_os_service.dart`  
+**Native:** `android/wear/` complication + Data Layer listener; phone sync via `MainActivity.kt` wear channel.
+
+Pushes active alarm JSON (destination, distance, ETA) to paired watch. Alarm logic stays on phone.
+
+---
+
+## AndroidAutoService (v3.1)
+
+**File:** `lib/services/android_auto_service.dart`  
+**Native:** `NomadAlarmCarAppService`, `NomadAlarmNavigationScreen` - read-only `NavigationTemplate` / `MessageInfo`.
+
+Writes destination and distance to HomeWidget shared prefs via MethodChannel.
+
+---
+
+## GroupTravelService (v3.1)
+
+**File:** `lib/services/group_travel_service.dart`
+
+Export/import single alarm config (`nomad_alarm_config`) or multi-alarm bundle (`nomad_alarm_bundle`) via clipboard/share sheet.
+
+---
+
+## CloudBackupService (v3.0)
+
+**File:** `lib/services/cloud_backup_service.dart`
+
+Optional HTTPS POST of backup JSON to user-provided URL.
+
+---
+
+## RingtoneService (v3.0)
+
+**File:** `lib/services/ringtone_service.dart`
+
+Custom alarm ringtone playback via `audioplayers`.
+
+---
+
+## WidgetService (v1.5+)
+
+**File:** `lib/services/widget_service.dart`
+
+Updates home screen widgets, Quick Settings tile prefs, and delegates to `AndroidAutoService` / `WearOsService`.
 
 ---
 

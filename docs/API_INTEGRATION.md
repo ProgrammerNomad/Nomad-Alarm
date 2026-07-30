@@ -1,3 +1,10 @@
+---
+layout: default
+title: API Integration
+parent: Reference
+nav_order: 6
+permalink: /API_INTEGRATION/
+---
 # API Integration
 
 Nomad Alarm works **fully offline and free** with open providers. Optional paid APIs use a **Bring Your Own Key (BYO)** model - keys are entered by the user and stored encrypted on device. **No server-side key storage.**

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Architecture
+parent: Developer
+nav_order: 11
+permalink: /ARCHITECTURE/
+---
 # Architecture
 
 Detailed technical architecture for Nomad Alarm.
@@ -96,7 +103,13 @@ lib/
 │   ├── search_service.dart
 │   ├── route_service.dart
 │   ├── settings_service.dart
-│   └── backup_service.dart
+│   ├── backup_service.dart
+│   ├── wear_os_service.dart
+│   ├── android_auto_service.dart
+│   ├── group_travel_service.dart
+│   ├── cloud_backup_service.dart
+│   ├── ringtone_service.dart
+│   └── widget_service.dart
 ├── providers/
 │   ├── app_providers.dart
 │   ├── alarm_providers.dart
@@ -121,6 +134,18 @@ features/<name>/
 │   └── <name>_controller.dart      # Riverpod Notifier
 └── (optional) domain/
 ```
+
+---
+
+## Platform modules (v3.1)
+
+| Module | Path | Role |
+|--------|------|------|
+| Wear OS | `android/wear/` | Complication + Data Layer (phone runs alarm logic) |
+| Android Auto | `android/app/.../auto/` | Car App read-only navigation template |
+| iOS scaffold | `ios/Runner/` | Location + notification setup; App Store deferred |
+
+Dart: `WearOsService`, `AndroidAutoService` → MethodChannels in `MainActivity.kt`.
 
 ---
 

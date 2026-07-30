@@ -1,3 +1,10 @@
+---
+layout: default
+title: Store Assets
+parent: Release
+nav_order: 4
+permalink: /play-store/ASSETS_README/
+---
 # Play Store assets
 
 Capture on a **phone** (1080×1920 or similar). Store PNGs in `docs/play-store/screenshots/`.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Master Blueprint
+parent: Developer
+nav_order: 10
+permalink: /MASTER_BLUEPRINT/
+---
 # Nomad Alarm – Complete Project Summary (Master Blueprint)
 
 ---
@@ -17,7 +24,7 @@ com.nomad.alarm
 
 **Platform**
 * Android (v1)
-* iOS (Future)
+* iOS (scaffold - buildable on device; App Store deferred)
 
 **License**
 * MIT License (Recommended)
@@ -582,9 +589,9 @@ about/
 
 * Large Text
 * TalkBack
-* High Contrast
-* Color Blind
-* Voice Commands
+* High Contrast theme (v3.1 - `accessibilityHighContrast`)
+* Color Blind (not implemented)
+* Voice Commands (voice search mic v3.1; no hands-free commands)
 
 ---
 
@@ -599,19 +606,24 @@ about/
 
 ---
 
-# Future Features
+# Shipped in v2.x–v3.1 (formerly future)
 
-* Wear OS
-* Android Auto
-* Smart Watch
-* Live Activities
-* AI ETA Prediction
-* Group Travel
-* Family Sharing
-* Cloud Backup (optional)
-* Apple Maps
+* Wear OS complication module (v3.1)
+* Android Auto read-only navigation template (v3.1)
+* AI ETA Prediction (on-device heuristics)
+* Group Travel + Family Sharing (local JSON bundles)
+* Cloud Backup (optional HTTPS upload)
+* Apple Maps (iOS)
 * Offline Maps Download
+* Voice search (v3.1)
+
+# Still future
+
+* Smart Watch full interactive app
+* Live Activities (iOS)
 * Custom Plugins
+* Google Drive cloud backup
+* Color blind mode
 
 ---
 
@@ -658,11 +670,9 @@ nomad-alarm/
 # CI/CD
 
 * GitHub Actions
-  * Flutter Analyze
-  * Flutter Test
-  * Build APK
-  * Build AAB
-  * Create Release
+  * Flutter analyze + test (`.github/workflows/ci.yml`)
+  * Jekyll docs site deploy (`.github/workflows/pages.yml`)
+* Release AAB/APK: local build ([LOCAL_BUILD.md](LOCAL_BUILD.md))
 
 ---
 
@@ -708,13 +718,11 @@ nomad-alarm/
 * Multiple map providers
 * BYO Google APIs
 * Offline map downloads
-* Wear OS support
 
-## v3.0
-* Smart ETA
-* Group travel
-* Family sharing
-* Advanced automation
+## v3.0–v3.1
+* Smart ETA, group/family sharing, voice search
+* Wear OS complication, Android Auto template
+* High contrast, ar/he RTL, docs site + Play prep
 
 ---
 

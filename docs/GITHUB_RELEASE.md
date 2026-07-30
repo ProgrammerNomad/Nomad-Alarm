@@ -1,3 +1,10 @@
+---
+layout: default
+title: GitHub Release
+parent: Release
+nav_order: 3
+permalink: /GITHUB_RELEASE/
+---
 # GitHub Release (v1.0.0)
 
 Run after signed AAB is verified and [RELEASE_QA_SIGNOFF.md](RELEASE_QA_SIGNOFF.md) is complete.

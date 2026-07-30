@@ -1,3 +1,10 @@
+---
+layout: default
+title: Assets
+parent: Design
+nav_order: 4
+permalink: /ASSETS/
+---
 # Assets
 
 Asset inventory and organization for Nomad Alarm.

@@ -1,6 +1,15 @@
 # Nomad Alarm Documentation
 
-This folder contains the detailed documentation needed to design, build, test, and release Nomad Alarm.
+This folder is the **Jekyll source** for the public docs site and developer documentation.
+
+**Live site:** [programmernomad.github.io/Nomad-Alarm](https://programmernomad.github.io/Nomad-Alarm/)
+
+**Play Console URLs:**
+- [Privacy Policy](https://programmernomad.github.io/Nomad-Alarm/privacy-policy/)
+- [Terms of Service](https://programmernomad.github.io/Nomad-Alarm/terms/)
+- [Data Safety](https://programmernomad.github.io/Nomad-Alarm/data-safety/)
+
+Local preview: `cd docs && bundle install && bundle exec jekyll serve --baseurl ""`
 
 Start here if you are new to the project.
 
@@ -59,8 +68,8 @@ Start here if you are new to the project.
 | Document | Purpose |
 |----------|---------|
 | [../README.md](../README.md) | Project overview and quick links |
-| [../ROADMAP.md](../ROADMAP.md) | Release timeline (v1.0 → v3.0) |
-| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Architecture summary |
+| [../ROADMAP.md](../ROADMAP.md) | Release timeline (v1.0 → v3.1) |
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Architecture summary (see also [Architecture](ARCHITECTURE.md)) |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute |
 | [../CHANGELOG.md](../CHANGELOG.md) | Version history |
 | [../SECURITY.md](../SECURITY.md) | Security policy |

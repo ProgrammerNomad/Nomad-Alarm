@@ -1,3 +1,10 @@
+---
+layout: default
+title: Widgets
+parent: Design
+nav_order: 7
+permalink: /WIDGETS/
+---
 # Widgets & System UI
 
 Android home screen widgets, lock screen, and Quick Settings tile specifications.
@@ -109,19 +116,12 @@ Full-screen alarm uses `fullScreenIntent` on alarm channel.
 
 **Version:** v1.5
 
-| State | Label | Action |
-|-------|-------|--------|
-| No active alarm | "Nomad Alarm" | Tap → Home |
-| Active alarm | "Alarm: {distance}" | Tap → Active Alarm |
-| Long press | - | Open app settings |
+| State | Label | Tap action |
+|-------|-------|------------|
+| No active alarm | "Nomad Alarm" | Opens `/search` (create alarm) |
+| Active alarm | "{distance} away" | Opens `/tile/cancel/{alarmId}` (cancel via deep link) |
 
-Secondary tile (optional):
-
-| Label | Action |
-|-------|--------|
-| "Cancel Alarm" | Cancel active alarm (confirm in app) |
-
-Implement via `TileService` (Android native) or Flutter plugin.
+Implemented in `NomadAlarmTileService.kt` (v3.1).
 
 ---
 
