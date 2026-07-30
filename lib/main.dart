@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: unused_import
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:nomad_alarm/app.dart';
+import 'package:nomad_alarm/services/google_maps_init.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GoogleMapsInit.applyFromStore();
   runApp(
     const ProviderScope(
       child: NomadAlarmApp(),

@@ -134,7 +134,11 @@ See full list in [Permissions](PERMISSIONS.md).
 
 ## Environment Variables
 
-No `.env` file required for core app. Optional API keys are entered in-app and stored via `flutter_secure_storage`.
+No `.env` file required for core app. Optional API keys are entered in **Settings → API keys** and stored via `flutter_secure_storage`.
+
+For Google Maps on Android, the app applies the saved key at runtime - end users do not edit AndroidManifest. Developers may optionally set `google_maps_api_key` in `android/app/src/main/res/values/strings.xml` for CI builds without secure storage.
+
+See [Settings Guide](SETTINGS_GUIDE.md) for Google Cloud Console setup (2026 steps).
 
 For CI builds, no secrets needed for default OSM/Nominatim/OSRM stack.
 

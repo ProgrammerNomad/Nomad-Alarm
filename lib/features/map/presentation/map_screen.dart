@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:latlong2/latlong.dart';
+import 'package:nomad_alarm/core/constants/app_constants.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
@@ -19,6 +20,7 @@ import 'package:nomad_alarm/providers/search_providers.dart';
 import 'package:nomad_alarm/services/map_service.dart';
 import 'package:nomad_alarm/services/map_viewport_store.dart';
 import 'package:nomad_alarm/services/offline_tile_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({
@@ -155,6 +157,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
 
     if (mapProvider.displayMode == MapDisplayMode.googleNative) {
+      final googleKey = ref.watch(googleApiKeyProvider).valueOrNull;
+      if (googleKey == null || googleKey.isEmpty) {
+        return _GoogleMapKeyMissingPanel(
+          onOpenApiKeys: () => context.push('/settings/api-keys'),
+          onOpenGuide: () async {
+            final uri = Uri.parse(AppConstants.settingsGuideGoogleSetupUrl);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            }
+          },
+        );
+      }
       return gmaps.GoogleMap(
         initialCameraPosition: gmaps.CameraPosition(
           target: gmaps.LatLng(initialCenter.latitude, initialCenter.longitude),
@@ -378,6 +392,54 @@ class _PinBottomSheet extends StatelessWidget {
               onPressed: loading ? null : onSaveFavorite,
               icon: const Icon(Icons.favorite_border),
               label: Text(l10n.saveFavorite),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GoogleMapKeyMissingPanel extends StatelessWidget {
+  const _GoogleMapKeyMissingPanel({
+    required this.onOpenApiKeys,
+    required this.onOpenGuide,
+  });
+
+  final VoidCallback onOpenApiKeys;
+  final VoidCallback onOpenGuide;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.map_outlined,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.googleMapKeyRequired,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: onOpenApiKeys,
+              icon: const Icon(Icons.key),
+              label: Text(l10n.googleMapKeyRequiredAction),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: onOpenGuide,
+              icon: const Icon(Icons.help_outline),
+              label: Text(l10n.googleMapKeySetupGuide),
             ),
           ],
         ),

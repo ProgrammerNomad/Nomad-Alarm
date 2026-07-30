@@ -10,6 +10,10 @@ final apiKeyStoreProvider = Provider<ApiKeyStore>((ref) {
   return ApiKeyStore();
 });
 
+final googleApiKeyProvider = FutureProvider<String?>((ref) async {
+  return ref.watch(apiKeyStoreProvider).readGoogleApiKey();
+});
+
 final providerFactoryProvider = Provider<ProviderFactory>((ref) {
   final factory = ProviderFactory(apiKeyStore: ref.watch(apiKeyStoreProvider));
   ref.onDispose(factory.dispose);

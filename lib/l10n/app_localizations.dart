@@ -1583,6 +1583,42 @@ abstract class AppLocalizations {
   /// **'Connection failed - check the key'**
   String get apiKeyTestFailure;
 
+  /// No description provided for @apiKeyGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google API key'**
+  String get apiKeyGoogle;
+
+  /// No description provided for @apiKeyGoogleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One key for Maps, Places, and Directions'**
+  String get apiKeyGoogleHint;
+
+  /// No description provided for @apiKeyGoogleHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup guide'**
+  String get apiKeyGoogleHelp;
+
+  /// No description provided for @googleMapKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps requires an API key. Add one in Settings, then choose Google as the map provider.'**
+  String get googleMapKeyRequired;
+
+  /// No description provided for @googleMapKeyRequiredAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open API keys'**
+  String get googleMapKeyRequiredAction;
+
+  /// No description provided for @googleMapKeySetupGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'How to create a Google API key'**
+  String get googleMapKeySetupGuide;
+
   /// No description provided for @apiKeyGoogleMaps.
   ///
   /// In en, this message translates to:

@@ -33,6 +33,12 @@ A **privacy-first, open-source location alarm** that wakes you before you reach 
 
 ---
 
+## Settings & API keys
+
+Nomad Alarm works free with OpenStreetMap. To use Google Maps, Places, or Directions, see the **[Settings Guide](settings-guide/)** - one Google API key covers all three.
+
+---
+
 ## For developers
 
 Browse the sidebar for architecture, setup, testing, and release documentation.

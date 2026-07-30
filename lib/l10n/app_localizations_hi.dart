@@ -789,6 +789,25 @@ class AppLocalizationsHi extends AppLocalizations {
   String get apiKeyTestFailure => 'कनेक्शन विफल - कुंजी जाँचें';
 
   @override
+  String get apiKeyGoogle => 'Google API कुंजी';
+
+  @override
+  String get apiKeyGoogleHint => 'Maps, Places और Directions के लिए एक कुंजी';
+
+  @override
+  String get apiKeyGoogleHelp => 'सेटअप गाइड';
+
+  @override
+  String get googleMapKeyRequired =>
+      'Google Maps के लिए API कुंजी चाहिए। Settings में कुंजी जोड़ें, फिर map provider Google चुनें।';
+
+  @override
+  String get googleMapKeyRequiredAction => 'API कुंजी खोलें';
+
+  @override
+  String get googleMapKeySetupGuide => 'Google API कुंजी कैसे बनाएँ';
+
+  @override
   String get apiKeyGoogleMaps => 'Google Maps SDK';
 
   @override

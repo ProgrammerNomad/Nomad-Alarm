@@ -98,6 +98,19 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "com.nomad.alarm/google_maps",
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "setGoogleMapsApiKey" -> {
+                    val apiKey = call.argument<String>("apiKey")
+                    GoogleMapsKeyHelper.saveKey(this, apiKey)
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
     }
 }
 

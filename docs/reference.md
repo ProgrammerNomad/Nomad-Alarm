@@ -8,4 +8,4 @@ permalink: /reference/
 
 # Reference
 
-Constants, feature flags, error handling, battery, and API integration.
+Constants, feature flags, error handling, battery, API integration, and [Settings Guide](SETTINGS_GUIDE.md).

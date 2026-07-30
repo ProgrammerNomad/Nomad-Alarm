@@ -790,6 +790,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apiKeyTestFailure => 'Connection failed - check the key';
 
   @override
+  String get apiKeyGoogle => 'Google API key';
+
+  @override
+  String get apiKeyGoogleHint => 'One key for Maps, Places, and Directions';
+
+  @override
+  String get apiKeyGoogleHelp => 'Setup guide';
+
+  @override
+  String get googleMapKeyRequired =>
+      'Google Maps requires an API key. Add one in Settings, then choose Google as the map provider.';
+
+  @override
+  String get googleMapKeyRequiredAction => 'Open API keys';
+
+  @override
+  String get googleMapKeySetupGuide => 'How to create a Google API key';
+
+  @override
   String get apiKeyGoogleMaps => 'Google Maps SDK';
 
   @override

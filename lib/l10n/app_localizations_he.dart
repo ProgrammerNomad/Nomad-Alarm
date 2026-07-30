@@ -777,6 +777,25 @@ class AppLocalizationsHe extends AppLocalizations {
   String get apiKeyTestFailure => 'החיבור נכשל - בדוק מפתח';
 
   @override
+  String get apiKeyGoogle => 'מפתח Google API';
+
+  @override
+  String get apiKeyGoogleHint => 'מפתח אחד למפות, Places ו-Directions';
+
+  @override
+  String get apiKeyGoogleHelp => 'מדריך הגדרה';
+
+  @override
+  String get googleMapKeyRequired =>
+      'Google Maps דורש מפתח API. הוסף בהגדרות ובחר Google כספק מפות.';
+
+  @override
+  String get googleMapKeyRequiredAction => 'פתח מפתחות API';
+
+  @override
+  String get googleMapKeySetupGuide => 'איך ליצור מפתח Google API';
+
+  @override
   String get apiKeyGoogleMaps => 'Google Maps SDK';
 
   @override

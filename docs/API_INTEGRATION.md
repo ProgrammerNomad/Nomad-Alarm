@@ -49,32 +49,31 @@ Switch providers in **Settings → Maps** without reinstalling.
 
 ## Optional: Google APIs (BYO)
 
-User provides keys in **Settings → Google API**.
+User provides **one Google API key** in **Settings → API keys**. The app stores it in all Google slots (Maps, Places, Directions) and initializes the native Maps SDK at runtime on Android.
 
-| API | Key Type | Used For |
-|-----|----------|----------|
-| Maps SDK for Android | Restricted Android key | Map display, traffic layer |
-| Places API | API key | Search autocomplete |
-| Directions API | API key | Route polyline + ETA |
+**Step-by-step setup:** [Settings Guide → Google Cloud setup]({{ '/settings-guide/#google-cloud-setup' | relative_url }})
 
-### Key Storage
+| API | Used for |
+|-----|----------|
+| Maps SDK for Android | Native Google map display, traffic layer |
+| Places API (classic) | Search autocomplete (`place/autocomplete/json`) |
+| Directions API | Route polyline + ETA |
+
+### Key storage
 
 ```dart
-// flutter_secure_storage
-await secureStorage.write(key: 'google_maps_key', value: userKey);
+// One key written to google_maps, google_places, google_directions slots
+await apiKeyStore.writeGoogleApiKey(userKey);
+await GoogleMapsInit.applyKey(userKey); // Android Maps SDK
 ```
 
-* Keys encrypted via Android Keystore
+* Keys encrypted via Android Keystore (`flutter_secure_storage`)
 * Never logged, never included in backup export
-* Never committed to git
+* End users do **not** edit AndroidManifest - runtime init applies the saved key
 
-### Key Restrictions (User Instructions)
+### Developer builds (optional)
 
-Show in-app guide:
-1. Create project in Google Cloud Console
-2. Enable required APIs
-3. Restrict key to Android app + package `com.nomad.alarm` + SHA-1
-4. Set billing alerts
+For CI or builds without secure storage, you may set a fallback in `android/app/src/main/res/values/strings.xml` → `google_maps_api_key`. Play Store users should use in-app Settings only.
 
 ---
 

@@ -256,11 +256,13 @@ Provider picker, layer default, cache clear, optional API key entry.
 
 ---
 
-## Google API
+## API Keys
 
-**Route:** `/settings/google-api`
+**Route:** `/settings/api-keys`
 
-Fields for Maps, Places, Directions API keys. Stored encrypted. Test connection button.
+Single **Google API key** field (covers Maps, Places, Directions) plus Mapbox, HERE, and GraphHopper. Stored encrypted. **Test** validates all three Google APIs. **Setup guide** link opens [Settings Guide](SETTINGS_GUIDE.md) on GitHub Pages.
+
+When Google Maps is selected but no key is saved, the Map screen shows a setup prompt instead of a blank grey map.
 
 ---
 

@@ -60,4 +60,43 @@ void main() {
     final all = await store.readAll();
     expect(all.keys, containsAll(ApiKeyId.values));
   });
+
+  test('writeGoogleApiKey writes to all Google slots', () async {
+    when(
+      () => storage.write(
+        key: any(named: 'key'),
+        value: any(named: 'value'),
+        aOptions: any(named: 'aOptions'),
+      ),
+    ).thenAnswer((_) async {});
+
+    await store.writeGoogleApiKey('AIza.test-key');
+
+    for (final id in ApiKeyId.googleSlots) {
+      verify(
+        () => storage.write(
+          key: id.storageKey,
+          value: 'AIza.test-key',
+          aOptions: any(named: 'aOptions'),
+        ),
+      ).called(1);
+    }
+  });
+
+  test('readGoogleApiKey returns first non-empty slot', () async {
+    when(
+      () => storage.read(
+        key: any(named: 'key'),
+        aOptions: any(named: 'aOptions'),
+      ),
+    ).thenAnswer((invocation) async {
+      final key = invocation.namedArguments[#key] as String;
+      if (key == ApiKeyId.googlePlaces.storageKey) {
+        return 'AIza.from-places';
+      }
+      return null;
+    });
+
+    expect(await store.readGoogleApiKey(), 'AIza.from-places');
+  });
 }

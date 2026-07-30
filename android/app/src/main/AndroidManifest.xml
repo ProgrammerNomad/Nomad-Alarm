@@ -23,7 +23,7 @@
 
     <application
         android:label="Nomad Alarm"
-        android:name="${applicationName}"
+        android:name=".NomadAlarmApplication"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -8,6 +8,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+* Single Google API key in Settings (one key for Maps, Places, Directions)
+* Runtime Android Maps SDK init from saved key (`GoogleMapsInit`)
+* Map screen prompt when Google provider selected without a key
+* [Settings Guide](docs/SETTINGS_GUIDE.md) on docs site - Google Cloud setup, troubleshooting, other providers
+
+### Changed
+* API keys screen: one Google field + setup guide link; Mapbox/HERE/GraphHopper unchanged
+* Provider factory reads unified `readGoogleApiKey()` for Places and Directions
+
 ---
 
 ## [3.1.2] - 2026-07-30

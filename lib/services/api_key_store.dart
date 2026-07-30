@@ -11,6 +11,18 @@ enum ApiKeyId {
 
   const ApiKeyId(this.storageKey);
   final String storageKey;
+
+  static const googleSlots = [
+    ApiKeyId.googleMaps,
+    ApiKeyId.googlePlaces,
+    ApiKeyId.googleDirections,
+  ];
+
+  static const otherProviders = [
+    ApiKeyId.mapboxToken,
+    ApiKeyId.hereApiKey,
+    ApiKeyId.graphhopperKey,
+  ];
 }
 
 class ApiKeyStore {
@@ -56,6 +68,85 @@ class ApiKeyStore {
       map[id] = await read(id);
     }
     return map;
+  }
+
+  /// First non-empty Google key (maps, places, or directions slot).
+  Future<String?> readGoogleApiKey() async {
+    for (final id in ApiKeyId.googleSlots) {
+      final value = await read(id);
+      if (value != null && value.isNotEmpty) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  /// Writes the same key to all Google slots (Maps, Places, Directions).
+  Future<void> writeGoogleApiKey(String value) async {
+    for (final id in ApiKeyId.googleSlots) {
+      await write(id, value);
+    }
+  }
+
+  /// Clears all Google key slots.
+  Future<void> clearGoogleApiKey() async {
+    for (final id in ApiKeyId.googleSlots) {
+      await clear(id);
+    }
+  }
+
+  /// Tests Geocoding, Places autocomplete, and Directions with one key.
+  Future<bool> testGoogleApiKey({http.Client? client}) async {
+    final key = await readGoogleApiKey();
+    if (key == null || key.isEmpty) {
+      return false;
+    }
+    final c = client ?? http.Client();
+    final ownsClient = client == null;
+    try {
+      final geocode = await c.get(
+        Uri.parse('https://maps.googleapis.com/maps/api/geocode/json').replace(
+          queryParameters: {'address': 'London', 'key': key},
+        ),
+      );
+      if (geocode.statusCode != 200 ||
+          geocode.body.contains('"error_message"')) {
+        return false;
+      }
+
+      final places = await c.get(
+        Uri.parse('https://maps.googleapis.com/maps/api/place/autocomplete/json')
+            .replace(
+          queryParameters: {'input': 'London', 'key': key},
+        ),
+      );
+      if (places.statusCode != 200 ||
+          places.body.contains('"error_message"')) {
+        return false;
+      }
+
+      final directions = await c.get(
+        Uri.parse('https://maps.googleapis.com/maps/api/directions/json').replace(
+          queryParameters: {
+            'origin': '51.5074,-0.1278',
+            'destination': '51.5155,-0.0922',
+            'key': key,
+          },
+        ),
+      );
+      if (directions.statusCode != 200 ||
+          directions.body.contains('"error_message"')) {
+        return false;
+      }
+
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      if (ownsClient) {
+        c.close();
+      }
+    }
   }
 
   /// Lightweight connectivity check per provider family.

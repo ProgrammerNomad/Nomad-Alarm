@@ -779,6 +779,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get apiKeyTestFailure => 'فشل الاتصال - تحقق من المفتاح';
 
   @override
+  String get apiKeyGoogle => 'مفتاح Google API';
+
+  @override
+  String get apiKeyGoogleHint => 'مفتاح واحد للخرائط والأماكن والاتجاهات';
+
+  @override
+  String get apiKeyGoogleHelp => 'دليل الإعداد';
+
+  @override
+  String get googleMapKeyRequired =>
+      'يتطلب Google Maps مفتاح API. أضفه في الإعدادات ثم اختر Google كمزود الخريطة.';
+
+  @override
+  String get googleMapKeyRequiredAction => 'فتح مفاتيح API';
+
+  @override
+  String get googleMapKeySetupGuide => 'كيفية إنشاء مفتاح Google API';
+
+  @override
   String get apiKeyGoogleMaps => 'Google Maps SDK';
 
   @override

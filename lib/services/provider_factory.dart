@@ -75,7 +75,7 @@ class ProviderFactory {
     switch (settings.searchProvider) {
       case SearchProviderType.googlePlaces:
         if (FeatureFlags.googlePlacesSearch) {
-          final key = await _apiKeyStore.read(ApiKeyId.googlePlaces);
+          final key = await _apiKeyStore.readGoogleApiKey();
           if (key != null && key.isNotEmpty) {
             return GooglePlacesSearchProvider(apiKey: key, client: _httpClient);
           }
@@ -102,7 +102,7 @@ class ProviderFactory {
     switch (settings.routeProvider) {
       case RouteProviderType.googleDirections:
         if (FeatureFlags.googleMapsProvider) {
-          final key = await _apiKeyStore.read(ApiKeyId.googleDirections);
+          final key = await _apiKeyStore.readGoogleApiKey();
           if (key != null && key.isNotEmpty) {
             return GoogleDirectionsProvider(apiKey: key, client: _httpClient);
           }

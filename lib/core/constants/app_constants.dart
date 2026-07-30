@@ -11,5 +11,9 @@ abstract class AppConstants {
       'https://programmernomad.github.io/Nomad-Alarm/data-safety/';
   static const String openSourceUrl =
       'https://programmernomad.github.io/Nomad-Alarm/open-source/';
+  static const String settingsGuideUrl =
+      'https://programmernomad.github.io/Nomad-Alarm/settings-guide/';
+  static const String settingsGuideGoogleSetupUrl =
+      'https://programmernomad.github.io/Nomad-Alarm/settings-guide/#google-cloud-setup';
   static const String logoAsset = 'assets/images/logo/logo.png';
 }
