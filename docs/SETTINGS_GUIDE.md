@@ -19,8 +19,8 @@ Open **Settings** from the bottom navigation bar.
 | Screen | Path | What it controls |
 |--------|------|------------------|
 | **Appearance** | Settings | Theme (light / dark / system), units (km / mi), language |
-| **Map** | Settings → Map | Map, search, and route providers; map layer; offline tile cache |
-| **API keys** | Settings → API keys | Google (one key), Mapbox, HERE, GraphHopper |
+| **Map** | Settings → Map | Map, search, and route providers (bundled); map layer; offline tile cache; explicit **Save** |
+| **API keys** | Settings → Advanced → API Keys | Status dashboard: Google (Maps/Places/Directions tests), Mapbox, HERE, GraphHopper |
 | **Permissions** | Settings → Permissions | Location, notifications, background location, battery |
 | **Alarm defaults** | Settings → Alarm | Default trigger distance, voice, vibration |
 | **Battery** | Settings → Battery | GPS profile (balanced / aggressive / saver) |
@@ -98,7 +98,7 @@ Look for `Variant: debug` → `SHA1` under `Task :app:signingReport`.
 
 ### 6. Configure Nomad Alarm
 
-1. Open **Settings → API keys**
+1. Open **Settings → Map**, select Google Maps, tap **Save** (or **Settings → Advanced → API Keys**)
 2. Paste your key in **Google API key** → **Save**
 3. Tap **Test** - should report success if all three APIs are enabled
 4. Open **Settings → Map**:

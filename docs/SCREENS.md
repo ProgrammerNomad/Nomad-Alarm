@@ -71,19 +71,31 @@ Each step: icon, plain-language explanation, Grant / Skip / Open Settings.
 
 ## Home
 
-**Route:** `/home` (bottom nav)
+**Route:** `/home` (bottom nav) - **multi-alarm dashboard**
 
 | Section | Content |
 |---------|---------|
-| App bar | "Nomad Alarm", settings shortcut |
-| Current location | Address or coordinates chip, tap → Map |
-| Search bar | Tap → Search screen |
-| Active alarm card | If running: destination, distance, ETA, tap → Active Alarm |
-| Favorites row | Horizontal chips: Home, Office, + custom |
-| Recent | Last 3 destinations |
-| FAB | "Create Alarm" → Alarm Config |
+| App bar | "Nomad Alarm" |
+| Current location | Card with place name (reverse geocode) or coordinates fallback; tap → Map |
+| Search bar | Tap → Search screen (primary entry, below location) |
+| Active alarms | Always shown; empty hint when none; live cards with pause/resume/cancel when active |
+| Recent | Last 3 destinations (first-alarm empty card has no CTA button) |
+| Favorites row | Horizontal chips |
+| FAB | Sole **+** create action → Alarm Config (no duplicate top buttons) |
 
-**Empty state:** Illustration + "Set your first destination alarm"
+Settings → Language shows each option in **native script** (e.g. हिन्दी, العربية) so users can recover from accidental language changes. Settings sections use icons for faster scanning.
+
+**After Save & Start:** returns here with "Alarm created successfully" snackbar.
+
+**Tap alarm card:** opens Alarm details (`/alarm/active/:id`), not a trapped tracking screen.
+
+---
+
+## Alarm details (Active Alarm)
+
+**Route:** `/alarm/active/:id`
+
+Detail page for one alarm: destination, distance, ETA, speed, accuracy, map link, pause/cancel. Back returns to Home. Ring screen still opens automatically when triggered.
 
 ---
 
@@ -237,13 +249,16 @@ Full recent search list with clear-all option.
 
 | Section | Items |
 |---------|-------|
-| Appearance | Theme, accent color, font |
-| Maps | Provider, default layer |
-| Alarm | Default distance, voice, vibration |
-| Battery | Profile: balanced / aggressive / saver |
+| Appearance | Theme picker tile → bottom sheet (system / light / dark) |
+| Units | km / mi segmented control |
+| Language | Picker tile → bottom sheet (Follow system, en, hi, ar, he with native endonyms) |
+| Alarm defaults | Default distance picker tile → presets + custom slider, voice, vibration |
+| Battery | GPS profile picker tile → bottom sheet (Balanced recommended) |
+| Maps | Link → Map settings |
+| Advanced | Link → API Keys dashboard |
 | Permissions | Link → Permission Center |
 | Privacy | Link → Privacy screen |
-| About | Version, licenses, GitHub |
+| About | Version, privacy, terms, licenses, GitHub, support |
 | Debug | Visible in debug builds only |
 
 ---
@@ -252,17 +267,24 @@ Full recent search list with clear-all option.
 
 **Route:** `/settings/map`
 
-Provider picker, layer default, cache clear, optional API key entry.
+| Section | Content |
+|---------|---------|
+| Providers | Map provider picker tile → bottom sheet with badges; recommended search/route summary; **Use recommended providers** toggle |
+| Advanced | Override search/route toggles + picker tiles when enabled; link → API Keys |
+| Map layer | Picker tile → bottom sheet (standard / dark / satellite / terrain) |
+| Offline tiles | Cache size, download sample region, clear (when enabled) |
+
+Changes are staged locally until **Save**. Save runs credential checks inline (bottom sheet for missing keys). OSM saves immediately with success snackbar.
 
 ---
 
 ## API Keys
 
-**Route:** `/settings/api-keys`
+**Route:** `/settings/api-keys` (Advanced only)
 
-Single **Google API key** field (covers Maps, Places, Directions) plus Mapbox, HERE, and GraphHopper. Stored encrypted. **Test** validates all three Google APIs. **Setup guide** link opens [Settings Guide](SETTINGS_GUIDE.md) on GitHub Pages.
+Status dashboard for **all** providers: Google (per-service Maps/Places/Directions test status), Mapbox, HERE, GraphHopper. Actions: add/update, test, clear. **Test all configured keys** batch action. Security footer notes encryption and backup exclusion.
 
-When Google Maps is selected but no key is saved, the Map screen shows a setup prompt instead of a blank grey map.
+When Google Maps is selected but no key is saved, the Map screen prompts **Open map settings** instead of a blank grey map.
 
 ---
 

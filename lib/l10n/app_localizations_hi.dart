@@ -240,6 +240,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get miles => 'मील';
 
   @override
+  String get distanceUnitsLabel => 'दूरी की इकाइयाँ';
+
+  @override
   String get language => 'भाषा';
 
   @override
@@ -716,7 +719,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get mapSettingsTitle => 'मानचित्र सेटिंग्स';
 
   @override
-  String get mapSettingsSubtitle => 'प्रदाता, ऑफ़लाइन टाइल, API कुंजी';
+  String get mapSettingsSubtitle => 'प्रदाता, परतें और ऑफ़लाइन टाइल';
 
   @override
   String get mapProvidersSection => 'प्रदाता';
@@ -1019,4 +1022,197 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get tileTapToCreate => 'अलार्म बनाने के लिए टैप करें';
+
+  @override
+  String get alarmCreatedSuccess => 'अलार्म सफलतापूर्वक बनाया गया';
+
+  @override
+  String get alarmDetailsTitle => 'अलार्म विवरण';
+
+  @override
+  String get addAnotherAlarm => 'एक और अलार्म जोड़ें';
+
+  @override
+  String get newAlarm => 'नया अलार्म';
+
+  @override
+  String get alarmStatusTracking => 'ट्रैकिंग';
+
+  @override
+  String get alarmStatusPaused => 'रोका गया';
+
+  @override
+  String alarmNumberLabel(int number) {
+    return 'अलार्म #$number';
+  }
+
+  @override
+  String activeAlarmsCount(int count) {
+    return 'सक्रिय अलार्म ($count)';
+  }
+
+  @override
+  String get save => 'सहेजें';
+
+  @override
+  String get providersSection => 'प्रदाता';
+
+  @override
+  String get providerChangedSuccess => 'प्रदाता सफलतापूर्वक बदला गया।';
+
+  @override
+  String get noApiKeyRequired =>
+      'कोई API कुंजी आवश्यक नहीं। प्रदाता सफलतापूर्वक बदला गया।';
+
+  @override
+  String get configureAndSave => 'कॉन्फ़िगर करें और सहेजें';
+
+  @override
+  String get providerSaveBlocked =>
+      'मान्य API कुंजी दर्ज होने तक सहेजना अवरुद्ध है।';
+
+  @override
+  String get credentialGoogleMapsTitle =>
+      'Google Maps के लिए API कुंजी आवश्यक है';
+
+  @override
+  String get credentialGoogleServicesTitle =>
+      'Google सेवाओं के लिए API कुंजी आवश्यक है';
+
+  @override
+  String get credentialGoogleMapsBody =>
+      'एक कुंजी Maps, Places और Directions को कवर करती है।';
+
+  @override
+  String get credentialMapboxTitle => 'Mapbox के लिए एक्सेस टोकन आवश्यक है';
+
+  @override
+  String get credentialMapboxBody =>
+      'Mapbox मानचित्र के लिए अपना Mapbox टोकन दर्ज करें।';
+
+  @override
+  String get credentialHereTitle => 'HERE के लिए API कुंजी आवश्यक है';
+
+  @override
+  String get credentialHereBody => 'अपनी HERE REST API कुंजी दर्ज करें।';
+
+  @override
+  String get credentialGraphhopperTitle =>
+      'GraphHopper के लिए API कुंजी आवश्यक है';
+
+  @override
+  String get credentialGraphhopperBody =>
+      'रूटिंग के लिए GraphHopper API कुंजी दर्ज करें।';
+
+  @override
+  String get googleServiceMaps => 'Android के लिए Maps SDK';
+
+  @override
+  String get googleServicePlaces => 'Places API';
+
+  @override
+  String get googleServiceDirections => 'Directions API';
+
+  @override
+  String get googleServiceAlsoUsed => 'सक्षम होने पर भी उपयोग (एक ही कुंजी)';
+
+  @override
+  String get advancedSection => 'उन्नत';
+
+  @override
+  String get advancedApiKeys => 'API कुंजी';
+
+  @override
+  String get useRecommendedProviders => 'अनुशंसित प्रदाता उपयोग करें';
+
+  @override
+  String get useRecommendedProvidersSubtitle =>
+      'खोज और रूट को मानचित्र प्रदाता से मिलाए रखें';
+
+  @override
+  String get overrideSearchProvider => 'खोज प्रदाता ओवरराइड करें';
+
+  @override
+  String get overrideRouteProvider => 'रूट प्रदाता ओवरराइड करें';
+
+  @override
+  String get mapProviderAutoSetsProviders =>
+      'मानचित्र प्रदाता बदलने पर अनुशंसित खोज और रूट अपडेट होते हैं।';
+
+  @override
+  String get apiKeyStatusConfigured => 'कॉन्फ़िगर किया गया';
+
+  @override
+  String get apiKeyStatusNotConfigured => 'कॉन्फ़िगर नहीं';
+
+  @override
+  String get apiKeyClear => 'साफ़ करें';
+
+  @override
+  String get apiKeyUpdate => 'कुंजी अपडेट करें';
+
+  @override
+  String get apiKeyAdd => 'कुंजी जोड़ें';
+
+  @override
+  String get testAllConfiguredKeys =>
+      'सभी कॉन्फ़िगर की गई कुंजियाँ परीक्षण करें';
+
+  @override
+  String get apiKeysSecurityFooter =>
+      'एन्क्रिप्टेड · Android Keystore · बैकअप में शामिल नहीं';
+
+  @override
+  String get languageFollowSystem => 'सिस्टम का अनुसरण करें';
+
+  @override
+  String get distancePresetCustom => 'कस्टम';
+
+  @override
+  String get batteryBalancedRecommended => 'संतुलित (अनुशंसित)';
+
+  @override
+  String get resumeAlarmAfterBootBatteryWarning =>
+      'रीबूट के बाद ट्रैकिंग पुनः शुरू करें। अधिक बैटरी उपयोग।';
+
+  @override
+  String get uploadBackupViaHttps => 'HTTPS के माध्यम से बैकअप अपलोड करें';
+
+  @override
+  String get shareLiveTrip => 'लाइव यात्रा साझा करें';
+
+  @override
+  String get importSharedAlarm => 'साझा अलार्म आयात करें';
+
+  @override
+  String get permRestricted => 'प्रतिबंधित';
+
+  @override
+  String get permLimited => 'सीमित';
+
+  @override
+  String get permProvisional => 'अनंतिम';
+
+  @override
+  String get aboutPrivacyPolicy => 'गोपनीयता नीति';
+
+  @override
+  String get aboutTermsOfService => 'सेवा की शर्तें';
+
+  @override
+  String get aboutDonateSupport => 'दान / सहायता';
+
+  @override
+  String get openMapSettings => 'मानचित्र सेटिंग्स खोलें';
+
+  @override
+  String get currentLocationLabel => 'वर्तमान स्थान';
+
+  @override
+  String get activeAlarmsEmptyHint =>
+      'कोई सक्रिय अलार्म नहीं - बनाने के लिए + टैप करें';
+
+  @override
+  String get languageEndonymHint =>
+      'भाषा के नाम उनकी मूल लिपि में दिखाए जाते हैं';
 }

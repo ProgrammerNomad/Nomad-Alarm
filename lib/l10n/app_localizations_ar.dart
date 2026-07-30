@@ -233,6 +233,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get miles => 'أميال';
 
   @override
+  String get distanceUnitsLabel => 'وحدات المسافة';
+
+  @override
   String get language => 'اللغة';
 
   @override
@@ -706,7 +709,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mapSettingsTitle => 'إعدادات الخريطة';
 
   @override
-  String get mapSettingsSubtitle => 'المزودون، البلاطات دون اتصال، مفاتيح API';
+  String get mapSettingsSubtitle => 'المزودون والطبقات والبلاطات دون اتصال';
 
   @override
   String get mapProvidersSection => 'المزودون';
@@ -1007,4 +1010,188 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tileTapToCreate => 'اضغط لإنشاء منبه';
+
+  @override
+  String get alarmCreatedSuccess => 'تم إنشاء المنبه بنجاح';
+
+  @override
+  String get alarmDetailsTitle => 'تفاصيل المنبه';
+
+  @override
+  String get addAnotherAlarm => 'إضافة منبه آخر';
+
+  @override
+  String get newAlarm => 'منبه جديد';
+
+  @override
+  String get alarmStatusTracking => 'تتبع';
+
+  @override
+  String get alarmStatusPaused => 'متوقف مؤقتاً';
+
+  @override
+  String alarmNumberLabel(int number) {
+    return 'منبه #$number';
+  }
+
+  @override
+  String activeAlarmsCount(int count) {
+    return 'المنبهات النشطة ($count)';
+  }
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get providersSection => 'المزودون';
+
+  @override
+  String get providerChangedSuccess => 'تم تغيير المزود بنجاح.';
+
+  @override
+  String get noApiKeyRequired => 'لا يلزم مفتاح API. تم تغيير المزود بنجاح.';
+
+  @override
+  String get configureAndSave => 'تكوين وحفظ';
+
+  @override
+  String get providerSaveBlocked => 'الحفظ محظور حتى إدخال مفتاح API صالح.';
+
+  @override
+  String get credentialGoogleMapsTitle => 'يتطلب Google Maps مفتاح API';
+
+  @override
+  String get credentialGoogleServicesTitle => 'تتطلب خدمات Google مفتاح API';
+
+  @override
+  String get credentialGoogleMapsBody =>
+      'مفتاح واحد يغطي Maps وPlaces وDirections عند التفعيل.';
+
+  @override
+  String get credentialMapboxTitle => 'يتطلب Mapbox رمز وصول';
+
+  @override
+  String get credentialMapboxBody => 'أدخل رمز Mapbox لاستخدام خرائط Mapbox.';
+
+  @override
+  String get credentialHereTitle => 'يتطلب HERE مفتاح API';
+
+  @override
+  String get credentialHereBody => 'أدخل مفتاح HERE REST API.';
+
+  @override
+  String get credentialGraphhopperTitle => 'يتطلب GraphHopper مفتاح API';
+
+  @override
+  String get credentialGraphhopperBody => 'أدخل مفتاح GraphHopper للتوجيه.';
+
+  @override
+  String get googleServiceMaps => 'Maps SDK لـ Android';
+
+  @override
+  String get googleServicePlaces => 'Places API';
+
+  @override
+  String get googleServiceDirections => 'Directions API';
+
+  @override
+  String get googleServiceAlsoUsed => 'يُستخدم أيضًا عند التفعيل (نفس المفتاح)';
+
+  @override
+  String get advancedSection => 'متقدم';
+
+  @override
+  String get advancedApiKeys => 'مفاتيح API';
+
+  @override
+  String get useRecommendedProviders => 'استخدام المزودين الموصى بهم';
+
+  @override
+  String get useRecommendedProvidersSubtitle =>
+      'إبقاء البحث والمسار متطابقين مع مزود الخريطة';
+
+  @override
+  String get overrideSearchProvider => 'تجاوز مزود البحث';
+
+  @override
+  String get overrideRouteProvider => 'تجاوز مزود المسار';
+
+  @override
+  String get mapProviderAutoSetsProviders =>
+      'تغيير مزود الخريطة يحدّث البحث والمسار الموصى بهما.';
+
+  @override
+  String get apiKeyStatusConfigured => 'مُكوَّن';
+
+  @override
+  String get apiKeyStatusNotConfigured => 'غير مُكوَّن';
+
+  @override
+  String get apiKeyClear => 'مسح';
+
+  @override
+  String get apiKeyUpdate => 'تحديث المفتاح';
+
+  @override
+  String get apiKeyAdd => 'إضافة مفتاح';
+
+  @override
+  String get testAllConfiguredKeys => 'اختبار جميع المفاتيح المُكوَّنة';
+
+  @override
+  String get apiKeysSecurityFooter =>
+      'مشفّر · Android Keystore · غير مشمول في النسخ الاحتياطي';
+
+  @override
+  String get languageFollowSystem => 'اتباع النظام';
+
+  @override
+  String get distancePresetCustom => 'مخصص';
+
+  @override
+  String get batteryBalancedRecommended => 'متوازن (موصى به)';
+
+  @override
+  String get resumeAlarmAfterBootBatteryWarning =>
+      'إعادة التتبع بعد إعادة التشغيل. يستهلك بطارية أكثر.';
+
+  @override
+  String get uploadBackupViaHttps => 'رفع النسخة الاحتياطية عبر HTTPS';
+
+  @override
+  String get shareLiveTrip => 'مشاركة الرحلة المباشرة';
+
+  @override
+  String get importSharedAlarm => 'استيراد منبه مشترك';
+
+  @override
+  String get permRestricted => 'مقيّد';
+
+  @override
+  String get permLimited => 'محدود';
+
+  @override
+  String get permProvisional => 'مؤقت';
+
+  @override
+  String get aboutPrivacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get aboutTermsOfService => 'شروط الخدمة';
+
+  @override
+  String get aboutDonateSupport => 'تبرع / دعم';
+
+  @override
+  String get openMapSettings => 'فتح إعدادات الخريطة';
+
+  @override
+  String get currentLocationLabel => 'الموقع الحالي';
+
+  @override
+  String get activeAlarmsEmptyHint =>
+      'لا توجد منبهات نشطة - اضغط + لإنشاء واحد';
+
+  @override
+  String get languageEndonymHint => 'أسماء اللغات معروضة بخطها الأصلي';
 }

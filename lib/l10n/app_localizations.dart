@@ -534,6 +534,12 @@ abstract class AppLocalizations {
   /// **'Miles'**
   String get miles;
 
+  /// No description provided for @distanceUnitsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance units'**
+  String get distanceUnitsLabel;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -1442,7 +1448,7 @@ abstract class AppLocalizations {
   /// No description provided for @mapSettingsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Providers, offline tiles, API keys'**
+  /// **'Providers, layers, and offline tiles'**
   String get mapSettingsSubtitle;
 
   /// No description provided for @mapProvidersSection.
@@ -2032,6 +2038,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to create alarm'**
   String get tileTapToCreate;
+
+  /// No description provided for @alarmCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm created successfully'**
+  String get alarmCreatedSuccess;
+
+  /// No description provided for @alarmDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm details'**
+  String get alarmDetailsTitle;
+
+  /// No description provided for @addAnotherAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another alarm'**
+  String get addAnotherAlarm;
+
+  /// No description provided for @newAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'New alarm'**
+  String get newAlarm;
+
+  /// No description provided for @alarmStatusTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get alarmStatusTracking;
+
+  /// No description provided for @alarmStatusPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get alarmStatusPaused;
+
+  /// No description provided for @alarmNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm #{number}'**
+  String alarmNumberLabel(int number);
+
+  /// No description provided for @activeAlarmsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Active alarms ({count})'**
+  String activeAlarmsCount(int count);
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @providersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Providers'**
+  String get providersSection;
+
+  /// No description provided for @providerChangedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider changed successfully.'**
+  String get providerChangedSuccess;
+
+  /// No description provided for @noApiKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'No API key required. Provider changed successfully.'**
+  String get noApiKeyRequired;
+
+  /// No description provided for @configureAndSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure & Save'**
+  String get configureAndSave;
+
+  /// No description provided for @providerSaveBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Save blocked until a valid API key is entered.'**
+  String get providerSaveBlocked;
+
+  /// No description provided for @credentialGoogleMapsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps requires an API key'**
+  String get credentialGoogleMapsTitle;
+
+  /// No description provided for @credentialGoogleServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google services require an API key'**
+  String get credentialGoogleServicesTitle;
+
+  /// No description provided for @credentialGoogleMapsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'One key covers Maps, Places, and Directions when those providers are enabled.'**
+  String get credentialGoogleMapsBody;
+
+  /// No description provided for @credentialMapboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapbox requires an access token'**
+  String get credentialMapboxTitle;
+
+  /// No description provided for @credentialMapboxBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your Mapbox access token to use Mapbox maps.'**
+  String get credentialMapboxBody;
+
+  /// No description provided for @credentialHereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HERE requires an API key'**
+  String get credentialHereTitle;
+
+  /// No description provided for @credentialHereBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your HERE REST API key.'**
+  String get credentialHereBody;
+
+  /// No description provided for @credentialGraphhopperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GraphHopper requires an API key'**
+  String get credentialGraphhopperTitle;
+
+  /// No description provided for @credentialGraphhopperBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your GraphHopper API key for routing.'**
+  String get credentialGraphhopperBody;
+
+  /// No description provided for @googleServiceMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Maps SDK for Android'**
+  String get googleServiceMaps;
+
+  /// No description provided for @googleServicePlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Places API'**
+  String get googleServicePlaces;
+
+  /// No description provided for @googleServiceDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions API'**
+  String get googleServiceDirections;
+
+  /// No description provided for @googleServiceAlsoUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Also used when enabled (same key)'**
+  String get googleServiceAlsoUsed;
+
+  /// No description provided for @advancedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advancedSection;
+
+  /// No description provided for @advancedApiKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'API Keys'**
+  String get advancedApiKeys;
+
+  /// No description provided for @useRecommendedProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'Use recommended providers'**
+  String get useRecommendedProviders;
+
+  /// No description provided for @useRecommendedProvidersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep search and route matched to your map provider'**
+  String get useRecommendedProvidersSubtitle;
+
+  /// No description provided for @overrideSearchProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Override search provider'**
+  String get overrideSearchProvider;
+
+  /// No description provided for @overrideRouteProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Override route provider'**
+  String get overrideRouteProvider;
+
+  /// No description provided for @mapProviderAutoSetsProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the map provider updates recommended search and route.'**
+  String get mapProviderAutoSetsProviders;
+
+  /// No description provided for @apiKeyStatusConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get apiKeyStatusConfigured;
+
+  /// No description provided for @apiKeyStatusNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get apiKeyStatusNotConfigured;
+
+  /// No description provided for @apiKeyClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get apiKeyClear;
+
+  /// No description provided for @apiKeyUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update key'**
+  String get apiKeyUpdate;
+
+  /// No description provided for @apiKeyAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add key'**
+  String get apiKeyAdd;
+
+  /// No description provided for @testAllConfiguredKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Test all configured keys'**
+  String get testAllConfiguredKeys;
+
+  /// No description provided for @apiKeysSecurityFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted · Android Keystore · Not included in backup'**
+  String get apiKeysSecurityFooter;
+
+  /// No description provided for @languageFollowSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow system'**
+  String get languageFollowSystem;
+
+  /// No description provided for @distancePresetCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get distancePresetCustom;
+
+  /// No description provided for @batteryBalancedRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced (Recommended)'**
+  String get batteryBalancedRecommended;
+
+  /// No description provided for @resumeAlarmAfterBootBatteryWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Relaunch tracking when the device restarts. Uses more battery.'**
+  String get resumeAlarmAfterBootBatteryWarning;
+
+  /// No description provided for @uploadBackupViaHttps.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Backup via HTTPS'**
+  String get uploadBackupViaHttps;
+
+  /// No description provided for @shareLiveTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Live Trip'**
+  String get shareLiveTrip;
+
+  /// No description provided for @importSharedAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Shared Alarm'**
+  String get importSharedAlarm;
+
+  /// No description provided for @permRestricted.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted'**
+  String get permRestricted;
+
+  /// No description provided for @permLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited'**
+  String get permLimited;
+
+  /// No description provided for @permProvisional.
+  ///
+  /// In en, this message translates to:
+  /// **'Provisional'**
+  String get permProvisional;
+
+  /// No description provided for @aboutPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get aboutPrivacyPolicy;
+
+  /// No description provided for @aboutTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get aboutTermsOfService;
+
+  /// No description provided for @aboutDonateSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Donate / Support'**
+  String get aboutDonateSupport;
+
+  /// No description provided for @openMapSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map settings'**
+  String get openMapSettings;
+
+  /// No description provided for @currentLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Location'**
+  String get currentLocationLabel;
+
+  /// No description provided for @activeAlarmsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No active alarms - tap + to create one'**
+  String get activeAlarmsEmptyHint;
+
+  /// No description provided for @languageEndonymHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Language names are shown in their native script'**
+  String get languageEndonymHint;
 }
 
 class _AppLocalizationsDelegate

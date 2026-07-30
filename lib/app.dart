@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/l10n/app_localizations.dart';
 import 'package:nomad_alarm/core/constants/app_constants.dart';
+import 'package:nomad_alarm/core/utils/locale_resolution.dart';
 import 'package:nomad_alarm/core/router/app_router.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
@@ -29,7 +30,7 @@ class NomadAlarmApp extends ConsumerWidget {
     );
 
     final locale = settingsAsync.when(
-      data: (settings) => Locale(settings.languageCode),
+      data: (settings) => resolveAppLocale(settings.languageCode),
       loading: () => const Locale('en'),
       error: (_, _) => const Locale('en'),
     );

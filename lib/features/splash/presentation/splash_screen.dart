@@ -140,12 +140,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!mounted) {
         return;
       }
-      final alarm = running.first;
-      if (alarm.status == AlarmStatus.triggered) {
-        context.go('/alarm/ring/${alarm.id}');
-      } else {
-        context.go('/alarm/active/${alarm.id}');
+      await ref.read(alarmServiceProvider).resumeMonitoringForRunningAlarms();
+      if (!mounted) {
+        return;
       }
+      final triggered = running.where((a) => a.status == AlarmStatus.triggered).toList();
+      if (triggered.isNotEmpty) {
+        context.go('/alarm/ring/${triggered.first.id}');
+        return;
+      }
+      context.go('/home');
       return;
     }
     if (!mounted) {

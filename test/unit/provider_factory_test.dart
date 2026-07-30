@@ -6,6 +6,7 @@ import 'package:nomad_alarm/providers/map/google_map_provider.dart';
 import 'package:nomad_alarm/providers/map/mapbox_map_provider.dart';
 import 'package:nomad_alarm/providers/map/osm_map_provider.dart';
 import 'package:nomad_alarm/providers/route/osrm_route_provider.dart';
+import 'package:nomad_alarm/providers/search/google_places_search_provider.dart';
 import 'package:nomad_alarm/providers/search/nominatim_search_provider.dart';
 import 'package:nomad_alarm/providers/search/photon_search_provider.dart';
 import 'package:nomad_alarm/services/api_key_store.dart';
@@ -62,9 +63,22 @@ void main() {
 
   test('createSearchProvider returns Photon when selected', () async {
     final settings = AppSettings.defaults()
+      ..useRecommendedProviders = false
+      ..overrideSearchProvider = true
       ..searchProvider = SearchProviderType.photon;
     final provider = await factory.createSearchProvider(settings);
     expect(provider, isA<PhotonSearchProvider>());
+  });
+
+  test('createSearchProvider uses bundle when recommended', () async {
+    final settings = AppSettings.defaults()
+      ..mapProvider = MapProviderType.google
+      ..searchProvider = SearchProviderType.nominatim
+      ..useRecommendedProviders = true;
+    when(() => apiKeyStore.readGoogleApiKey())
+        .thenAnswer((_) async => 'AIza.test');
+    final provider = await factory.createSearchProvider(settings);
+    expect(provider, isA<GooglePlacesSearchProvider>());
   });
 
   test('createRouteProvider returns OSRM by default', () async {

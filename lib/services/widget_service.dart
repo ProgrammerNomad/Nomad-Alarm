@@ -31,6 +31,7 @@ class WidgetService {
     double? triggerDistanceMeters,
     double? speedKmh,
     String languageCode = 'en',
+    int activeAlarmCount = 1,
   }) async {
     if (!FeatureFlags.homeScreenWidgets) {
       return;
@@ -55,9 +56,19 @@ class WidgetService {
     );
     await HomeWidget.saveWidgetData<String>(
       'distance',
-      active ? (eta.isNotEmpty && eta != '-' ? '$distance · $eta' : distance) : '',
+      active
+          ? (activeAlarmCount > 1
+              ? '$activeAlarmCount active · $distance'
+              : (eta.isNotEmpty && eta != '-'
+                  ? '$distance · $eta'
+                  : distance))
+          : '',
     );
     await HomeWidget.saveWidgetData<int>('alarmId', active ? alarmId : -1);
+    await HomeWidget.saveWidgetData<int>(
+      'active_alarm_count',
+      active ? activeAlarmCount : 0,
+    );
     await HomeWidget.saveWidgetData<int>(
       'progress',
       (progress * 100).round(),

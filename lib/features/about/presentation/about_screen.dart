@@ -56,6 +56,24 @@ class _AboutScreenState extends State<AboutScreen> {
           ),
           const Spacer(),
           OutlinedButton.icon(
+            onPressed: () => launchUrl(
+              Uri.parse(AppConstants.privacyPolicyUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+            icon: const Icon(Icons.privacy_tip_outlined),
+            label: Text(l10n.aboutPrivacyPolicy),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => launchUrl(
+              Uri.parse(AppConstants.termsOfServiceUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+            icon: const Icon(Icons.description_outlined),
+            label: Text(l10n.aboutTermsOfService),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
@@ -71,6 +89,15 @@ class _AboutScreenState extends State<AboutScreen> {
             onPressed: () => launchUrl(Uri.parse(AppConstants.githubUrl)),
             icon: const Icon(Icons.code),
             label: Text(l10n.viewOnGitHub),
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => launchUrl(
+              Uri.parse(AppConstants.supportUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+            icon: const Icon(Icons.favorite_outline),
+            label: Text(l10n.aboutDonateSupport),
           ),
         ],
       ),

@@ -9,7 +9,7 @@ import 'package:nomad_alarm/core/constants/battery_profile_config.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/l10n/notification_l10n.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
-import 'package:nomad_alarm/core/utils/distance_utils.dart';
+import 'package:nomad_alarm/core/utils/multi_alarm_notification_formatter.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
@@ -65,7 +65,7 @@ class BackgroundAlarmService {
     return Permission.locationWhenInUse.isGranted;
   }
 
-  static Future<void> startMonitoring(AlarmMonitorConfig config) async {
+  static Future<void> _ensureServiceRunning() async {
     if (!await hasLocationPermissionForForegroundService()) {
       throw const PermissionException(
         'Location permission is required to track your alarm.',
@@ -84,7 +84,15 @@ class BackgroundAlarmService {
         );
       }
     }
-    service.invoke('start', config.toJson());
+  }
+
+  static Future<void> addAlarmMonitoring(AlarmMonitorConfig config) async {
+    await _ensureServiceRunning();
+    FlutterBackgroundService().invoke('addAlarm', config.toJson());
+  }
+
+  static Future<void> removeAlarmMonitoring(int alarmId) async {
+    FlutterBackgroundService().invoke('removeAlarm', {'alarmId': alarmId});
   }
 
   static Future<void> stopMonitoring() async {
@@ -93,17 +101,31 @@ class BackgroundAlarmService {
     service.invoke('stopService');
   }
 
-  static Future<void> pauseMonitoring() async {
-    FlutterBackgroundService().invoke('pause');
+  static Future<void> pauseAlarmMonitoring(int alarmId) async {
+    FlutterBackgroundService().invoke('pauseAlarm', {'alarmId': alarmId});
   }
 
-  static Future<void> resumeMonitoring(AlarmMonitorConfig config) async {
+  static Future<void> resumeAlarmMonitoring(AlarmMonitorConfig config) async {
     if (!await hasLocationPermissionForForegroundService()) {
       throw const PermissionException(
         'Location permission is required to resume tracking.',
       );
     }
-    FlutterBackgroundService().invoke('resume', config.toJson());
+    await _ensureServiceRunning();
+    FlutterBackgroundService().invoke('resumeAlarm', config.toJson());
+  }
+
+  /// Legacy entry point - adds one alarm without stopping others.
+  static Future<void> startMonitoring(AlarmMonitorConfig config) async {
+    await addAlarmMonitoring(config);
+  }
+
+  static Future<void> pauseMonitoring() async {
+    FlutterBackgroundService().invoke('pauseAll');
+  }
+
+  static Future<void> resumeMonitoring(AlarmMonitorConfig config) async {
+    await resumeAlarmMonitoring(config);
   }
 
   static Future<bool> isRunning() async {
@@ -135,41 +157,59 @@ class BackgroundAlarmService {
   }
 }
 
+class _MonitorEntry {
+  _MonitorEntry(this.config);
+
+  AlarmMonitorConfig config;
+  AlarmStatus currentStatus = AlarmStatus.active;
+  DateTime? snoozeSuppressedUntil;
+  final AlarmEvaluator evaluator = AlarmEvaluator();
+  DateTime? lastRouteFetchAt;
+  double? cachedRouteEtaMinutes;
+  bool paused = false;
+  bool passedHandled = false;
+  AlarmRuntimeState? lastState;
+}
+
 @pragma('vm:entry-point')
 Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
-  AlarmMonitorConfig? config;
-  var currentStatus = AlarmStatus.active;
-  DateTime? snoozeSuppressedUntil;
-  final evaluator = AlarmEvaluator();
+  final monitors = <int, _MonitorEntry>{};
   final routeProvider = OsrmRouteProvider();
-  DateTime? lastRouteFetchAt;
-  double? cachedRouteEtaMinutes;
   StreamSubscription<Position>? subscription;
-  var paused = false;
-  var lastDistanceMeters = double.infinity;
   LocationSettings? activeSettings;
   Future<void> Function(Position position)? onPosition;
 
   Future<void> stopAll() async {
     await subscription?.cancel();
     subscription = null;
-    config = null;
+    monitors.clear();
     activeSettings = null;
-    evaluator.reset();
     routeProvider.dispose();
-    lastRouteFetchAt = null;
-    cachedRouteEtaMinutes = null;
     service.invoke('stopped');
     service.stopSelf();
   }
 
-  Future<void> startGpsStream(AlarmMonitorConfig cfg, double distance) async {
+  Future<void> startGpsStream(double nearestDistanceMeters) async {
+    var profile = BatteryProfile.balanced;
+    var triggerDistance = AlarmConstants.defaultTriggerDistanceM;
+    for (final entry in monitors.values) {
+      if (entry.paused) {
+        continue;
+      }
+      if (entry.config.batteryProfile == BatteryProfile.aggressive) {
+        profile = BatteryProfile.aggressive;
+      }
+      if (entry.config.triggerDistanceMeters < triggerDistance) {
+        triggerDistance = entry.config.triggerDistanceMeters;
+      }
+    }
+
     final profileConfig = BatteryProfileConfig.effectiveFor(
-      selectedProfile: cfg.batteryProfile,
-      distanceMeters: distance,
-      triggerDistanceMeters: cfg.triggerDistanceMeters,
+      selectedProfile: profile,
+      distanceMeters: nearestDistanceMeters,
+      triggerDistanceMeters: triggerDistance,
     );
     final settings = profileConfig.toLocationSettings();
     if (activeSettings != null &&
@@ -184,16 +224,14 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
     ).listen((position) => onPosition!(position));
   }
 
-  Future<double?> resolveRouteEta(
-    AlarmMonitorConfig cfg,
-    Position position,
-  ) async {
+  Future<double?> resolveRouteEta(_MonitorEntry entry, Position position) async {
+    final cfg = entry.config;
     final now = DateTime.now();
-    if (lastRouteFetchAt != null &&
-        now.difference(lastRouteFetchAt!).inSeconds <
+    if (entry.lastRouteFetchAt != null &&
+        now.difference(entry.lastRouteFetchAt!).inSeconds <
             AlarmConstants.routeEtaRefreshSec &&
-        cachedRouteEtaMinutes != null) {
-      return cachedRouteEtaMinutes;
+        entry.cachedRouteEtaMinutes != null) {
+      return entry.cachedRouteEtaMinutes;
     }
     try {
       final result = await routeProvider.route(
@@ -201,91 +239,158 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
         to: LatLng(cfg.destLatitude, cfg.destLongitude),
         travelMode: cfg.travelMode,
       );
-      lastRouteFetchAt = now;
-      cachedRouteEtaMinutes = result?.durationMinutes;
-      return cachedRouteEtaMinutes;
+      entry.lastRouteFetchAt = now;
+      entry.cachedRouteEtaMinutes = result?.durationMinutes;
+      return entry.cachedRouteEtaMinutes;
     } catch (_) {
       return null;
     }
   }
 
+  void updateForegroundNotification(List<AlarmRuntimeState> states) {
+    if (service is! AndroidServiceInstance) {
+      return;
+    }
+    final formatted = formatMultiAlarmNotification(states);
+    service.setForegroundNotificationInfo(
+      title: formatted.title,
+      content: formatted.content,
+    );
+  }
+
   onPosition = (Position position) async {
-    final activeConfig = config;
-    if (activeConfig == null || paused) {
+    if (monitors.isEmpty) {
       return;
     }
 
-    final routeEta = await resolveRouteEta(activeConfig, position);
+    final emitted = <AlarmRuntimeState>[];
+    var nearestDistance = double.infinity;
 
-    final state = evaluator.evaluate(
-      config: activeConfig,
-      position: position,
-      currentStatus: currentStatus,
-      snoozeSuppressedUntil: snoozeSuppressedUntil,
-      routeEtaMinutes: routeEta,
-    );
+    for (final entry in monitors.values) {
+      if (entry.paused) {
+        if (entry.lastState != null) {
+          emitted.add(entry.lastState!);
+        }
+        continue;
+      }
 
-    lastDistanceMeters = state.distanceMeters;
-    await startGpsStream(activeConfig, state.distanceMeters);
-
-    if (service is AndroidServiceInstance) {
-      final eta = formatEta(state.etaMinutes);
-      final distance = formatDistance(state.distanceMeters);
-      final content = state.etaMinutes != null
-          ? '$distance · $eta'
-          : '$distance to destination';
-      service.setForegroundNotificationInfo(
-        title: activeConfig.name,
-        content: content,
+      final routeEta = await resolveRouteEta(entry, position);
+      final state = entry.evaluator.evaluate(
+        config: entry.config,
+        position: position,
+        currentStatus: entry.currentStatus,
+        snoozeSuppressedUntil: entry.snoozeSuppressedUntil,
+        routeEtaMinutes: routeEta,
       );
+
+      entry.lastState = state;
+      emitted.add(state);
+      if (state.distanceMeters < nearestDistance) {
+        nearestDistance = state.distanceMeters;
+      }
+
+      service.invoke('state', state.toJson());
+
+      if (state.status == AlarmStatus.triggered &&
+          entry.currentStatus != AlarmStatus.triggered) {
+        entry.currentStatus = AlarmStatus.triggered;
+        service.invoke('triggered', {'alarmId': entry.config.alarmId});
+      }
+
+      if (state.hasPassedDestination && !entry.passedHandled) {
+        entry.passedHandled = true;
+      }
     }
 
-    service.invoke('state', state.toJson());
-
-    if (state.status == AlarmStatus.triggered &&
-        currentStatus != AlarmStatus.triggered) {
-      currentStatus = AlarmStatus.triggered;
-      service.invoke('triggered', {'alarmId': activeConfig.alarmId});
+    if (nearestDistance.isFinite) {
+      await startGpsStream(nearestDistance);
     }
+    updateForegroundNotification(emitted);
   };
+
+  void addMonitor(AlarmMonitorConfig config) {
+    monitors[config.alarmId] = _MonitorEntry(config);
+    if (subscription == null) {
+      unawaited(startGpsStream(double.infinity));
+    }
+  }
+
+  service.on('addAlarm').listen((event) async {
+    if (event == null) {
+      return;
+    }
+    final config = AlarmMonitorConfig.fromJson(Map<String, dynamic>.from(event));
+    addMonitor(config);
+  });
 
   service.on('start').listen((event) async {
     if (event == null) {
       return;
     }
-    config = AlarmMonitorConfig.fromJson(Map<String, dynamic>.from(event));
-    currentStatus = AlarmStatus.active;
-    paused = false;
-    snoozeSuppressedUntil = null;
-    lastDistanceMeters = double.infinity;
-    evaluator.reset();
-    lastRouteFetchAt = null;
-    cachedRouteEtaMinutes = null;
-
-    await startGpsStream(config!, lastDistanceMeters);
+    final config = AlarmMonitorConfig.fromJson(Map<String, dynamic>.from(event));
+    addMonitor(config);
   });
 
-  service.on('pause').listen((_) {
-    paused = true;
-    currentStatus = AlarmStatus.paused;
-  });
-
-  service.on('resume').listen((event) async {
-    if (event != null) {
-      config = AlarmMonitorConfig.fromJson(Map<String, dynamic>.from(event));
+  service.on('removeAlarm').listen((event) async {
+    final alarmId = event?['alarmId'] as int?;
+    if (alarmId == null) {
+      return;
     }
-    paused = false;
-    currentStatus = AlarmStatus.active;
-    if (config != null) {
-      await startGpsStream(config!, lastDistanceMeters);
+    monitors.remove(alarmId);
+    if (monitors.isEmpty) {
+      await stopAll();
     }
   });
 
-  service.on('snooze').listen((_) {
-    currentStatus = AlarmStatus.active;
-    snoozeSuppressedUntil = DateTime.now().add(
-      const Duration(minutes: AlarmConstants.snoozeDurationMin),
-    );
+  service.on('pauseAlarm').listen((event) {
+    final alarmId = event?['alarmId'] as int?;
+    if (alarmId == null) {
+      return;
+    }
+    monitors[alarmId]?.paused = true;
+    monitors[alarmId]?.currentStatus = AlarmStatus.paused;
+  });
+
+  service.on('pauseAll').listen((_) {
+    for (final entry in monitors.values) {
+      entry.paused = true;
+      entry.currentStatus = AlarmStatus.paused;
+    }
+  });
+
+  service.on('resumeAlarm').listen((event) async {
+    if (event == null) {
+      return;
+    }
+    final config = AlarmMonitorConfig.fromJson(Map<String, dynamic>.from(event));
+    final entry = monitors[config.alarmId];
+    if (entry != null) {
+      entry.config = config;
+      entry.paused = false;
+      entry.currentStatus = AlarmStatus.active;
+    } else {
+      addMonitor(config);
+    }
+  });
+
+  service.on('snooze').listen((event) {
+    final alarmId = event?['alarmId'] as int?;
+    if (alarmId != null) {
+      final entry = monitors[alarmId];
+      if (entry != null) {
+        entry.currentStatus = AlarmStatus.active;
+        entry.snoozeSuppressedUntil = DateTime.now().add(
+          const Duration(minutes: AlarmConstants.snoozeDurationMin),
+        );
+        return;
+      }
+    }
+    for (final entry in monitors.values) {
+      entry.currentStatus = AlarmStatus.active;
+      entry.snoozeSuppressedUntil = DateTime.now().add(
+        const Duration(minutes: AlarmConstants.snoozeDurationMin),
+      );
+    }
   });
 
   service.on('stop').listen((_) async {

@@ -42,6 +42,10 @@ class AppSettings {
   late bool accessibilityHighContrast;
   late bool resumeAlarmAfterBoot;
 
+  late bool useRecommendedProviders;
+  late bool overrideSearchProvider;
+  late bool overrideRouteProvider;
+
   static AppSettings defaults() {
     return AppSettings()
       ..themeMode = AppThemeMode.system
@@ -52,7 +56,7 @@ class AppSettings {
       ..searchProvider = SearchProviderType.nominatim
       ..routeProvider = RouteProviderType.osrm
       ..useMetric = true
-      ..languageCode = 'en'
+      ..languageCode = 'system'
       ..defaultTriggerDistanceMeters = 500
       ..defaultVoiceEnabled = true
       ..defaultVibrationEnabled = true
@@ -64,6 +68,9 @@ class AppSettings {
       ..persistentNotificationEnabled = true
       ..lockScreenInfoEnabled = true
       ..accessibilityHighContrast = false
-      ..resumeAlarmAfterBoot = false;
+      ..resumeAlarmAfterBoot = false
+      ..useRecommendedProviders = true
+      ..overrideSearchProvider = false
+      ..overrideRouteProvider = false;
   }
 }

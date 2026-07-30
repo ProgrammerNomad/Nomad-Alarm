@@ -160,7 +160,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       final googleKey = ref.watch(googleApiKeyProvider).valueOrNull;
       if (googleKey == null || googleKey.isEmpty) {
         return _GoogleMapKeyMissingPanel(
-          onOpenApiKeys: () => context.push('/settings/api-keys'),
+          onOpenMapSettings: () => context.push('/settings/map'),
           onOpenGuide: () async {
             final uri = Uri.parse(AppConstants.settingsGuideGoogleSetupUrl);
             if (await canLaunchUrl(uri)) {
@@ -402,11 +402,11 @@ class _PinBottomSheet extends StatelessWidget {
 
 class _GoogleMapKeyMissingPanel extends StatelessWidget {
   const _GoogleMapKeyMissingPanel({
-    required this.onOpenApiKeys,
+    required this.onOpenMapSettings,
     required this.onOpenGuide,
   });
 
-  final VoidCallback onOpenApiKeys;
+  final VoidCallback onOpenMapSettings;
   final VoidCallback onOpenGuide;
 
   @override
@@ -431,9 +431,9 @@ class _GoogleMapKeyMissingPanel extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: onOpenApiKeys,
-              icon: const Icon(Icons.key),
-              label: Text(l10n.googleMapKeyRequiredAction),
+              onPressed: onOpenMapSettings,
+              icon: const Icon(Icons.map_outlined),
+              label: Text(l10n.openMapSettings),
             ),
             const SizedBox(height: 8),
             TextButton.icon(

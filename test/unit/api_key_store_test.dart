@@ -99,4 +99,19 @@ void main() {
 
     expect(await store.readGoogleApiKey(), 'AIza.from-places');
   });
+
+  test('testGoogleApiKeyStatus returns all false when no key', () async {
+    when(
+      () => storage.read(
+        key: any(named: 'key'),
+        aOptions: any(named: 'aOptions'),
+      ),
+    ).thenAnswer((_) async => null);
+
+    final status = await store.testGoogleApiKeyStatus();
+    expect(status.maps, isFalse);
+    expect(status.places, isFalse);
+    expect(status.directions, isFalse);
+    expect(status.allPassed, isFalse);
+  });
 }

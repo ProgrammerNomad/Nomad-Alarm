@@ -21,6 +21,7 @@ import 'package:nomad_alarm/providers/search/pelias_search_provider.dart';
 import 'package:nomad_alarm/providers/search/photon_search_provider.dart';
 import 'package:nomad_alarm/providers/search/search_provider.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/core/utils/settings_provider_utils.dart';
 import 'package:nomad_alarm/services/api_key_store.dart';
 
 class ProviderFactory {
@@ -72,7 +73,7 @@ class ProviderFactory {
   }
 
   Future<SearchProvider> createSearchProvider(AppSettings settings) async {
-    switch (settings.searchProvider) {
+    switch (effectiveSearch(settings)) {
       case SearchProviderType.googlePlaces:
         if (FeatureFlags.googlePlacesSearch) {
           final key = await _apiKeyStore.readGoogleApiKey();
@@ -99,7 +100,7 @@ class ProviderFactory {
   }
 
   Future<RouteProvider> createRouteProvider(AppSettings settings) async {
-    switch (settings.routeProvider) {
+    switch (effectiveRoute(settings)) {
       case RouteProviderType.googleDirections:
         if (FeatureFlags.googleMapsProvider) {
           final key = await _apiKeyStore.readGoogleApiKey();

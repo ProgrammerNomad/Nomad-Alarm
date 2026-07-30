@@ -47,13 +47,14 @@ class _PermissionCenterScreenState extends ConsumerState<PermissionCenterScreen>
               children: steps.map((info) {
                 final status = _statuses![info.type] ?? PermissionStatus.denied;
                 return ListTile(
+                  leading: Icon(
+                    _statusIcon(status),
+                    color: _statusColor(context, status),
+                  ),
                   title: Text(info.title),
                   subtitle: Text(_statusLabel(l10n, status)),
                   trailing: status.isGranted
-                      ? Icon(
-                          Icons.check_circle,
-                          color: Theme.of(context).colorScheme.secondary,
-                        )
+                      ? null
                       : TextButton(
                           onPressed: () async {
                             final service =
@@ -78,9 +79,29 @@ class _PermissionCenterScreenState extends ConsumerState<PermissionCenterScreen>
       PermissionStatus.granted => l10n.permGranted,
       PermissionStatus.denied => l10n.permDenied,
       PermissionStatus.permanentlyDenied => l10n.permPermanentlyDenied,
-      PermissionStatus.restricted => 'Restricted',
-      PermissionStatus.limited => 'Limited',
-      PermissionStatus.provisional => 'Provisional',
+      PermissionStatus.restricted => l10n.permRestricted,
+      PermissionStatus.limited => l10n.permLimited,
+      PermissionStatus.provisional => l10n.permProvisional,
+    };
+  }
+
+  IconData _statusIcon(PermissionStatus status) {
+    return switch (status) {
+      PermissionStatus.granted => Icons.check_circle,
+      PermissionStatus.limited => Icons.check_circle_outline,
+      PermissionStatus.provisional => Icons.schedule,
+      PermissionStatus.restricted => Icons.block,
+      PermissionStatus.permanentlyDenied => Icons.settings,
+      PermissionStatus.denied => Icons.cancel_outlined,
+    };
+  }
+
+  Color? _statusColor(BuildContext context, PermissionStatus status) {
+    return switch (status) {
+      PermissionStatus.granted => Theme.of(context).colorScheme.secondary,
+      PermissionStatus.limited || PermissionStatus.provisional =>
+        Theme.of(context).colorScheme.primary,
+      _ => Theme.of(context).colorScheme.error,
     };
   }
 }

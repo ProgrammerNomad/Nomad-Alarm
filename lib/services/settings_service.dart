@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:nomad_alarm/core/utils/settings_provider_utils.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
@@ -12,6 +13,7 @@ class SettingsService {
   Future<AppSettings> getSettings() async {
     final existing = await _isar.appSettings.get(0);
     if (existing != null) {
+      ensureProviderSettingsDefaults(existing);
       return existing;
     }
     final defaults = AppSettings.defaults();

@@ -19,7 +19,21 @@ Nomad Alarm works **fully offline and free** with open providers. Optional paid 
 | Search | Nominatim | Google Places, Photon, Pelias, HERE |
 | Routing/ETA | OSRM | Google Directions, GraphHopper, Valhalla |
 
-Switch providers in **Settings → Maps** without reinstalling.
+Switch providers in **Settings → Map** (explicit Save). Provider bundles couple map + recommended search + route by default.
+
+---
+
+## Provider bundles
+
+| Map provider | Recommended search | Recommended route | Credential on Save |
+|--------------|-------------------|-------------------|--------------------|
+| OpenStreetMap | Nominatim | OSRM | None |
+| Google Maps | Google Places | Google Directions | Google key |
+| HERE | HERE Search | OSRM | HERE key |
+| Mapbox | Nominatim | OSRM | Mapbox token |
+| Apple Maps (iOS) | Nominatim | OSRM | None |
+
+Power users can override search/route under **Advanced** on the map settings screen. Effective providers are resolved in `settings_provider_utils.dart`.
 
 ---
 
@@ -49,7 +63,7 @@ Switch providers in **Settings → Maps** without reinstalling.
 
 ## Optional: Google APIs (BYO)
 
-User provides **one Google API key** in **Settings → API keys**. The app stores it in all Google slots (Maps, Places, Directions) and initializes the native Maps SDK at runtime on Android.
+User provides **one Google API key** via inline prompt on map settings Save, or under **Settings → Advanced → API Keys**. The app stores it in all Google slots (Maps, Places, Directions) and initializes the native Maps SDK at runtime on Android.
 
 **Step-by-step setup:** [Settings Guide → Google Cloud setup]({{ '/settings-guide/#google-cloud-setup' | relative_url }})
 

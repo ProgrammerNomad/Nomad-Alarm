@@ -148,7 +148,10 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
         if (!mounted) {
           return;
         }
-        context.go('/alarm/active/${alarm.id}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.alarmCreatedSuccess)),
+        );
+        context.go('/home');
         return;
       }
 

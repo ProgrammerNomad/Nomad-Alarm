@@ -2,60 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
-import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
-import 'package:nomad_alarm/services/background_alarm_service.dart';
 
-class ActiveAlarmScreen extends ConsumerStatefulWidget {
+class ActiveAlarmScreen extends ConsumerWidget {
   const ActiveAlarmScreen({
     required this.alarmId,
     super.key,
   });
 
   final int alarmId;
-
-  @override
-  ConsumerState<ActiveAlarmScreen> createState() => _ActiveAlarmScreenState();
-}
-
-class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureMonitoring());
-  }
-
-  Future<void> _ensureMonitoring() async {
-    final alarm = await ref.read(alarmRepositoryProvider).getById(widget.alarmId);
-    if (alarm == null || !mounted) {
-      return;
-    }
-    if (alarm.status == AlarmStatus.active &&
-        ref.read(alarmServiceProvider).activeAlarmId != widget.alarmId) {
-      if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
-        await ref.read(alarmServiceProvider).suspendActiveAlarmsIfLocationDenied();
-        if (mounted) {
-          context.go('/permissions');
-        }
-        return;
-      }
-      try {
-        await ref.read(alarmServiceProvider).startAlarm(widget.alarmId);
-      } on PermissionException catch (error) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.userMessage)),
-          );
-          context.go('/permissions');
-        }
-      }
-    }
-  }
 
   Color _accuracyColor(double meters) {
     if (meters <= AlarmConstants.gpsAccuracyGoodM) {
@@ -68,23 +28,22 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final useMetric =
         ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
-    final stateAsync = ref.watch(activeAlarmStateProvider(widget.alarmId));
+    final stateAsync = ref.watch(activeAlarmStateProvider(alarmId));
 
-    ref.listen(activeAlarmStateProvider(widget.alarmId), (prev, next) {
+    ref.listen(activeAlarmStateProvider(alarmId), (prev, next) {
       final state = next.valueOrNull;
-      if (state?.status == AlarmStatus.triggered && mounted) {
-        context.go('/alarm/ring/${widget.alarmId}');
+      if (state?.status == AlarmStatus.triggered && context.mounted) {
+        context.go('/alarm/ring/$alarmId');
       }
     });
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.activeAlarmTitle),
-        automaticallyImplyLeading: false,
+        title: Text(l10n.alarmDetailsTitle),
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -99,6 +58,12 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                   state.destinationName,
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.alarmNumberLabel(alarmId),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
                 if (state.address != null) ...[
                   const SizedBox(height: 4),
@@ -182,7 +147,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                     onPressed: () async {
                       await ref
                           .read(alarmServiceProvider)
-                          .resumeAlarm(widget.alarmId);
+                          .resumeAlarm(alarmId);
                       ref.invalidate(activeAlarmsProvider);
                     },
                     icon: const Icon(Icons.play_arrow),
@@ -193,7 +158,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                     onPressed: () async {
                       await ref
                           .read(alarmServiceProvider)
-                          .pauseAlarm(widget.alarmId);
+                          .pauseAlarm(alarmId);
                       ref.invalidate(activeAlarmsProvider);
                     },
                     icon: const Icon(Icons.pause),
@@ -219,7 +184,7 @@ class _ActiveAlarmScreenState extends ConsumerState<ActiveAlarmScreen> {
                     onPressed: () async {
                       await ref
                           .read(alarmServiceProvider)
-                          .cancelAlarm(widget.alarmId);
+                          .cancelAlarm(alarmId);
                       ref.invalidate(activeAlarmsProvider);
                       if (context.mounted) {
                         context.go('/home');

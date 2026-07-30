@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/core/utils/provider_catalog.dart';
+import 'package:nomad_alarm/core/utils/settings_provider_utils.dart';
+import 'package:nomad_alarm/features/settings/presentation/provider_credential_sheet.dart';
+import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/search_providers.dart';
@@ -11,6 +15,7 @@ import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/map_viewport_store.dart';
 import 'package:nomad_alarm/services/offline_tile_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
+import 'package:nomad_alarm/shared/widgets/settings_controls.dart';
 
 class MapSettingsScreen extends ConsumerStatefulWidget {
   const MapSettingsScreen({super.key});
@@ -22,11 +27,50 @@ class MapSettingsScreen extends ConsumerStatefulWidget {
 class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
   String _cacheSize = '…';
   bool _busy = false;
+  AppSettings? _saved;
+  AppSettings? _pending;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     _refreshCacheSize();
+  }
+
+  void _syncFromSaved(AppSettings settings) {
+    if (_initialized && _pending != null) {
+      return;
+    }
+    _saved = _cloneMapSettings(settings);
+    _pending = _cloneMapSettings(settings);
+    _initialized = true;
+  }
+
+  AppSettings _cloneMapSettings(AppSettings source) {
+    return AppSettings()
+      ..id = source.id
+      ..mapProvider = source.mapProvider
+      ..mapLayer = source.mapLayer
+      ..searchProvider = source.searchProvider
+      ..routeProvider = source.routeProvider
+      ..useRecommendedProviders = source.useRecommendedProviders
+      ..overrideSearchProvider = source.overrideSearchProvider
+      ..overrideRouteProvider = source.overrideRouteProvider;
+  }
+
+  bool get _hasChanges {
+    final saved = _saved;
+    final pending = _pending;
+    if (saved == null || pending == null) {
+      return false;
+    }
+    return saved.mapProvider != pending.mapProvider ||
+        saved.mapLayer != pending.mapLayer ||
+        saved.searchProvider != pending.searchProvider ||
+        saved.routeProvider != pending.routeProvider ||
+        saved.useRecommendedProviders != pending.useRecommendedProviders ||
+        saved.overrideSearchProvider != pending.overrideSearchProvider ||
+        saved.overrideRouteProvider != pending.overrideRouteProvider;
   }
 
   Future<void> _refreshCacheSize() async {
@@ -37,6 +81,74 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     if (mounted) {
       setState(() => _cacheSize = size);
     }
+  }
+
+  Future<void> _saveProviders() async {
+    final l10n = context.l10n;
+    final pending = _pending;
+    final savedSnapshot = ref.read(settingsControllerProvider).valueOrNull;
+    if (pending == null || savedSnapshot == null) {
+      return;
+    }
+
+    final missing = await missingCredentialsFor(
+      pending,
+      ref.read(apiKeyStoreProvider),
+    );
+    if (missing.isNotEmpty) {
+      final configured = await showProviderCredentialSheet(
+        context,
+        ref,
+        requirements: missing,
+      );
+      if (!configured || !mounted) {
+        return;
+      }
+      final stillMissing = await missingCredentialsFor(
+        pending,
+        ref.read(apiKeyStoreProvider),
+      );
+      if (stillMissing.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.providerSaveBlocked)),
+        );
+        return;
+      }
+    }
+
+    final updated = savedSnapshot
+      ..mapProvider = pending.mapProvider
+      ..mapLayer = pending.mapLayer
+      ..searchProvider = pending.searchProvider
+      ..routeProvider = pending.routeProvider
+      ..useRecommendedProviders = pending.useRecommendedProviders
+      ..overrideSearchProvider = pending.overrideSearchProvider
+      ..overrideRouteProvider = pending.overrideRouteProvider;
+
+    await ref.read(settingsControllerProvider.notifier).saveSettings(updated);
+    ref.invalidate(mapProviderProvider);
+    ref.invalidate(searchProviderProvider);
+    ref.invalidate(searchRepositoryProvider);
+    ref.invalidate(routeServiceProvider);
+    ref.invalidate(googleApiKeyProvider);
+
+    setState(() {
+      _saved = _cloneMapSettings(updated);
+      _pending = _cloneMapSettings(updated);
+    });
+
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          missing.isEmpty && !credentialsRequiredFor(pending).any((r) => r.required)
+              ? l10n.noApiKeyRequired
+              : l10n.providerChangedSuccess,
+        ),
+      ),
+    );
   }
 
   Future<void> _downloadRegion() async {
@@ -96,6 +208,17 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     }
   }
 
+  void _onMapProviderChanged(MapProviderType value) {
+    setState(() {
+      applyMapProviderChange(_pending!, value);
+      if (_pending!.useRecommendedProviders) {
+        _pending!
+          ..overrideSearchProvider = false
+          ..overrideRouteProvider = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -106,139 +229,213 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
-        data: (settings) => ListView(
-          children: [
-            _SectionHeader(title: l10n.mapProvidersSection),
-            ListTile(
-              title: Text(l10n.mapLayerLabel),
-              trailing: DropdownButton<MapLayerType>(
-                value: settings.mapLayer,
-                underline: const SizedBox.shrink(),
-                items: MapLayerType.values
-                    .map(
-                      (layer) => DropdownMenuItem(
-                        value: layer,
-                        child: Text(_mapLayerLabel(l10n, layer)),
+        data: (settings) {
+          _syncFromSaved(settings);
+          final pending = _pending!;
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    _SectionHeader(title: l10n.providersSection),
+                    Text(
+                      l10n.mapProviderAutoSetsProviders,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    SettingsPickerTile(
+                      title: l10n.mapProviderLabel,
+                      valueLabel: _mapProviderLabel(l10n, pending.mapProvider),
+                      onTap: () async {
+                        final providers = ProviderCatalog.mapProvidersForPlatform();
+                        final picked = await showSettingsPickerSheet<MapProviderType>(
+                          context: context,
+                          title: l10n.mapProviderLabel,
+                          options: providers,
+                          value: pending.mapProvider,
+                          labelFor: (p) => _mapProviderLabel(l10n, p),
+                          cancelLabel: l10n.cancel,
+                          trailingFor: (p) {
+                            final badge = ProviderCatalog.badgeForMap(p);
+                            return badge == null ? null : ProviderBadge(kind: badge);
+                          },
+                        );
+                        if (picked != null) {
+                          _onMapProviderChanged(picked);
+                        }
+                      },
+                    ),
+                    ProviderSummaryRow(
+                      title: l10n.searchProviderLabel,
+                      valueLabel: _searchProviderLabel(
+                        l10n,
+                        effectiveSearch(pending),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) {
-                    return;
-                  }
-                  await ref.read(settingsControllerProvider.notifier).saveSettings(
-                        settings..mapLayer = value,
-                      );
-                  ref.invalidate(mapProviderProvider);
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(l10n.mapProviderLabel),
-              trailing: DropdownButton<MapProviderType>(
-                value: settings.mapProvider,
-                underline: const SizedBox.shrink(),
-                items: MapProviderType.values
-                    .map(
-                      (p) => DropdownMenuItem(
-                        value: p,
-                        child: Text(_mapProviderLabel(l10n, p)),
+                      badge: pending.useRecommendedProviders ||
+                              !pending.overrideSearchProvider
+                          ? ProviderBadgeKind.recommended
+                          : ProviderCatalog.badgeForSearch(pending.searchProvider),
+                    ),
+                    if (!pending.useRecommendedProviders &&
+                        pending.overrideSearchProvider)
+                      SettingsPickerTile(
+                        title: l10n.searchProviderLabel,
+                        valueLabel: _searchProviderLabel(
+                          l10n,
+                          pending.searchProvider,
+                        ),
+                        onTap: () async {
+                          final picked =
+                              await showSettingsPickerSheet<SearchProviderType>(
+                            context: context,
+                            title: l10n.searchProviderLabel,
+                            options: ProviderCatalog.searchProviderOrder,
+                            value: pending.searchProvider,
+                            labelFor: (p) => _searchProviderLabel(l10n, p),
+                            cancelLabel: l10n.cancel,
+                          );
+                          if (picked != null) {
+                            setState(() => pending.searchProvider = picked);
+                          }
+                        },
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) {
-                    return;
-                  }
-                  await ref.read(settingsControllerProvider.notifier).saveSettings(
-                        settings..mapProvider = value,
-                      );
-                  ref.invalidate(mapProviderProvider);
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(l10n.searchProviderLabel),
-              trailing: DropdownButton<SearchProviderType>(
-                value: settings.searchProvider,
-                underline: const SizedBox.shrink(),
-                items: SearchProviderType.values
-                    .map(
-                      (p) => DropdownMenuItem(
-                        value: p,
-                        child: Text(_searchProviderLabel(l10n, p)),
+                    ProviderSummaryRow(
+                      title: l10n.routeProviderLabel,
+                      valueLabel: _routeProviderLabel(
+                        l10n,
+                        effectiveRoute(pending),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) {
-                    return;
-                  }
-                  await ref.read(settingsControllerProvider.notifier).saveSettings(
-                        settings..searchProvider = value,
-                      );
-                  ref.invalidate(searchProviderProvider);
-                  ref.invalidate(searchRepositoryProvider);
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(l10n.routeProviderLabel),
-              trailing: DropdownButton<RouteProviderType>(
-                value: settings.routeProvider,
-                underline: const SizedBox.shrink(),
-                items: RouteProviderType.values
-                    .map(
-                      (p) => DropdownMenuItem(
-                        value: p,
-                        child: Text(_routeProviderLabel(l10n, p)),
+                      badge: pending.useRecommendedProviders ||
+                              !pending.overrideRouteProvider
+                          ? ProviderBadgeKind.recommended
+                          : ProviderCatalog.badgeForRoute(pending.routeProvider),
+                    ),
+                    if (!pending.useRecommendedProviders &&
+                        pending.overrideRouteProvider)
+                      SettingsPickerTile(
+                        title: l10n.routeProviderLabel,
+                        valueLabel: _routeProviderLabel(
+                          l10n,
+                          pending.routeProvider,
+                        ),
+                        onTap: () async {
+                          final picked =
+                              await showSettingsPickerSheet<RouteProviderType>(
+                            context: context,
+                            title: l10n.routeProviderLabel,
+                            options: ProviderCatalog.routeProviderOrder,
+                            value: pending.routeProvider,
+                            labelFor: (p) => _routeProviderLabel(l10n, p),
+                            cancelLabel: l10n.cancel,
+                          );
+                          if (picked != null) {
+                            setState(() => pending.routeProvider = picked);
+                          }
+                        },
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) {
-                    return;
-                  }
-                  await ref.read(settingsControllerProvider.notifier).saveSettings(
-                        settings..routeProvider = value,
-                      );
-                  ref.invalidate(routeServiceProvider);
-                },
+                    SwitchListTile(
+                      title: Text(l10n.useRecommendedProviders),
+                      subtitle: Text(l10n.useRecommendedProvidersSubtitle),
+                      value: pending.useRecommendedProviders,
+                      onChanged: (value) {
+                        setState(() {
+                          pending.useRecommendedProviders = value;
+                          if (value) {
+                            pending
+                              ..overrideSearchProvider = false
+                              ..overrideRouteProvider = false;
+                            applyMapProviderChange(
+                              pending,
+                              pending.mapProvider,
+                            );
+                          }
+                        });
+                      },
+                    ),
+                    _SectionHeader(title: l10n.advancedSection),
+                    SwitchListTile(
+                      title: Text(l10n.overrideSearchProvider),
+                      value: pending.overrideSearchProvider,
+                      onChanged: pending.useRecommendedProviders
+                          ? null
+                          : (value) {
+                              setState(
+                                () => pending.overrideSearchProvider = value,
+                              );
+                            },
+                    ),
+                    SwitchListTile(
+                      title: Text(l10n.overrideRouteProvider),
+                      value: pending.overrideRouteProvider,
+                      onChanged: pending.useRecommendedProviders
+                          ? null
+                          : (value) {
+                              setState(
+                                () => pending.overrideRouteProvider = value,
+                              );
+                            },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.vpn_key_outlined),
+                      title: Text(l10n.advancedApiKeys),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/settings/api-keys'),
+                    ),
+                    _SectionHeader(title: l10n.mapLayerLabel),
+                    SettingsPickerTile(
+                      title: l10n.mapLayerLabel,
+                      valueLabel: _mapLayerLabel(l10n, pending.mapLayer),
+                      onTap: () async {
+                        final picked = await showSettingsPickerSheet<MapLayerType>(
+                          context: context,
+                          title: l10n.mapLayerLabel,
+                          options: ProviderCatalog.mapLayerOrder,
+                          value: pending.mapLayer,
+                          labelFor: (layer) => _mapLayerLabel(l10n, layer),
+                          cancelLabel: l10n.cancel,
+                        );
+                        if (picked != null) {
+                          setState(() => pending.mapLayer = picked);
+                        }
+                      },
+                    ),
+                    if (FeatureFlags.offlineMapTiles) ...[
+                      _SectionHeader(title: l10n.mapOfflineSection),
+                      ListTile(
+                        title: Text(l10n.mapOfflineCacheSize),
+                        subtitle: Text(_cacheSize),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.download_outlined),
+                        title: Text(l10n.mapOfflineDownload),
+                        subtitle: Text(l10n.mapOfflineDownloadSubtitle),
+                        enabled: !_busy,
+                        onTap: _downloadRegion,
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.delete_outline),
+                        title: Text(l10n.mapOfflineClearCache),
+                        enabled: !_busy,
+                        onTap: _clearCache,
+                      ),
+                    ],
+                    if (_busy)
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: LinearProgressIndicator(),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.vpn_key_outlined),
-              title: Text(l10n.apiKeysTitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/settings/api-keys'),
-            ),
-            if (FeatureFlags.offlineMapTiles) ...[
-              _SectionHeader(title: l10n.mapOfflineSection),
-              ListTile(
-                title: Text(l10n.mapOfflineCacheSize),
-                subtitle: Text(_cacheSize),
-              ),
-              ListTile(
-                leading: const Icon(Icons.download_outlined),
-                title: Text(l10n.mapOfflineDownload),
-                subtitle: Text(l10n.mapOfflineDownloadSubtitle),
-                enabled: !_busy,
-                onTap: _downloadRegion,
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: Text(l10n.mapOfflineClearCache),
-                enabled: !_busy,
-                onTap: _clearCache,
+              PendingChangesBar(
+                hasChanges: _hasChanges,
+                onSave: _saveProviders,
+                saveLabel: l10n.save,
               ),
             ],
-            if (_busy)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: LinearProgressIndicator(),
-              ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -290,7 +487,7 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      padding: const EdgeInsets.only(top: 16, bottom: 8, left: 16, right: 16),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(

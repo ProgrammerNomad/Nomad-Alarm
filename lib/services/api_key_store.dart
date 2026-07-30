@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:nomad_alarm/core/utils/provider_catalog.dart';
 
 enum ApiKeyId {
   googleMaps('google_maps'),
@@ -97,35 +98,40 @@ class ApiKeyStore {
 
   /// Tests Geocoding, Places autocomplete, and Directions with one key.
   Future<bool> testGoogleApiKey({http.Client? client}) async {
+    final status = await testGoogleApiKeyStatus(client: client);
+    return status.allPassed;
+  }
+
+  Future<GoogleApiKeyTestStatus> testGoogleApiKeyStatus({
+    http.Client? client,
+  }) async {
     final key = await readGoogleApiKey();
     if (key == null || key.isEmpty) {
-      return false;
+      return const GoogleApiKeyTestStatus(
+        maps: false,
+        places: false,
+        directions: false,
+      );
     }
     final c = client ?? http.Client();
     final ownsClient = client == null;
     try {
-      final geocode = await c.get(
+      final maps = await _googleEndpointOk(
+        c,
         Uri.parse('https://maps.googleapis.com/maps/api/geocode/json').replace(
           queryParameters: {'address': 'London', 'key': key},
         ),
       );
-      if (geocode.statusCode != 200 ||
-          geocode.body.contains('"error_message"')) {
-        return false;
-      }
-
-      final places = await c.get(
-        Uri.parse('https://maps.googleapis.com/maps/api/place/autocomplete/json')
-            .replace(
+      final places = await _googleEndpointOk(
+        c,
+        Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json',
+        ).replace(
           queryParameters: {'input': 'London', 'key': key},
         ),
       );
-      if (places.statusCode != 200 ||
-          places.body.contains('"error_message"')) {
-        return false;
-      }
-
-      final directions = await c.get(
+      final directions = await _googleEndpointOk(
+        c,
         Uri.parse('https://maps.googleapis.com/maps/api/directions/json').replace(
           queryParameters: {
             'origin': '51.5074,-0.1278',
@@ -134,19 +140,44 @@ class ApiKeyStore {
           },
         ),
       );
-      if (directions.statusCode != 200 ||
-          directions.body.contains('"error_message"')) {
-        return false;
-      }
-
-      return true;
+      return GoogleApiKeyTestStatus(
+        maps: maps,
+        places: places,
+        directions: directions,
+      );
     } catch (_) {
-      return false;
+      return const GoogleApiKeyTestStatus(
+        maps: false,
+        places: false,
+        directions: false,
+      );
     } finally {
       if (ownsClient) {
         c.close();
       }
     }
+  }
+
+  Future<bool> _googleEndpointOk(http.Client client, Uri uri) async {
+    final response = await client.get(uri);
+    return response.statusCode == 200 &&
+        !response.body.contains('"error_message"');
+  }
+
+  Future<Map<ApiKeyId, bool>> testAllConfiguredKeys({http.Client? client}) async {
+    final results = <ApiKeyId, bool>{};
+    if (await readGoogleApiKey() != null) {
+      final google = await testGoogleApiKeyStatus(client: client);
+      results[ApiKeyId.googleMaps] = google.maps;
+      results[ApiKeyId.googlePlaces] = google.places;
+      results[ApiKeyId.googleDirections] = google.directions;
+    }
+    for (final id in ApiKeyId.otherProviders) {
+      if (await read(id) != null) {
+        results[id] = await testConnection(id, client: client);
+      }
+    }
+    return results;
   }
 
   /// Lightweight connectivity check per provider family.

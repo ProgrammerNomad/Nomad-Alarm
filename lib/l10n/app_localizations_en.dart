@@ -237,6 +237,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get miles => 'Miles';
 
   @override
+  String get distanceUnitsLabel => 'Distance units';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -717,7 +720,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapSettingsTitle => 'Map settings';
 
   @override
-  String get mapSettingsSubtitle => 'Providers, offline tiles, API keys';
+  String get mapSettingsSubtitle => 'Providers, layers, and offline tiles';
 
   @override
   String get mapProvidersSection => 'Providers';
@@ -1021,4 +1024,193 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tileTapToCreate => 'Tap to create alarm';
+
+  @override
+  String get alarmCreatedSuccess => 'Alarm created successfully';
+
+  @override
+  String get alarmDetailsTitle => 'Alarm details';
+
+  @override
+  String get addAnotherAlarm => 'Add another alarm';
+
+  @override
+  String get newAlarm => 'New alarm';
+
+  @override
+  String get alarmStatusTracking => 'Tracking';
+
+  @override
+  String get alarmStatusPaused => 'Paused';
+
+  @override
+  String alarmNumberLabel(int number) {
+    return 'Alarm #$number';
+  }
+
+  @override
+  String activeAlarmsCount(int count) {
+    return 'Active alarms ($count)';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get providersSection => 'Providers';
+
+  @override
+  String get providerChangedSuccess => 'Provider changed successfully.';
+
+  @override
+  String get noApiKeyRequired =>
+      'No API key required. Provider changed successfully.';
+
+  @override
+  String get configureAndSave => 'Configure & Save';
+
+  @override
+  String get providerSaveBlocked =>
+      'Save blocked until a valid API key is entered.';
+
+  @override
+  String get credentialGoogleMapsTitle => 'Google Maps requires an API key';
+
+  @override
+  String get credentialGoogleServicesTitle =>
+      'Google services require an API key';
+
+  @override
+  String get credentialGoogleMapsBody =>
+      'One key covers Maps, Places, and Directions when those providers are enabled.';
+
+  @override
+  String get credentialMapboxTitle => 'Mapbox requires an access token';
+
+  @override
+  String get credentialMapboxBody =>
+      'Enter your Mapbox access token to use Mapbox maps.';
+
+  @override
+  String get credentialHereTitle => 'HERE requires an API key';
+
+  @override
+  String get credentialHereBody => 'Enter your HERE REST API key.';
+
+  @override
+  String get credentialGraphhopperTitle => 'GraphHopper requires an API key';
+
+  @override
+  String get credentialGraphhopperBody =>
+      'Enter your GraphHopper API key for routing.';
+
+  @override
+  String get googleServiceMaps => 'Maps SDK for Android';
+
+  @override
+  String get googleServicePlaces => 'Places API';
+
+  @override
+  String get googleServiceDirections => 'Directions API';
+
+  @override
+  String get googleServiceAlsoUsed => 'Also used when enabled (same key)';
+
+  @override
+  String get advancedSection => 'Advanced';
+
+  @override
+  String get advancedApiKeys => 'API Keys';
+
+  @override
+  String get useRecommendedProviders => 'Use recommended providers';
+
+  @override
+  String get useRecommendedProvidersSubtitle =>
+      'Keep search and route matched to your map provider';
+
+  @override
+  String get overrideSearchProvider => 'Override search provider';
+
+  @override
+  String get overrideRouteProvider => 'Override route provider';
+
+  @override
+  String get mapProviderAutoSetsProviders =>
+      'Changing the map provider updates recommended search and route.';
+
+  @override
+  String get apiKeyStatusConfigured => 'Configured';
+
+  @override
+  String get apiKeyStatusNotConfigured => 'Not configured';
+
+  @override
+  String get apiKeyClear => 'Clear';
+
+  @override
+  String get apiKeyUpdate => 'Update key';
+
+  @override
+  String get apiKeyAdd => 'Add key';
+
+  @override
+  String get testAllConfiguredKeys => 'Test all configured keys';
+
+  @override
+  String get apiKeysSecurityFooter =>
+      'Encrypted · Android Keystore · Not included in backup';
+
+  @override
+  String get languageFollowSystem => 'Follow system';
+
+  @override
+  String get distancePresetCustom => 'Custom';
+
+  @override
+  String get batteryBalancedRecommended => 'Balanced (Recommended)';
+
+  @override
+  String get resumeAlarmAfterBootBatteryWarning =>
+      'Relaunch tracking when the device restarts. Uses more battery.';
+
+  @override
+  String get uploadBackupViaHttps => 'Upload Backup via HTTPS';
+
+  @override
+  String get shareLiveTrip => 'Share Live Trip';
+
+  @override
+  String get importSharedAlarm => 'Import Shared Alarm';
+
+  @override
+  String get permRestricted => 'Restricted';
+
+  @override
+  String get permLimited => 'Limited';
+
+  @override
+  String get permProvisional => 'Provisional';
+
+  @override
+  String get aboutPrivacyPolicy => 'Privacy policy';
+
+  @override
+  String get aboutTermsOfService => 'Terms of service';
+
+  @override
+  String get aboutDonateSupport => 'Donate / Support';
+
+  @override
+  String get openMapSettings => 'Open map settings';
+
+  @override
+  String get currentLocationLabel => 'Current Location';
+
+  @override
+  String get activeAlarmsEmptyHint => 'No active alarms - tap + to create one';
+
+  @override
+  String get languageEndonymHint =>
+      'Language names are shown in their native script';
 }

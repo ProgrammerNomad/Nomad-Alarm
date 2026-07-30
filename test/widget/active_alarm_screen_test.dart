@@ -71,6 +71,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Station'), findsOneWidget);
+    expect(find.text('Alarm #1'), findsOneWidget);
+    expect(find.text('Alarm details'), findsOneWidget);
     expect(find.text('750 m'), findsOneWidget);
     expect(find.text('~8 min'), findsOneWidget);
   });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/core/constants/app_constants.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/core/utils/provider_catalog.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/services/api_key_store.dart';
 import 'package:nomad_alarm/services/google_maps_init.dart';
@@ -16,42 +17,107 @@ class ApiKeysScreen extends ConsumerStatefulWidget {
 }
 
 class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
-  final _googleController = TextEditingController();
-  final _controllers = <ApiKeyId, TextEditingController>{};
-  final _obscure = <String, bool>{'google': true};
-  var _googleObscure = true;
-  var _testingGoogle = false;
-  ApiKeyId? _testingOther;
+  GoogleApiKeyTestStatus? _googleStatus;
+  final _configured = <ApiKeyId, bool>{};
+  var _loading = true;
+  var _testingAll = false;
+  ApiKeyId? _busyProvider;
 
   @override
   void initState() {
     super.initState();
-    for (final id in ApiKeyId.otherProviders) {
-      _controllers[id] = TextEditingController();
-      _obscure[id.storageKey] = true;
-    }
-    _loadKeys();
+    _refresh();
   }
 
-  Future<void> _loadKeys() async {
+  Future<void> _refresh() async {
     final store = ref.read(apiKeyStoreProvider);
     final googleKey = await store.readGoogleApiKey();
-    _googleController.text = googleKey ?? '';
-    final keys = await store.readAll();
+    GoogleApiKeyTestStatus? googleStatus;
+    if (googleKey != null && googleKey.isNotEmpty) {
+      googleStatus = await store.testGoogleApiKeyStatus();
+    }
+    final configured = <ApiKeyId, bool>{};
     for (final id in ApiKeyId.otherProviders) {
-      _controllers[id]?.text = keys[id] ?? '';
+      final value = await store.read(id);
+      configured[id] = value != null && value.isNotEmpty;
     }
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _googleStatus = googleStatus;
+        _configured
+          ..clear()
+          ..addAll(configured);
+        _loading = false;
+      });
     }
   }
 
-  Future<void> _saveGoogleKey() async {
+  Future<void> _testAll() async {
+    final l10n = context.l10n;
+    setState(() => _testingAll = true);
+    await ref.read(apiKeyStoreProvider).testAllConfiguredKeys();
+    await _refresh();
+    if (mounted) {
+      setState(() => _testingAll = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.apiKeyTestSuccess)),
+      );
+    }
+  }
+
+  Future<void> _editGoogle() async {
     final l10n = context.l10n;
     final store = ref.read(apiKeyStoreProvider);
-    await store.writeGoogleApiKey(_googleController.text);
-    await GoogleMapsInit.applyKey(_googleController.text.trim());
+    final existing = await store.readGoogleApiKey() ?? '';
+    final controller = TextEditingController(text: existing);
+    var obscure = true;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(l10n.apiKeyGoogle),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return TextField(
+                controller: controller,
+                obscureText: obscure,
+                decoration: InputDecoration(
+                  hintText: l10n.apiKeyGoogleHint,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscure
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () => setState(() => obscure = !obscure),
+                  ),
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.saveKey),
+            ),
+          ],
+        );
+      },
+    );
+    if (saved != true) {
+      controller.dispose();
+      return;
+    }
+    await store.writeGoogleApiKey(controller.text);
+    await GoogleMapsInit.applyKey(controller.text.trim());
     ref.invalidate(googleApiKeyProvider);
+    controller.dispose();
+    await _refresh();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.apiKeySaved)),
@@ -59,36 +125,89 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
     }
   }
 
-  Future<void> _testGoogleKey() async {
+  Future<void> _editOther(ApiKeyId id) async {
     final l10n = context.l10n;
-    setState(() => _testingGoogle = true);
-    final ok = await ref.read(apiKeyStoreProvider).testGoogleApiKey();
+    final store = ref.read(apiKeyStoreProvider);
+    final existing = await store.read(id) ?? '';
+    final controller = TextEditingController(text: existing);
+    var obscure = true;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(_providerTitle(l10n, id)),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return TextField(
+                controller: controller,
+                obscureText: obscure,
+                decoration: InputDecoration(
+                  hintText: _providerHint(l10n, id),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscure
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () => setState(() => obscure = !obscure),
+                  ),
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.saveKey),
+            ),
+          ],
+        );
+      },
+    );
+    if (saved != true) {
+      controller.dispose();
+      return;
+    }
+    await store.write(id, controller.text);
+    controller.dispose();
+    await _refresh();
     if (mounted) {
-      setState(() => _testingGoogle = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.apiKeySaved)),
+      );
+    }
+  }
+
+  Future<void> _testGoogle() async {
+    final l10n = context.l10n;
+    setState(() => _busyProvider = ApiKeyId.googleMaps);
+    final status = await ref.read(apiKeyStoreProvider).testGoogleApiKeyStatus();
+    if (mounted) {
+      setState(() {
+        _googleStatus = status;
+        _busyProvider = null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ok ? l10n.apiKeyTestSuccess : l10n.apiKeyTestFailure),
+          content: Text(
+            status.allPassed ? l10n.apiKeyTestSuccess : l10n.apiKeyTestFailure,
+          ),
         ),
       );
     }
   }
 
-  Future<void> _saveKey(ApiKeyId id) async {
+  Future<void> _testOther(ApiKeyId id) async {
     final l10n = context.l10n;
-    await ref.read(apiKeyStoreProvider).write(id, _controllers[id]!.text);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.apiKeySaved)),
-      );
-    }
-  }
-
-  Future<void> _testKey(ApiKeyId id) async {
-    final l10n = context.l10n;
-    setState(() => _testingOther = id);
+    setState(() => _busyProvider = id);
     final ok = await ref.read(apiKeyStoreProvider).testConnection(id);
     if (mounted) {
-      setState(() => _testingOther = null);
+      setState(() => _busyProvider = null);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ok ? l10n.apiKeyTestSuccess : l10n.apiKeyTestFailure),
@@ -97,20 +216,15 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
     }
   }
 
-  Future<void> _openSetupGuide() async {
-    final uri = Uri.parse(AppConstants.settingsGuideGoogleSetupUrl);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+  Future<void> _clearGoogle() async {
+    await ref.read(apiKeyStoreProvider).clearGoogleApiKey();
+    ref.invalidate(googleApiKeyProvider);
+    await _refresh();
   }
 
-  @override
-  void dispose() {
-    _googleController.dispose();
-    for (final c in _controllers.values) {
-      c.dispose();
-    }
-    super.dispose();
+  Future<void> _clearOther(ApiKeyId id) async {
+    await ref.read(apiKeyStoreProvider).clear(id);
+    await _refresh();
   }
 
   @override
@@ -118,110 +232,149 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
     final l10n = context.l10n;
 
     return NomadScaffold(
-      title: l10n.apiKeysTitle,
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(l10n.apiKeysIntro, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 16),
-          Text(
-            l10n.apiKeyGoogle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _googleController,
-            obscureText: _googleObscure,
-            decoration: InputDecoration(
-              labelText: l10n.apiKeyGoogle,
-              hintText: l10n.apiKeyGoogleHint,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _googleObscure
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                ),
-                onPressed: () => setState(() => _googleObscure = !_googleObscure),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: _openSetupGuide,
-              icon: const Icon(Icons.help_outline),
-              label: Text(l10n.apiKeyGoogleHelp),
-            ),
-          ),
-          Row(
-            children: [
-              FilledButton(
-                onPressed: _saveGoogleKey,
-                child: Text(l10n.saveKey),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: _testingGoogle ? null : _testGoogleKey,
-                child: _testingGoogle
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.apiKeyTest),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          for (final id in ApiKeyId.otherProviders) ...[
-            TextField(
-              controller: _controllers[id],
-              obscureText: _obscure[id.storageKey] ?? true,
-              decoration: InputDecoration(
-                labelText: _label(l10n, id),
-                hintText: _hint(l10n, id),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    (_obscure[id.storageKey] ?? true)
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                  ),
-                  onPressed: () => setState(
-                    () => _obscure[id.storageKey] =
-                        !(_obscure[id.storageKey] ?? true),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
+      title: l10n.advancedApiKeys,
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16),
               children: [
-                FilledButton(
-                  onPressed: () => _saveKey(id),
-                  child: Text(l10n.saveKey),
+                Text(
+                  l10n.apiKeysIntro,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(width: 8),
-                OutlinedButton(
-                  onPressed: _testingOther == id ? null : () => _testKey(id),
-                  child: _testingOther == id
+                const SizedBox(height: 16),
+                _ProviderCard(
+                  title: l10n.mapProviderGoogle,
+                  configured: _googleStatus != null,
+                  children: [
+                    _ServiceStatusRow(
+                      label: l10n.googleServiceMaps,
+                      ok: _googleStatus?.maps,
+                    ),
+                    _ServiceStatusRow(
+                      label: l10n.googleServicePlaces,
+                      ok: _googleStatus?.places,
+                    ),
+                    _ServiceStatusRow(
+                      label: l10n.googleServiceDirections,
+                      ok: _googleStatus?.directions,
+                    ),
+                  ],
+                  onUpdate: _editGoogle,
+                  onTest: _googleStatus != null ? _testGoogle : null,
+                  onClear: _googleStatus != null ? _clearGoogle : null,
+                  busy: _busyProvider == ApiKeyId.googleMaps,
+                  updateLabel: _googleStatus != null
+                      ? l10n.apiKeyUpdate
+                      : l10n.apiKeyAdd,
+                  testLabel: l10n.apiKeyTest,
+                  clearLabel: l10n.apiKeyClear,
+                ),
+                _ProviderCard(
+                  title: l10n.mapProviderMapbox,
+                  configured: _configured[ApiKeyId.mapboxToken] ?? false,
+                  children: [
+                    Text(
+                      (_configured[ApiKeyId.mapboxToken] ?? false)
+                          ? l10n.apiKeyStatusConfigured
+                          : l10n.apiKeyStatusNotConfigured,
+                    ),
+                  ],
+                  onUpdate: () => _editOther(ApiKeyId.mapboxToken),
+                  onTest: (_configured[ApiKeyId.mapboxToken] ?? false)
+                      ? () => _testOther(ApiKeyId.mapboxToken)
+                      : null,
+                  onClear: (_configured[ApiKeyId.mapboxToken] ?? false)
+                      ? () => _clearOther(ApiKeyId.mapboxToken)
+                      : null,
+                  busy: _busyProvider == ApiKeyId.mapboxToken,
+                  updateLabel: (_configured[ApiKeyId.mapboxToken] ?? false)
+                      ? l10n.apiKeyUpdate
+                      : l10n.apiKeyAdd,
+                  testLabel: l10n.apiKeyTest,
+                  clearLabel: l10n.apiKeyClear,
+                ),
+                _ProviderCard(
+                  title: l10n.mapProviderHere,
+                  configured: _configured[ApiKeyId.hereApiKey] ?? false,
+                  children: [
+                    Text(
+                      (_configured[ApiKeyId.hereApiKey] ?? false)
+                          ? l10n.apiKeyStatusConfigured
+                          : l10n.apiKeyStatusNotConfigured,
+                    ),
+                  ],
+                  onUpdate: () => _editOther(ApiKeyId.hereApiKey),
+                  onTest: (_configured[ApiKeyId.hereApiKey] ?? false)
+                      ? () => _testOther(ApiKeyId.hereApiKey)
+                      : null,
+                  onClear: (_configured[ApiKeyId.hereApiKey] ?? false)
+                      ? () => _clearOther(ApiKeyId.hereApiKey)
+                      : null,
+                  busy: _busyProvider == ApiKeyId.hereApiKey,
+                  updateLabel: (_configured[ApiKeyId.hereApiKey] ?? false)
+                      ? l10n.apiKeyUpdate
+                      : l10n.apiKeyAdd,
+                  testLabel: l10n.apiKeyTest,
+                  clearLabel: l10n.apiKeyClear,
+                ),
+                _ProviderCard(
+                  title: l10n.routeProviderGraphhopper,
+                  configured: _configured[ApiKeyId.graphhopperKey] ?? false,
+                  children: [
+                    Text(
+                      (_configured[ApiKeyId.graphhopperKey] ?? false)
+                          ? l10n.apiKeyStatusConfigured
+                          : l10n.apiKeyStatusNotConfigured,
+                    ),
+                  ],
+                  onUpdate: () => _editOther(ApiKeyId.graphhopperKey),
+                  onTest: (_configured[ApiKeyId.graphhopperKey] ?? false)
+                      ? () => _testOther(ApiKeyId.graphhopperKey)
+                      : null,
+                  onClear: (_configured[ApiKeyId.graphhopperKey] ?? false)
+                      ? () => _clearOther(ApiKeyId.graphhopperKey)
+                      : null,
+                  busy: _busyProvider == ApiKeyId.graphhopperKey,
+                  updateLabel:
+                      (_configured[ApiKeyId.graphhopperKey] ?? false)
+                      ? l10n.apiKeyUpdate
+                      : l10n.apiKeyAdd,
+                  testLabel: l10n.apiKeyTest,
+                  clearLabel: l10n.apiKeyClear,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: _testingAll ? null : _testAll,
+                  icon: _testingAll
                       ? const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(l10n.apiKeyTest),
+                      : const Icon(Icons.fact_check_outlined),
+                  label: Text(l10n.testAllConfiguredKeys),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(l10n.apiKeysSecurityFooter),
+                  dense: true,
+                ),
+                TextButton.icon(
+                  onPressed: () => launchUrl(
+                    Uri.parse(AppConstants.settingsGuideUrl),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  icon: const Icon(Icons.menu_book_outlined),
+                  label: Text(l10n.apiKeyGoogleHelp),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-          ],
-        ],
-      ),
     );
   }
 
-  String _label(dynamic l10n, ApiKeyId id) {
+  String _providerTitle(dynamic l10n, ApiKeyId id) {
     return switch (id) {
       ApiKeyId.mapboxToken => l10n.apiKeyMapbox,
       ApiKeyId.hereApiKey => l10n.apiKeyHere,
@@ -230,12 +383,115 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
     };
   }
 
-  String _hint(dynamic l10n, ApiKeyId id) {
+  String _providerHint(dynamic l10n, ApiKeyId id) {
     return switch (id) {
       ApiKeyId.mapboxToken => l10n.apiKeyMapboxHint,
       ApiKeyId.hereApiKey => l10n.apiKeyHereHint,
       ApiKeyId.graphhopperKey => l10n.apiKeyGraphhopperHint,
       _ => '',
     };
+  }
+}
+
+class _ProviderCard extends StatelessWidget {
+  const _ProviderCard({
+    required this.title,
+    required this.configured,
+    required this.children,
+    required this.onUpdate,
+    required this.updateLabel,
+    required this.testLabel,
+    required this.clearLabel,
+    this.onTest,
+    this.onClear,
+    this.busy = false,
+  });
+
+  final String title;
+  final bool configured;
+  final List<Widget> children;
+  final VoidCallback onUpdate;
+  final VoidCallback? onTest;
+  final VoidCallback? onClear;
+  final String updateLabel;
+  final String testLabel;
+  final String clearLabel;
+  final bool busy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ...children,
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton(
+                  onPressed: onUpdate,
+                  child: Text(updateLabel),
+                ),
+                if (onTest != null)
+                  OutlinedButton(
+                    onPressed: busy ? null : onTest,
+                    child: busy
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(testLabel),
+                  ),
+                if (onClear != null)
+                  TextButton(
+                    onPressed: onClear,
+                    child: Text(clearLabel),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ServiceStatusRow extends StatelessWidget {
+  const _ServiceStatusRow({required this.label, this.ok});
+
+  final String label;
+  final bool? ok;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = ok == null
+        ? Icons.help_outline
+        : ok!
+            ? Icons.check_circle
+            : Icons.cancel;
+    final color = ok == null
+        ? Theme.of(context).colorScheme.outline
+        : ok!
+            ? Colors.green
+            : Theme.of(context).colorScheme.error;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 8),
+          Expanded(child: Text(label)),
+        ],
+      ),
+    );
   }
 }

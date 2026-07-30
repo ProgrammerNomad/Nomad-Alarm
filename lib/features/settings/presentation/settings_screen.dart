@@ -8,6 +8,9 @@ import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
+import 'package:nomad_alarm/core/utils/language_display.dart';
+import 'package:nomad_alarm/core/utils/locale_resolution.dart';
+import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
@@ -17,7 +20,36 @@ import 'package:nomad_alarm/repositories/backup_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/services/group_travel_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
+import 'package:nomad_alarm/shared/widgets/settings_controls.dart';
 import 'package:nomad_alarm/l10n/app_localizations.dart';
+
+enum _DistancePickerOption {
+  m200,
+  m500,
+  m1000,
+  m2000,
+  custom,
+}
+
+_DistancePickerOption _distanceOptionFor(double meters) {
+  return switch (meters) {
+    200.0 => _DistancePickerOption.m200,
+    500.0 => _DistancePickerOption.m500,
+    1000.0 => _DistancePickerOption.m1000,
+    2000.0 => _DistancePickerOption.m2000,
+    _ => _DistancePickerOption.custom,
+  };
+}
+
+double _metersForDistanceOption(_DistancePickerOption option) {
+  return switch (option) {
+    _DistancePickerOption.m200 => 200,
+    _DistancePickerOption.m500 => 500,
+    _DistancePickerOption.m1000 => 1000,
+    _DistancePickerOption.m2000 => 2000,
+    _DistancePickerOption.custom => 500,
+  };
+}
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -34,88 +66,113 @@ class SettingsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
         data: (settings) => ListView(
           children: [
-            _SectionHeader(title: l10n.appearance),
-            ListTile(
-              title: Text(l10n.theme),
-              subtitle: Text(_themeLabel(l10n, settings.themeMode)),
-              trailing: DropdownButton<AppThemeMode>(
-                value: settings.themeMode,
-                underline: const SizedBox.shrink(),
-                items: AppThemeMode.values
-                    .map(
-                      (mode) => DropdownMenuItem(
-                        value: mode,
-                        child: Text(_themeLabel(l10n, mode)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (mode) {
-                  if (mode == null) {
-                    return;
-                  }
+            _SettingsSectionHeader(
+              icon: Icons.palette_outlined,
+              title: l10n.appearance,
+            ),
+            SettingsPickerTile(
+              leading: Icons.brightness_auto,
+              title: l10n.theme,
+              valueLabel: _themeLabel(l10n, settings.themeMode),
+              onTap: () async {
+                final mode = await showSettingsPickerSheet<AppThemeMode>(
+                  context: context,
+                  title: l10n.theme,
+                  options: AppThemeMode.values,
+                  value: settings.themeMode,
+                  labelFor: (m) => _themeLabel(l10n, m),
+                  cancelLabel: l10n.cancel,
+                  iconFor: (m) => switch (m) {
+                    AppThemeMode.system => Icons.brightness_auto,
+                    AppThemeMode.light => Icons.light_mode_outlined,
+                    AppThemeMode.dark => Icons.dark_mode_outlined,
+                  },
+                );
+                if (mode != null && context.mounted) {
                   ref.read(settingsControllerProvider.notifier).saveSettings(
                         settings..themeMode = mode,
                       );
-                },
+                }
+              },
+            ),
+            _SettingsSectionHeader(
+              icon: Icons.straighten,
+              title: l10n.units,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+              child: Text(
+                l10n.distanceUnitsLabel,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
-            _SectionHeader(title: l10n.units),
-            SwitchListTile(
-              title: Text(l10n.useMetricUnits),
-              subtitle: Text(settings.useMetric ? l10n.kilometers : l10n.miles),
+            SettingsSegmentedControl<bool>(
+              options: const [true, false],
               value: settings.useMetric,
+              labelFor: (metric) => metric ? l10n.kilometers : l10n.miles,
               onChanged: (value) {
                 ref.read(settingsControllerProvider.notifier).saveSettings(
                       settings..useMetric = value,
                     );
               },
             ),
-            _SectionHeader(title: l10n.language),
-            ListTile(
-              title: Text(l10n.language),
-              trailing: DropdownButton<String>(
-                value: settings.languageCode,
-                underline: const SizedBox.shrink(),
-                items: [
-                  DropdownMenuItem(value: 'en', child: Text(l10n.english)),
-                  DropdownMenuItem(value: 'hi', child: Text(l10n.hindi)),
-                  DropdownMenuItem(value: 'ar', child: Text(l10n.arabic)),
-                  DropdownMenuItem(value: 'he', child: Text(l10n.hebrew)),
-                ],
-                onChanged: (code) async {
-                  if (code == null) {
-                    return;
-                  }
-                  await ref.read(settingsControllerProvider.notifier).saveSettings(
-                        settings..languageCode = code,
-                      );
-                  await ref.read(notificationServiceProvider).setLanguageCode(code);
-                  await BackgroundAlarmService.updateLanguageCode(code);
-                  await ref.read(alarmServiceProvider).updateLanguageCode(code);
-                },
+            _SettingsSectionHeader(
+              icon: Icons.translate,
+              title: l10n.language,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+              child: Text(
+                l10n.languageEndonymHint,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
-            _SectionHeader(title: l10n.alarmDefaults),
-            ListTile(
-              title: Text(l10n.defaultAlertDistance),
-              subtitle: Text(formatDistance(settings.defaultTriggerDistanceMeters)),
-            ),
-            Slider(
-              value: settings.defaultTriggerDistanceMeters.clamp(
-                AlarmConstants.minTriggerDistanceM,
-                AlarmConstants.maxTriggerDistanceM,
-              ),
-              min: AlarmConstants.minTriggerDistanceM,
-              max: AlarmConstants.maxTriggerDistanceM,
-              divisions: 49,
-              label: formatDistance(settings.defaultTriggerDistanceMeters),
-              onChanged: (value) {
-                ref.read(settingsControllerProvider.notifier).saveSettings(
-                      settings..defaultTriggerDistanceMeters = value,
+            SettingsPickerTile(
+              leading: Icons.language_outlined,
+              title: l10n.language,
+              valueLabel: settings.languageCode == systemLanguageCode
+                  ? l10n.languageFollowSystem
+                  : languageEndonym(settings.languageCode),
+              onTap: () async {
+                const codes = [
+                  systemLanguageCode,
+                  'en',
+                  'hi',
+                  'ar',
+                  'he',
+                ];
+                final code = await showSettingsPickerSheet<String>(
+                  context: context,
+                  title: l10n.language,
+                  options: codes,
+                  value: settings.languageCode,
+                  labelFor: (c) => c == systemLanguageCode
+                      ? l10n.languageFollowSystem
+                      : languageEndonym(c),
+                  cancelLabel: l10n.cancel,
+                  iconFor: (c) => c == systemLanguageCode
+                      ? Icons.phone_android_outlined
+                      : Icons.language_outlined,
+                );
+                if (code == null || !context.mounted) {
+                  return;
+                }
+                await ref.read(settingsControllerProvider.notifier).saveSettings(
+                      settings..languageCode = code,
                     );
+                final resolved = resolveNotificationLanguageCode(code);
+                await ref.read(notificationServiceProvider).setLanguageCode(resolved);
+                await BackgroundAlarmService.updateLanguageCode(resolved);
+                await ref.read(alarmServiceProvider).updateLanguageCode(resolved);
               },
             ),
+            _SettingsSectionHeader(
+              icon: Icons.notifications_active_outlined,
+              title: l10n.alarmDefaults,
+            ),
+            _DefaultAlertDistanceSection(settings: settings),
             SwitchListTile(
+              secondary: const Icon(Icons.record_voice_over_outlined),
               title: Text(l10n.voiceAlert),
               value: settings.defaultVoiceEnabled,
               onChanged: (value) {
@@ -125,6 +182,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             SwitchListTile(
+              secondary: const Icon(Icons.vibration_outlined),
               title: Text(l10n.vibration),
               value: settings.defaultVibrationEnabled,
               onChanged: (value) {
@@ -134,6 +192,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             SwitchListTile(
+              secondary: const Icon(Icons.flashlight_on_outlined),
               title: Text(l10n.flashlight),
               subtitle: Text(l10n.flashlightSubtitle),
               value: settings.defaultFlashlightEnabled,
@@ -144,6 +203,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             SwitchListTile(
+              secondary: const Icon(Icons.lock_outline),
               title: Text(l10n.lockScreenInfo),
               subtitle: Text(l10n.lockScreenInfoSubtitle),
               value: settings.lockScreenInfoEnabled,
@@ -155,6 +215,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             SwitchListTile(
+              secondary: const Icon(Icons.contrast_outlined),
               title: Text(l10n.highContrast),
               subtitle: Text(l10n.highContrastSubtitle),
               value: settings.accessibilityHighContrast,
@@ -164,35 +225,47 @@ class SettingsScreen extends ConsumerWidget {
                     );
               },
             ),
-            _SectionHeader(title: l10n.battery),
-            ListTile(
-              title: Text(l10n.gpsProfile),
-              subtitle: Text(_batteryProfileDescription(l10n, settings.batteryProfile)),
-              trailing: DropdownButton<BatteryProfile>(
-                value: settings.batteryProfile,
-                underline: const SizedBox.shrink(),
-                items: BatteryProfile.values
-                    .map(
-                      (profile) => DropdownMenuItem(
-                        value: profile,
-                        child: Text(_batteryProfileLabel(l10n, profile)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (profile) {
-                  if (profile == null) {
-                    return;
-                  }
+            _SettingsSectionHeader(
+              icon: Icons.battery_saver_outlined,
+              title: l10n.battery,
+            ),
+            SettingsPickerTile(
+              leading: Icons.battery_saver_outlined,
+              title: l10n.gpsProfile,
+              valueLabel: _batteryProfileLabel(l10n, settings.batteryProfile),
+              onTap: () async {
+                final profile = await showSettingsPickerSheet<BatteryProfile>(
+                  context: context,
+                  title: l10n.gpsProfile,
+                  options: BatteryProfile.values,
+                  value: settings.batteryProfile,
+                  labelFor: (p) => _batteryProfileLabel(l10n, p),
+                  cancelLabel: l10n.cancel,
+                  iconFor: (p) => switch (p) {
+                    BatteryProfile.saver => Icons.battery_2_bar,
+                    BatteryProfile.balanced => Icons.battery_5_bar,
+                    BatteryProfile.aggressive => Icons.battery_full,
+                  },
+                );
+                if (profile != null && context.mounted) {
                   ref.read(settingsControllerProvider.notifier).saveSettings(
                         settings..batteryProfile = profile,
                       );
                   ref.invalidate(alarmServiceProvider);
-                },
+                }
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                _batteryProfileDescription(l10n, settings.batteryProfile),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             SwitchListTile(
+              secondary: const Icon(Icons.restart_alt_outlined),
               title: Text(l10n.resumeAlarmAfterBoot),
-              subtitle: Text(l10n.resumeAlarmAfterBootSubtitle),
+              subtitle: Text(l10n.resumeAlarmAfterBootBatteryWarning),
               value: settings.resumeAlarmAfterBoot,
               onChanged: (value) {
                 ref.read(settingsControllerProvider.notifier).saveSettings(
@@ -201,10 +274,16 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             if (FeatureFlags.backupRestore) ...[
-              _SectionHeader(title: l10n.data),
+              _SettingsSectionHeader(
+                icon: Icons.storage_outlined,
+                title: l10n.data,
+              ),
               const _BackupDataSection(),
             ],
-            _SectionHeader(title: l10n.mapsSection),
+            _SettingsSectionHeader(
+              icon: Icons.map_outlined,
+              title: l10n.mapsSection,
+            ),
             ListTile(
               leading: const Icon(Icons.map_outlined),
               title: Text(l10n.mapSettingsTitle),
@@ -212,7 +291,20 @@ class SettingsScreen extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/settings/map'),
             ),
-            _SectionHeader(title: l10n.more),
+            _SettingsSectionHeader(
+              icon: Icons.tune,
+              title: l10n.advancedSection,
+            ),
+            ListTile(
+              leading: const Icon(Icons.vpn_key_outlined),
+              title: Text(l10n.advancedApiKeys),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/settings/api-keys'),
+            ),
+            _SettingsSectionHeader(
+              icon: Icons.more_horiz,
+              title: l10n.more,
+            ),
             ListTile(
               leading: const Icon(Icons.security),
               title: Text(l10n.permissionsMenu),
@@ -254,7 +346,7 @@ class SettingsScreen extends ConsumerWidget {
 
   String _batteryProfileLabel(AppLocalizations l10n, BatteryProfile profile) {
     return switch (profile) {
-      BatteryProfile.balanced => l10n.batteryBalanced,
+      BatteryProfile.balanced => l10n.batteryBalancedRecommended,
       BatteryProfile.aggressive => l10n.batteryAggressive,
       BatteryProfile.saver => l10n.batterySaver,
     };
@@ -266,6 +358,104 @@ class SettingsScreen extends ConsumerWidget {
       BatteryProfile.aggressive => l10n.batteryAggressiveDesc,
       BatteryProfile.saver => l10n.batterySaverDesc,
     };
+  }
+}
+
+class _DefaultAlertDistanceSection extends ConsumerStatefulWidget {
+  const _DefaultAlertDistanceSection({required this.settings});
+
+  final AppSettings settings;
+
+  @override
+  ConsumerState<_DefaultAlertDistanceSection> createState() =>
+      _DefaultAlertDistanceSectionState();
+}
+
+class _DefaultAlertDistanceSectionState
+    extends ConsumerState<_DefaultAlertDistanceSection> {
+  bool _showCustomSlider = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final settings = widget.settings;
+    final distance = settings.defaultTriggerDistanceMeters;
+    final currentOption = _distanceOptionFor(distance);
+    final isCustom = currentOption == _DistancePickerOption.custom || _showCustomSlider;
+    final valueLabel = isCustom && currentOption == _DistancePickerOption.custom
+        ? formatDistance(distance, useMetric: settings.useMetric)
+        : switch (currentOption) {
+            _DistancePickerOption.m200 => formatDistance(200, useMetric: settings.useMetric),
+            _DistancePickerOption.m500 => formatDistance(500, useMetric: settings.useMetric),
+            _DistancePickerOption.m1000 => formatDistance(1000, useMetric: settings.useMetric),
+            _DistancePickerOption.m2000 => formatDistance(2000, useMetric: settings.useMetric),
+            _DistancePickerOption.custom => l10n.distancePresetCustom,
+          };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsPickerTile(
+          leading: Icons.notifications_active_outlined,
+          title: l10n.defaultAlertDistance,
+          valueLabel: valueLabel,
+          onTap: () async {
+            final options = _DistancePickerOption.values;
+            final picked = await showSettingsPickerSheet<_DistancePickerOption>(
+              context: context,
+              title: l10n.defaultAlertDistance,
+              options: options,
+              value: isCustom ? _DistancePickerOption.custom : currentOption,
+              labelFor: (option) => option == _DistancePickerOption.custom
+                  ? l10n.distancePresetCustom
+                  : formatDistance(
+                      _metersForDistanceOption(option),
+                      useMetric: settings.useMetric,
+                    ),
+              cancelLabel: l10n.cancel,
+            );
+            if (picked == null || !context.mounted) {
+              return;
+            }
+            if (picked == _DistancePickerOption.custom) {
+              setState(() => _showCustomSlider = true);
+              return;
+            }
+            setState(() => _showCustomSlider = false);
+            ref.read(settingsControllerProvider.notifier).saveSettings(
+                  settings..defaultTriggerDistanceMeters =
+                      _metersForDistanceOption(picked),
+                );
+          },
+        ),
+        if (isCustom)
+          Column(
+            children: [
+              ListTile(
+                dense: true,
+                title: Text(
+                  formatDistance(distance, useMetric: settings.useMetric),
+                ),
+              ),
+              Slider(
+                value: distance.clamp(
+                  AlarmConstants.minTriggerDistanceM,
+                  AlarmConstants.maxTriggerDistanceM,
+                ),
+                min: AlarmConstants.minTriggerDistanceM,
+                max: AlarmConstants.maxTriggerDistanceM,
+                divisions: 49,
+                label: formatDistance(distance, useMetric: settings.useMetric),
+                onChanged: (value) {
+                  ref.read(settingsControllerProvider.notifier).saveSettings(
+                        settings..defaultTriggerDistanceMeters = value,
+                      );
+                },
+              ),
+            ],
+          ),
+      ],
+    );
   }
 }
 
@@ -431,7 +621,7 @@ class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
     final url = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.cloudBackupUpload),
+        title: Text(l10n.uploadBackupViaHttps),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(hintText: l10n.cloudBackupUrlHint),
@@ -445,7 +635,7 @@ class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(l10n.exportBackup),
+            child: Text(l10n.uploadBackupViaHttps),
           ),
         ],
       ),
@@ -509,7 +699,7 @@ class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
         if (FeatureFlags.cloudBackup)
           ListTile(
             leading: const Icon(Icons.cloud_upload_outlined),
-            title: Text(l10n.cloudBackupUpload),
+            title: Text(l10n.uploadBackupViaHttps),
             subtitle: Text(l10n.cloudBackupUrlHint),
             enabled: !_busy,
             onTap: _uploadCloudBackup,
@@ -517,13 +707,13 @@ class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
         if (FeatureFlags.familySharing) ...[
           ListTile(
             leading: const Icon(Icons.group_outlined),
-            title: Text(l10n.shareAllAlarms),
+            title: Text(l10n.shareLiveTrip),
             enabled: !_busy,
             onTap: _shareActiveAlarms,
           ),
           ListTile(
             leading: const Icon(Icons.group_add_outlined),
-            title: Text(l10n.importAlarmBundle),
+            title: Text(l10n.importSharedAlarm),
             enabled: !_busy,
             onTap: _importAlarmBundle,
           ),
@@ -538,20 +728,30 @@ class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+class _SettingsSectionHeader extends StatelessWidget {
+  const _SettingsSectionHeader({
+    required this.icon,
+    required this.title,
+  });
 
+  final IconData icon;
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+      padding: const EdgeInsets.only(top: 16, bottom: 8, left: 16, right: 16),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+        ],
       ),
     );
   }

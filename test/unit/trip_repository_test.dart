@@ -77,14 +77,15 @@ void main() {
     expect(await repository.getActiveTrip(), isNull);
   });
 
-  test('closes previous active trip when starting a new one', () async {
+  test('allows multiple concurrent active trips', () async {
     final first = await repository.startTrip(_alarm());
     final second = await repository.startTrip(_alarm(id: 2));
 
     final firstTrip = await repository.getById(first.id);
-    expect(firstTrip?.endedAt, isNotNull);
-    expect(firstTrip?.outcome, TripOutcome.cancelled);
+    expect(firstTrip?.endedAt, isNull);
     expect(second.alarmId, 2);
+    expect(await repository.getActiveTripForAlarm(1), isNotNull);
+    expect(await repository.getActiveTripForAlarm(2), isNotNull);
   });
 
   test('lists trips sorted by start date desc', () async {

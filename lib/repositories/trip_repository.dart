@@ -24,6 +24,7 @@ abstract class TripRepository {
   Future<List<Trip>> getAll({int? limit, int? offset});
   Future<Trip?> getById(int id);
   Future<Trip?> getActiveTrip();
+  Future<Trip?> getActiveTripForAlarm(int alarmId);
   Stream<List<Trip>> watchAll();
 }
 
@@ -34,9 +35,9 @@ class TripRepositoryImpl implements TripRepository {
 
   @override
   Future<Trip> startTrip(Alarm alarm) async {
-    final active = await getActiveTrip();
-    if (active != null) {
-      await endTrip(active.id, TripOutcome.cancelled);
+    final existing = await getActiveTripForAlarm(alarm.id);
+    if (existing != null) {
+      return existing;
     }
 
     final trip = Trip()
@@ -152,6 +153,15 @@ class TripRepositoryImpl implements TripRepository {
         .filter()
         .endedAtIsNull()
         .sortByStartedAtDesc()
+        .findFirst();
+  }
+
+  @override
+  Future<Trip?> getActiveTripForAlarm(int alarmId) async {
+    return _isar.trips
+        .filter()
+        .alarmIdEqualTo(alarmId)
+        .endedAtIsNull()
         .findFirst();
   }
 

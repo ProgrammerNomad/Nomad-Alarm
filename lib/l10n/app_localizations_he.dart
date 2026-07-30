@@ -233,6 +233,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get miles => 'מיילים';
 
   @override
+  String get distanceUnitsLabel => 'יחידות מרחק';
+
+  @override
   String get language => 'שפה';
 
   @override
@@ -705,7 +708,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get mapSettingsTitle => 'הגדרות מפה';
 
   @override
-  String get mapSettingsSubtitle => 'ספקים, אריחים לא מקוונים, מפתחות API';
+  String get mapSettingsSubtitle => 'ספקים, שכבות ואריחים לא מקוונים';
 
   @override
   String get mapProvidersSection => 'ספקים';
@@ -1005,4 +1008,188 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get tileTapToCreate => 'הקש ליצירת התראה';
+
+  @override
+  String get alarmCreatedSuccess => 'ההתראה נוצרה בהצלחה';
+
+  @override
+  String get alarmDetailsTitle => 'פרטי התראה';
+
+  @override
+  String get addAnotherAlarm => 'הוסף התראה נוספת';
+
+  @override
+  String get newAlarm => 'התראה חדשה';
+
+  @override
+  String get alarmStatusTracking => 'מעקב';
+
+  @override
+  String get alarmStatusPaused => 'מושהה';
+
+  @override
+  String alarmNumberLabel(int number) {
+    return 'התראה #$number';
+  }
+
+  @override
+  String activeAlarmsCount(int count) {
+    return 'התראות פעילות ($count)';
+  }
+
+  @override
+  String get save => 'שמור';
+
+  @override
+  String get providersSection => 'ספקים';
+
+  @override
+  String get providerChangedSuccess => 'הספק שונה בהצלחה.';
+
+  @override
+  String get noApiKeyRequired => 'לא נדרש מפתח API. הספק שונה בהצלחה.';
+
+  @override
+  String get configureAndSave => 'הגדר ושמור';
+
+  @override
+  String get providerSaveBlocked => 'השמירה חסומה עד להזנת מפתח API תקין.';
+
+  @override
+  String get credentialGoogleMapsTitle => 'Google Maps דורש מפתח API';
+
+  @override
+  String get credentialGoogleServicesTitle => 'שירותי Google דורשים מפתח API';
+
+  @override
+  String get credentialGoogleMapsBody =>
+      'מפתח אחד מכסה Maps, Places ו-Directions כשהם מופעלים.';
+
+  @override
+  String get credentialMapboxTitle => 'Mapbox דורש אסימון גישה';
+
+  @override
+  String get credentialMapboxBody =>
+      'הזן את אסימון Mapbox לשימוש במפות Mapbox.';
+
+  @override
+  String get credentialHereTitle => 'HERE דורש מפתח API';
+
+  @override
+  String get credentialHereBody => 'הזן את מפתח HERE REST API.';
+
+  @override
+  String get credentialGraphhopperTitle => 'GraphHopper דורש מפתח API';
+
+  @override
+  String get credentialGraphhopperBody => 'הזן מפתח GraphHopper לניתוב.';
+
+  @override
+  String get googleServiceMaps => 'Maps SDK ל-Android';
+
+  @override
+  String get googleServicePlaces => 'Places API';
+
+  @override
+  String get googleServiceDirections => 'Directions API';
+
+  @override
+  String get googleServiceAlsoUsed => 'בשימוש גם כשמופעל (אותו מפתח)';
+
+  @override
+  String get advancedSection => 'מתקדם';
+
+  @override
+  String get advancedApiKeys => 'מפתחות API';
+
+  @override
+  String get useRecommendedProviders => 'השתמש בספקים מומלצים';
+
+  @override
+  String get useRecommendedProvidersSubtitle =>
+      'שמור על חיפוש ומסלול תואמים לספק המפות';
+
+  @override
+  String get overrideSearchProvider => 'עקוף ספק חיפוש';
+
+  @override
+  String get overrideRouteProvider => 'עקוף ספק מסלול';
+
+  @override
+  String get mapProviderAutoSetsProviders =>
+      'שינוי ספק המפות מעדכן חיפוש ומסלול מומלצים.';
+
+  @override
+  String get apiKeyStatusConfigured => 'מוגדר';
+
+  @override
+  String get apiKeyStatusNotConfigured => 'לא מוגדר';
+
+  @override
+  String get apiKeyClear => 'נקה';
+
+  @override
+  String get apiKeyUpdate => 'עדכן מפתח';
+
+  @override
+  String get apiKeyAdd => 'הוסף מפתח';
+
+  @override
+  String get testAllConfiguredKeys => 'בדוק את כל המפתחות המוגדרים';
+
+  @override
+  String get apiKeysSecurityFooter =>
+      'מוצפן · Android Keystore · לא כלול בגיבוי';
+
+  @override
+  String get languageFollowSystem => 'עקוב אחר המערכת';
+
+  @override
+  String get distancePresetCustom => 'מותאם';
+
+  @override
+  String get batteryBalancedRecommended => 'מאוזן (מומלץ)';
+
+  @override
+  String get resumeAlarmAfterBootBatteryWarning =>
+      'הפעל מעקב מחדש לאחר אתחול. צורך יותר סוללה.';
+
+  @override
+  String get uploadBackupViaHttps => 'העלה גיבוי דרך HTTPS';
+
+  @override
+  String get shareLiveTrip => 'שתף נסיעה חיה';
+
+  @override
+  String get importSharedAlarm => 'ייבא התראה משותפת';
+
+  @override
+  String get permRestricted => 'מוגבל';
+
+  @override
+  String get permLimited => 'חלקי';
+
+  @override
+  String get permProvisional => 'זמני';
+
+  @override
+  String get aboutPrivacyPolicy => 'מדיניות פרטיות';
+
+  @override
+  String get aboutTermsOfService => 'תנאי שירות';
+
+  @override
+  String get aboutDonateSupport => 'תרום / תמוך';
+
+  @override
+  String get openMapSettings => 'פתח הגדרות מפה';
+
+  @override
+  String get currentLocationLabel => 'מיקום נוכחי';
+
+  @override
+  String get activeAlarmsEmptyHint => 'אין התראות פעילות - הקש + ליצירה';
+
+  @override
+  String get languageEndonymHint => 'שמות השפות מוצגים בכתב המקורי שלהן';
 }

@@ -9,14 +9,29 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+* Multi-alarm dashboard on Home - run several active alarms at once with live distance/ETA per card
+* Home quick actions (pause, resume, cancel) and **Add another alarm** flow
+* Single consolidated foreground notification summarizing all active alarms
+* [Settings Guide](docs/SETTINGS_GUIDE.md) on docs site - Google Cloud setup, troubleshooting, other providers
 * Single Google API key in Settings (one key for Maps, Places, Directions)
 * Runtime Android Maps SDK init from saved key (`GoogleMapsInit`)
 * Map screen prompt when Google provider selected without a key
-* [Settings Guide](docs/SETTINGS_GUIDE.md) on docs site - Google Cloud setup, troubleshooting, other providers
+* **Settings UX polish:** provider bundles with recommended search/route coupling, staged Save on map settings, inline credential prompts on Save, Advanced → API Keys status dashboard
+* Language **Follow system** option; theme/units/GPS profile radio controls; alert distance presets
+* Home current-location card with reverse-geocoded place name; language endonyms in native script
+* Material 3 settings pickers: compact summary tiles and bottom sheets (segmented control for units)
 
 ### Changed
-* API keys screen: one Google field + setup guide link; Mapbox/HERE/GraphHopper unchanged
-* Provider factory reads unified `readGoogleApiKey()` for Places and Directions
+* Settings UI uses M3 picker sheets instead of expanded radio lists
+* Save & Start returns to Home with success snackbar instead of trapping on Active Alarm screen
+* Active Alarm screen is a detail page only (Alarm #id, back navigation)
+* Splash with running alarms opens Home dashboard and resumes monitoring
+* API keys moved under **Advanced → API Keys** (status dashboard with per-service Google tests)
+* Map settings no longer auto-saves provider changes; explicit Save with credential gate
+* Map empty-state routes to map settings instead of API keys screen
+* Provider factory uses effective search/route from recommended bundles and overrides
+* Trip repository allows concurrent active trips for multiple alarms
+* Home screen: FAB-only create action; search moved up; active-alarm empty hint; settings icons
 
 ---
 

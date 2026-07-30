@@ -7,6 +7,7 @@ import 'package:nomad_alarm/core/constants/alarm_constants.dart';
 import 'package:nomad_alarm/core/errors/app_exception.dart';
 import 'package:nomad_alarm/core/utils/alarm_evaluator.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
+import 'package:nomad_alarm/core/utils/multi_alarm_notification_formatter.dart';
 import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
@@ -111,10 +112,25 @@ class AlarmService {
   final BatteryProfile batteryProfile;
 
   static const _routeRefreshInterval = Duration(seconds: 60);
-  DateTime? _lastRouteFetchAt;
-  double? _cachedRouteEtaMinutes;
 
   String get languageCode => _languageCode;
+
+  final Map<int, _AlarmSession> _sessions = {};
+  var _eventsBound = false;
+
+  Set<int> get monitoredAlarmIds => _sessions.keys.toSet();
+
+  int? get activeAlarmId {
+    if (_sessions.isEmpty) {
+      return null;
+    }
+    for (final session in _sessions.values) {
+      if (session.lastState?.status == AlarmStatus.active) {
+        return session.alarmId;
+      }
+    }
+    return _sessions.keys.first;
+  }
 
   void updateLockScreenInfoEnabled(bool enabled) {
     _notificationService.setLockScreenInfoEnabled(enabled);
@@ -126,31 +142,31 @@ class AlarmService {
     }
     _languageCode = code;
     await BackgroundAlarmService.updateLanguageCode(code);
-    final state = _session?.lastState;
-    if (state != null) {
-      await _notificationService.updateTrackingNotification(state);
-      final alarm = await _alarmRepository.getById(state.alarmId);
-      await WidgetService.updateActiveAlarm(
-        active: state.status == AlarmStatus.active ||
-            state.status == AlarmStatus.paused ||
-            state.status == AlarmStatus.triggered,
-        destination: state.destinationName,
-        distanceMeters: state.distanceMeters,
-        etaMinutes: state.etaMinutes,
-        alarmId: state.alarmId,
-        triggerDistanceMeters: alarm?.triggerDistanceMeters,
-        speedKmh: state.speedKmh,
-        languageCode: _languageCode,
-      );
+    await _syncWidgetFromSessions();
+  }
+
+  /// Resumes GPS monitoring for all active alarms in the database.
+  Future<void> resumeMonitoringForRunningAlarms() async {
+    if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
+      return;
+    }
+    bindBackgroundEvents();
+    final running = await _alarmRepository.getRunning();
+    for (final alarm in running) {
+      if (alarm.status != AlarmStatus.active) {
+        continue;
+      }
+      if (_sessions.containsKey(alarm.id)) {
+        continue;
+      }
+      try {
+        await startAlarm(alarm.id, createTrip: false);
+      } catch (_) {
+        // Skip alarms that cannot be resumed.
+      }
     }
   }
 
-  _AlarmSession? _session;
-  var _eventsBound = false;
-
-  int? get activeAlarmId => _session?.alarmId;
-
-  /// Pauses active alarms in the database when location permission was revoked.
   Future<void> suspendActiveAlarmsIfLocationDenied() async {
     if (await Permission.locationWhenInUse.isGranted) {
       return;
@@ -166,9 +182,7 @@ class AlarmService {
     if (await BackgroundAlarmService.isRunning()) {
       await BackgroundAlarmService.stopMonitoring();
     }
-    if (_session != null) {
-      await _disposeSession();
-    }
+    await _disposeAllSessions();
   }
 
   void bindBackgroundEvents() {
@@ -181,8 +195,8 @@ class AlarmService {
       onState: _handleBackgroundState,
       onTriggered: _handleTriggered,
       onStopped: () async {
-        if (_session != null) {
-          await _disposeSession();
+        if (_sessions.isNotEmpty) {
+          await _disposeAllSessions();
         }
       },
     );
@@ -193,15 +207,17 @@ class AlarmService {
 
   Stream<AlarmRuntimeState> watchActiveAlarm(int alarmId) {
     bindBackgroundEvents();
-    if (_session?.alarmId == alarmId) {
-      return _session!.controller.stream;
+    final session = _sessions[alarmId];
+    if (session != null) {
+      return session.controller.stream;
     }
     return Stream.fromFuture(_buildStaticState(alarmId));
   }
 
   Future<AlarmRuntimeState?> getRuntimeState(int alarmId) async {
-    if (_session?.alarmId == alarmId && _session!.lastState != null) {
-      return _session!.lastState;
+    final session = _sessions[alarmId];
+    if (session?.lastState != null) {
+      return session!.lastState;
     }
     try {
       return await _buildStaticState(alarmId);
@@ -210,7 +226,7 @@ class AlarmService {
     }
   }
 
-  Future<void> startAlarm(int alarmId) async {
+  Future<void> startAlarm(int alarmId, {bool createTrip = true}) async {
     bindBackgroundEvents();
 
     if (!await BackgroundAlarmService.hasLocationPermissionForForegroundService()) {
@@ -224,41 +240,43 @@ class AlarmService {
       throw const AlarmException('Alarm not found.');
     }
 
-    if (_session != null && _session!.alarmId != alarmId) {
-      await cancelAlarm(_session!.alarmId);
-    }
-
     alarm.status = AlarmStatus.active;
-    alarm.startedAt = DateTime.now();
+    alarm.startedAt ??= DateTime.now();
     alarm.updatedAt = DateTime.now();
     await _alarmRepository.update(alarm);
 
-    final trip = await _tripRepository.startTrip(alarm);
+    int? tripId = _sessions[alarmId]?.tripId;
+    if (createTrip || tripId == null) {
+      final trip = await _tripRepository.startTrip(alarm);
+      tripId = trip.id;
+    }
 
-    await _startSession(alarm, tripId: trip.id);
-    await BootPrefsSync.setActiveAlarmId(alarm.id);
-    await BackgroundAlarmService.startMonitoring(_monitorConfig(alarm));
-    await _notificationService.showTrackingNotification(
-      AlarmRuntimeState(
-        alarmId: alarm.id,
-        destinationName: alarm.name,
-        address: alarm.address,
-        destLatitude: alarm.destLatitude,
-        destLongitude: alarm.destLongitude,
-        distanceMeters: 0,
-        speedKmh: 0,
-        accuracyMeters: 0,
-        lastFixAt: DateTime.now(),
-        isGpsLost: false,
-        hasPassedDestination: false,
-        status: AlarmStatus.active,
-      ),
+    await _ensureSession(alarm, tripId: tripId);
+    await BootPrefsSync.addActiveAlarmId(alarm.id);
+    await BackgroundAlarmService.addAlarmMonitoring(_monitorConfig(alarm));
+
+    _emitState(
+      alarmId,
+      _sessions[alarmId]!.lastState ??
+          AlarmRuntimeState(
+            alarmId: alarm.id,
+            destinationName: alarm.name,
+            address: alarm.address,
+            destLatitude: alarm.destLatitude,
+            destLongitude: alarm.destLongitude,
+            distanceMeters: 0,
+            speedKmh: 0,
+            accuracyMeters: 0,
+            lastFixAt: DateTime.now(),
+            isGpsLost: false,
+            hasPassedDestination: false,
+            status: AlarmStatus.active,
+          ),
     );
+    await _syncWidgetFromSessions();
   }
 
   Future<void> pauseAlarm(int alarmId) async {
-    _ensureSession(alarmId);
-
     final alarm = await _alarmRepository.getById(alarmId);
     if (alarm == null) {
       return;
@@ -266,11 +284,13 @@ class AlarmService {
     alarm.status = AlarmStatus.paused;
     await _alarmRepository.update(alarm);
 
-    await BackgroundAlarmService.pauseMonitoring();
+    await BackgroundAlarmService.pauseAlarmMonitoring(alarmId);
 
-    if (_session?.lastState != null) {
-      _emitState(_session!.lastState!.copyWith(status: AlarmStatus.paused));
+    final session = _sessions[alarmId];
+    if (session?.lastState != null) {
+      _emitState(alarmId, session!.lastState!.copyWith(status: AlarmStatus.paused));
     }
+    await _syncWidgetFromSessions();
   }
 
   Future<void> resumeAlarm(int alarmId) async {
@@ -287,40 +307,42 @@ class AlarmService {
     alarm.status = AlarmStatus.active;
     await _alarmRepository.update(alarm);
 
-    if (_session?.alarmId == alarmId) {
-      await _startSession(alarm, tripId: _session!.tripId);
+    final existing = _sessions[alarmId];
+    if (existing != null) {
+      await _ensureSession(alarm, tripId: existing.tripId);
     } else {
-      final activeTrip = await _tripRepository.getActiveTrip();
-      await _startSession(alarm, tripId: activeTrip?.id);
+      final trip = await _tripRepository.getActiveTripForAlarm(alarm.id);
+      await _ensureSession(alarm, tripId: trip?.id);
+      await BootPrefsSync.addActiveAlarmId(alarm.id);
     }
 
-    await BackgroundAlarmService.resumeMonitoring(_monitorConfig(alarm));
+    await BackgroundAlarmService.resumeAlarmMonitoring(_monitorConfig(alarm));
+    await _syncWidgetFromSessions();
   }
 
   Future<void> cancelAlarm(int alarmId) async {
-    await BackgroundAlarmService.stopMonitoring();
-    await _notificationService.cancelAll();
-    await _flashlightService.stop();
+    await BackgroundAlarmService.removeAlarmMonitoring(alarmId);
 
     final alarm = await _alarmRepository.getById(alarmId);
     if (alarm == null) {
-      if (_session?.alarmId == alarmId) {
-        await _disposeSession();
-      }
+      await _disposeSession(alarmId);
+      await _maybeStopBackgroundWhenEmpty();
       return;
     }
 
     await _finalizeAlarm(
       alarm,
+      session: _sessions[alarmId],
       alarmStatus: AlarmStatus.cancelled,
       tripOutcome: TripOutcome.cancelled,
       historyType: HistoryType.dismissed,
       historyNotes: 'Cancelled by user',
     );
 
-    if (_session?.alarmId == alarmId) {
-      await _disposeSession();
-    }
+    await _disposeSession(alarmId);
+    await BootPrefsSync.removeActiveAlarmId(alarmId);
+    await _maybeStopBackgroundWhenEmpty();
+    await _syncWidgetFromSessions();
   }
 
   Future<void> dismissAlarm(int alarmId, {bool snooze = false}) async {
@@ -332,29 +354,34 @@ class AlarmService {
     await _notificationService.cancelAlarmNotification();
 
     if (snooze) {
-      _session?.snoozeCount += 1;
+      final session = _sessions[alarmId];
+      session?.snoozeCount += 1;
       alarm.status = AlarmStatus.active;
       alarm.triggeredAt = null;
       await _alarmRepository.update(alarm);
       await _speechService.stop();
       await _flashlightService.stop();
-      FlutterBackgroundService().invoke('snooze');
+      FlutterBackgroundService().invoke('snooze', {'alarmId': alarmId});
 
       await _historyRepository.log(
         alarm: alarm,
         type: HistoryType.snoozed,
-        tripId: _session?.tripId,
-        snoozeCount: _session?.snoozeCount,
+        tripId: session?.tripId,
+        snoozeCount: session?.snoozeCount,
       );
 
-      if (_session?.alarmId == alarmId && _session!.lastState != null) {
-        _emitState(_session!.lastState!.copyWith(status: AlarmStatus.active));
+      if (session?.lastState != null) {
+        _emitState(alarmId, session!.lastState!.copyWith(status: AlarmStatus.active));
       }
+      await _syncWidgetFromSessions();
       return;
     }
 
+    await BackgroundAlarmService.removeAlarmMonitoring(alarmId);
+
     await _finalizeAlarm(
       alarm,
+      session: _sessions[alarmId],
       alarmStatus: AlarmStatus.completed,
       tripOutcome: TripOutcome.completed,
       historyType: HistoryType.completed,
@@ -362,15 +389,15 @@ class AlarmService {
 
     await _speechService.stop();
     await _flashlightService.stop();
-    await BackgroundAlarmService.stopMonitoring();
 
-    if (_session?.alarmId == alarmId) {
-      await _disposeSession();
-    }
+    await _disposeSession(alarmId);
+    await BootPrefsSync.removeActiveAlarmId(alarmId);
+    await _maybeStopBackgroundWhenEmpty();
+    await _syncWidgetFromSessions();
   }
 
   AlarmRuntimeState evaluate(Alarm alarm, Position position) {
-    _session?.tripTracker.recordPosition(
+    _sessions[alarm.id]?.tripTracker.recordPosition(
       position.latitude,
       position.longitude,
       position.speed >= 0 ? position.speed * 3.6 : 0,
@@ -380,7 +407,7 @@ class AlarmService {
       config: _monitorConfig(alarm),
       position: position,
       currentStatus: alarm.status,
-      snoozeSuppressedUntil: _session?.snoozeSuppressedUntil,
+      snoozeSuppressedUntil: _sessions[alarm.id]?.snoozeSuppressedUntil,
     );
   }
 
@@ -391,93 +418,77 @@ class AlarmService {
     );
   }
 
-  Future<void> _startSession(Alarm alarm, {int? tripId}) async {
-    final preserveTripId = tripId ?? _session?.tripId;
-    await _disposeSession();
+  Future<void> _ensureSession(Alarm alarm, {int? tripId}) async {
+    final existing = _sessions[alarm.id];
+    if (existing != null) {
+      existing.tripId = tripId ?? existing.tripId;
+      existing.travelMode = alarm.travelMode;
+      return;
+    }
 
     final controller = StreamController<AlarmRuntimeState>.broadcast();
-    _session = _AlarmSession(
+    _sessions[alarm.id] = _AlarmSession(
       alarmId: alarm.id,
       controller: controller,
-      tripId: preserveTripId,
+      tripId: tripId,
       travelMode: alarm.travelMode,
     );
-    _evaluator.reset();
-    _lastRouteFetchAt = null;
-    _cachedRouteEtaMinutes = null;
   }
 
   Future<void> _handleBackgroundState(AlarmRuntimeState state) async {
-    if (_session == null || _session!.alarmId != state.alarmId) {
+    final alarmId = state.alarmId;
+    var session = _sessions[alarmId];
+    if (session == null) {
+      final trip = await _tripRepository.getActiveTripForAlarm(alarmId);
       final controller = StreamController<AlarmRuntimeState>.broadcast();
-      final activeTrip = await _tripRepository.getActiveTrip();
-      _session = _AlarmSession(
-        alarmId: state.alarmId,
+      session = _AlarmSession(
+        alarmId: alarmId,
         controller: controller,
-        tripId: activeTrip?.id,
+        tripId: trip?.id,
       );
+      _sessions[alarmId] = session;
     }
 
     if (state.latitude != null && state.longitude != null) {
-      _session!.tripTracker.recordPosition(
+      session.tripTracker.recordPosition(
         state.latitude!,
         state.longitude!,
         state.speedKmh,
       );
     }
 
-    final enriched = await _enrichWithRouteEta(await _enrichWithBattery(state));
-    _emitState(enriched);
+    final enriched = await _enrichWithRouteEta(session, await _enrichWithBattery(session, state));
+    _emitState(alarmId, enriched);
 
-    final tripId = _session?.tripId;
+    final tripId = session.tripId;
     if (tripId != null) {
-      await _tripRepository.updateStats(tripId, _session!.tripTracker.toStats());
-    }
-
-    if (enriched.status != AlarmStatus.paused) {
-      await _notificationService.updateTrackingNotification(enriched);
+      await _tripRepository.updateStats(tripId, session.tripTracker.toStats());
     }
 
     final alarm = await _alarmRepository.getById(enriched.alarmId);
-    await WidgetService.updateActiveAlarm(
-      active: enriched.status == AlarmStatus.active ||
-          enriched.status == AlarmStatus.paused ||
-          enriched.status == AlarmStatus.triggered,
-      destination: enriched.destinationName,
-      distanceMeters: enriched.distanceMeters,
-      etaMinutes: enriched.etaMinutes,
-      alarmId: enriched.alarmId,
-      triggerDistanceMeters: alarm?.triggerDistanceMeters,
-      speedKmh: enriched.speedKmh,
-      languageCode: _languageCode,
-    );
-
     if (enriched.isGpsLost) {
       await _notificationService.showGpsLostAlert(enriched.alarmId);
     }
 
-    if (enriched.isLowBattery && !(_session?.lowBatteryNotified ?? false)) {
-      _session?.lowBatteryNotified = true;
+    if (enriched.isLowBattery && !session.lowBatteryNotified) {
+      session.lowBatteryNotified = true;
       await _notificationService.showLowBatteryAlert(enriched.alarmId);
     }
 
-    if (enriched.isInternetLost && !(_session?.internetLostNotified ?? false)) {
-      _session?.internetLostNotified = true;
+    if (enriched.isInternetLost && !session.internetLostNotified) {
+      session.internetLostNotified = true;
       await _notificationService.showInternetLostAlert(enriched.alarmId);
     }
 
-    if (enriched.status == AlarmStatus.triggered) {
-      final alarm = await _alarmRepository.getById(enriched.alarmId);
-      if (alarm != null && alarm.status != AlarmStatus.triggered) {
-        alarm.status = AlarmStatus.triggered;
-        alarm.triggeredAt = DateTime.now();
-        await _alarmRepository.update(alarm);
-      }
+    if (enriched.status == AlarmStatus.triggered && alarm != null &&
+        alarm.status != AlarmStatus.triggered) {
+      alarm.status = AlarmStatus.triggered;
+      alarm.triggeredAt = DateTime.now();
+      await _alarmRepository.update(alarm);
     }
 
-    if (enriched.hasPassedDestination && !(_session?.passedHandled ?? true)) {
-      _session?.passedHandled = true;
-      final alarm = await _alarmRepository.getById(state.alarmId);
+    if (enriched.hasPassedDestination && !session.passedHandled) {
+      session.passedHandled = true;
       if (alarm != null &&
           alarm.status != AlarmStatus.completed &&
           alarm.status != AlarmStatus.missed &&
@@ -485,28 +496,32 @@ class AlarmService {
         await _handleMissed(alarm, reason: 'Destination passed');
       }
     }
+
+    await _syncWidgetFromSessions();
   }
 
   Future<void> _handleMissed(Alarm alarm, {required String reason}) async {
-    await BackgroundAlarmService.stopMonitoring();
-    await _notificationService.cancelAll();
+    await BackgroundAlarmService.removeAlarmMonitoring(alarm.id);
     await _flashlightService.stop();
 
     await _finalizeAlarm(
       alarm,
+      session: _sessions[alarm.id],
       alarmStatus: AlarmStatus.missed,
       tripOutcome: TripOutcome.passed,
       historyType: HistoryType.missed,
       historyNotes: reason,
     );
 
-    if (_session?.alarmId == alarm.id) {
-      await _disposeSession();
-    }
+    await _disposeSession(alarm.id);
+    await BootPrefsSync.removeActiveAlarmId(alarm.id);
+    await _maybeStopBackgroundWhenEmpty();
+    await _syncWidgetFromSessions();
   }
 
   Future<void> _finalizeAlarm(
     Alarm alarm, {
+    required _AlarmSession? session,
     required AlarmStatus alarmStatus,
     required TripOutcome tripOutcome,
     required HistoryType historyType,
@@ -519,12 +534,12 @@ class AlarmService {
     }
     await _alarmRepository.update(alarm);
 
-    final tripId = _session?.tripId;
+    final tripId = session?.tripId;
     if (tripId != null) {
       await _tripRepository.endTrip(
         tripId,
         tripOutcome,
-        stats: _session?.tripTracker.toStats(),
+        stats: session?.tripTracker.toStats(),
       );
     }
 
@@ -532,7 +547,7 @@ class AlarmService {
       alarm: alarm,
       type: historyType,
       tripId: tripId,
-      snoozeCount: _session?.snoozeCount,
+      snoozeCount: session?.snoozeCount,
       notes: historyNotes,
     );
   }
@@ -549,7 +564,7 @@ class AlarmService {
     );
 
     if (alarm.voiceEnabled) {
-      final state = _session?.lastState;
+      final state = _sessions[alarmId]?.lastState;
       await _speechService.speakApproaching(
         destinationName: alarm.name,
         distanceMeters: state?.distanceMeters ?? alarm.triggerDistanceMeters,
@@ -566,7 +581,10 @@ class AlarmService {
     onNavigateToAlarm?.call(alarmId, isRing: true);
   }
 
-  Future<AlarmRuntimeState> _enrichWithRouteEta(AlarmRuntimeState state) async {
+  Future<AlarmRuntimeState> _enrichWithRouteEta(
+    _AlarmSession session,
+    AlarmRuntimeState state,
+  ) async {
     final routeService = _routeService;
     if (routeService == null ||
         state.latitude == null ||
@@ -577,50 +595,50 @@ class AlarmService {
     }
 
     final now = DateTime.now();
-    if (_lastRouteFetchAt != null &&
-        now.difference(_lastRouteFetchAt!) < _routeRefreshInterval &&
-        _cachedRouteEtaMinutes != null) {
-      return state.copyWith(etaMinutes: _cachedRouteEtaMinutes);
+    if (session.lastRouteFetchAt != null &&
+        now.difference(session.lastRouteFetchAt!) < _routeRefreshInterval &&
+        session.cachedRouteEtaMinutes != null) {
+      return state.copyWith(etaMinutes: session.cachedRouteEtaMinutes);
     }
 
     try {
       final result = await routeService.route(
         from: LatLng(state.latitude!, state.longitude!),
         to: LatLng(state.destLatitude!, state.destLongitude!),
-        travelMode: _session?.travelMode ?? TravelMode.autoDetect,
+        travelMode: session.travelMode,
       );
-      _lastRouteFetchAt = now;
-      _cachedRouteEtaMinutes = result?.durationMinutes;
+      session.lastRouteFetchAt = now;
+      session.cachedRouteEtaMinutes = result?.durationMinutes;
 
       final polyline = result?.storablePolyline;
-      final tripId = _session?.tripId;
-      if (polyline != null &&
-          tripId != null &&
-          !(_session?.routePolylineStored ?? false)) {
+      final tripId = session.tripId;
+      if (polyline != null && tripId != null && !session.routePolylineStored) {
         await _tripRepository.updateRoutePolyline(tripId, polyline);
-        _session?.routePolylineStored = true;
+        session.routePolylineStored = true;
       }
 
-      if (_cachedRouteEtaMinutes != null) {
+      if (session.cachedRouteEtaMinutes != null) {
         _evaluator.smartDetection.recordRouteSuccess();
-        return state.copyWith(etaMinutes: _cachedRouteEtaMinutes);
+        return state.copyWith(etaMinutes: session.cachedRouteEtaMinutes);
       }
       _evaluator.smartDetection.recordRouteSuccess();
     } catch (_) {
       _evaluator.smartDetection.recordRouteFailure(now);
-      // Fall back to straight-line ETA from background isolate.
     }
     return state;
   }
 
-  Future<AlarmRuntimeState> _enrichWithBattery(AlarmRuntimeState state) async {
+  Future<AlarmRuntimeState> _enrichWithBattery(
+    _AlarmSession session,
+    AlarmRuntimeState state,
+  ) async {
     final now = DateTime.now();
-    if (_session?.lastBatteryCheck != null &&
-        now.difference(_session!.lastBatteryCheck!).inSeconds <
+    if (session.lastBatteryCheck != null &&
+        now.difference(session.lastBatteryCheck!).inSeconds <
             AlarmConstants.lowBatteryCheckIntervalSec) {
       return state;
     }
-    _session?.lastBatteryCheck = now;
+    session.lastBatteryCheck = now;
     final low = await _batteryMonitorService.isLowBattery(
       AlarmConstants.lowBatteryThresholdPercent,
     );
@@ -632,6 +650,7 @@ class AlarmService {
 
   void _handleNotificationTap(String? payload) {
     if (payload == null) {
+      onNavigateToAlarm?.call(-1, isRing: false);
       return;
     }
     if (payload.startsWith('ring:')) {
@@ -639,11 +658,17 @@ class AlarmService {
       if (id != null) {
         onNavigateToAlarm?.call(id, isRing: true);
       }
-    } else if (payload.startsWith('active:')) {
+      return;
+    }
+    if (payload.startsWith('active:')) {
       final id = int.tryParse(payload.split(':').last);
       if (id != null) {
         onNavigateToAlarm?.call(id, isRing: false);
       }
+      return;
+    }
+    if (payload == 'home') {
+      onNavigateToAlarm?.call(-1, isRing: false);
     }
   }
 
@@ -655,10 +680,14 @@ class AlarmService {
     }
   }
 
-  void _emitState(AlarmRuntimeState state) {
-    _session?.lastState = state;
-    if (!(_session?.controller.isClosed ?? true)) {
-      _session!.controller.add(state);
+  void _emitState(int alarmId, AlarmRuntimeState state) {
+    final session = _sessions[alarmId];
+    if (session == null) {
+      return;
+    }
+    session.lastState = state;
+    if (!session.controller.isClosed) {
+      session.controller.add(state);
     }
   }
 
@@ -683,27 +712,64 @@ class AlarmService {
     );
   }
 
-  void _ensureSession(int alarmId) {
-    if (_session?.alarmId != alarmId) {
-      throw AlarmException('No active monitoring for alarm $alarmId.');
+  Future<void> _maybeStopBackgroundWhenEmpty() async {
+    if (_sessions.isEmpty) {
+      await BackgroundAlarmService.stopMonitoring();
+      await _notificationService.cancelTrackingNotification();
     }
   }
 
-  Future<void> _disposeSession() async {
-    _session?.snoozeTimer?.cancel();
-    await _session?.controller.close();
-    _session = null;
+  Future<void> _syncWidgetFromSessions() async {
+    final states = _sessions.values
+        .map((session) => session.lastState)
+        .whereType<AlarmRuntimeState>()
+        .toList();
+    final nearest = nearestActiveAlarmState(states);
+    if (nearest == null) {
+      await WidgetService.clear(languageCode: _languageCode);
+      return;
+    }
+
+    final alarm = await _alarmRepository.getById(nearest.alarmId);
+    final activeCount = states
+        .where((state) => state.status == AlarmStatus.active)
+        .length;
+    await WidgetService.updateActiveAlarm(
+      active: true,
+      destination: nearest.destinationName,
+      distanceMeters: nearest.distanceMeters,
+      etaMinutes: nearest.etaMinutes,
+      alarmId: nearest.alarmId,
+      triggerDistanceMeters: alarm?.triggerDistanceMeters,
+      speedKmh: nearest.speedKmh,
+      languageCode: _languageCode,
+      activeAlarmCount: activeCount,
+    );
+  }
+
+  Future<void> _disposeSession(int alarmId) async {
+    final session = _sessions.remove(alarmId);
+    if (session == null) {
+      return;
+    }
+    session.snoozeTimer?.cancel();
+    await session.controller.close();
+  }
+
+  Future<void> _disposeAllSessions() async {
+    final ids = _sessions.keys.toList();
+    for (final id in ids) {
+      await _disposeSession(id);
+    }
     _evaluator.reset();
-    _lastRouteFetchAt = null;
-    _cachedRouteEtaMinutes = null;
+    await BootPrefsSync.setActiveAlarmIds(const []);
     await WidgetService.clear(languageCode: _languageCode);
-    await BootPrefsSync.setActiveAlarmId(null);
   }
 
   Future<void> dispose() async {
     await _ringtoneService.stop();
     _ringtoneService.dispose();
-    await _disposeSession();
+    await _disposeAllSessions();
   }
 }
 
@@ -717,8 +783,8 @@ class _AlarmSession {
 
   final int alarmId;
   final StreamController<AlarmRuntimeState> controller;
-  final int? tripId;
-  final TravelMode travelMode;
+  int? tripId;
+  TravelMode travelMode;
   final _TripStatsTracker tripTracker = _TripStatsTracker();
   Timer? snoozeTimer;
   DateTime? snoozeSuppressedUntil;
@@ -729,4 +795,6 @@ class _AlarmSession {
   bool internetLostNotified = false;
   bool routePolylineStored = false;
   DateTime? lastBatteryCheck;
+  DateTime? lastRouteFetchAt;
+  double? cachedRouteEtaMinutes;
 }

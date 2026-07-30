@@ -51,6 +51,10 @@ final alarmServiceProvider = Provider<AlarmService>((ref) {
           orElse: () => null,
         ),
     onNavigateToAlarm: (alarmId, {isRing = false}) {
+      if (alarmId < 0) {
+        router.go('/home');
+        return;
+      }
       if (isRing) {
         router.go('/alarm/ring/$alarmId');
       } else {
@@ -71,6 +75,10 @@ final activeAlarmStateProvider =
 
 final monitoringAlarmIdProvider = Provider<int?>((ref) {
   return ref.watch(alarmServiceProvider).activeAlarmId;
+});
+
+final monitoredAlarmIdsProvider = Provider<Set<int>>((ref) {
+  return ref.watch(alarmServiceProvider).monitoredAlarmIds;
 });
 
 final backgroundInitProvider = FutureProvider<void>((ref) async {
