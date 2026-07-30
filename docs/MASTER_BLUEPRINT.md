@@ -669,10 +669,8 @@ nomad-alarm/
 
 # CI/CD
 
-* GitHub Actions
-  * Flutter analyze + test (`.github/workflows/ci.yml`)
-  * Jekyll docs site deploy (`.github/workflows/pages.yml`)
-* Release AAB/APK: local build ([LOCAL_BUILD.md](LOCAL_BUILD.md))
+* GitHub Actions: Jekyll docs site deploy (`.github/workflows/pages.yml`)
+* Flutter analyze, tests, and release AAB/APK: local only ([LOCAL_BUILD.md](LOCAL_BUILD.md), [RELEASE_QA_SIGNOFF.md](RELEASE_QA_SIGNOFF.md))
 
 ---
 

@@ -7,7 +7,7 @@ permalink: /LOCAL_BUILD/
 ---
 # Local build
 
-Nomad Alarm supports **local builds** on your machine. GitHub Actions runs analyze + unit/widget tests on push/PR; integration and iOS builds are local.
+Nomad Alarm supports **local builds** on your machine. Run analyze, tests, and release builds locally before tagging or submitting to Play Console.
 
 ## Prerequisites
 

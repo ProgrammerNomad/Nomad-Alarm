@@ -30,7 +30,7 @@ Or create the release in the GitHub UI and attach `app-release.apk`.
 
 ## CI verification
 
-Trigger **workflow_dispatch** → `release` job in `.github/workflows/flutter.yml` to confirm unsigned release builds pass.
+Run local release checks before tagging — see [Local Build](LOCAL_BUILD.md) and [QA Sign-off](RELEASE_QA_SIGNOFF.md) (`flutter analyze`, `flutter test`, signed AAB build).
 
 ## v1.5.0
 
