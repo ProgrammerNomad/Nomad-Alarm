@@ -49,6 +49,8 @@ class AppSettings {
   late bool autoBackupEnabled;
   DateTime? lastBackupAt;
 
+  late bool smartPlacesEnabled;
+
   static AppSettings defaults() {
     return AppSettings()
       ..themeMode = AppThemeMode.system
@@ -76,6 +78,7 @@ class AppSettings {
       ..overrideSearchProvider = false
       ..overrideRouteProvider = false
       ..autoBackupEnabled = false
-      ..lastBackupAt = null;
+      ..lastBackupAt = null
+      ..smartPlacesEnabled = true;
   }
 }

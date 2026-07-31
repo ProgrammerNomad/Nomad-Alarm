@@ -21,6 +21,8 @@ import 'package:nomad_alarm/features/settings/presentation/map_settings_screen.d
 import 'package:nomad_alarm/features/settings/presentation/permission_center_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/settings_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/transfer_data_screen.dart';
+import 'package:nomad_alarm/features/saved_places/presentation/saved_place_form_screen.dart';
+import 'package:nomad_alarm/features/saved_places/presentation/saved_places_list_screen.dart';
 import 'package:nomad_alarm/features/splash/presentation/splash_screen.dart';
 import 'package:nomad_alarm/features/welcome/presentation/welcome_screen.dart';
 import 'package:nomad_alarm/shared/widgets/main_shell.dart';
@@ -95,6 +97,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const TransferDataScreen(),
       ),
       GoRoute(
+        path: '/saved-places',
+        builder: (context, state) => const SavedPlacesListScreen(),
+      ),
+      GoRoute(
+        path: '/saved-places/new',
+        builder: (context, state) => const SavedPlaceFormScreen(),
+      ),
+      GoRoute(
+        path: '/saved-places/:id/edit',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return SavedPlaceFormScreen(placeId: id);
+        },
+      ),
+      GoRoute(
         path: '/about',
         builder: (context, state) => const AboutScreen(),
       ),
@@ -108,7 +125,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/search',
-        builder: (context, state) => const SearchScreen(),
+        builder: (context, state) => SearchScreen(
+          pickForPlace: state.uri.queryParameters['pick'] == 'place',
+        ),
       ),
       GoRoute(
         path: '/map',

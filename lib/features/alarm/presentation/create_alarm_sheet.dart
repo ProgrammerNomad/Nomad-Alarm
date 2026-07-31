@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/features/alarm/presentation/import_alarm_flow.dart';
 
@@ -36,6 +37,15 @@ Future<void> showCreateAlarmSheet(BuildContext context) async {
               ImportAlarmFlow.showChooseSourceSheet(context);
             },
           ),
+          if (FeatureFlags.smartPlaces)
+            ListTile(
+              leading: const Icon(Icons.place_outlined),
+              title: Text(l10n.savedPlaces),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/saved-places');
+              },
+            ),
           Padding(
             padding: const EdgeInsets.all(8),
             child: TextButton(

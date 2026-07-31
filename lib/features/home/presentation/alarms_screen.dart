@@ -11,7 +11,8 @@ import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
-import 'package:nomad_alarm/models/favorite.dart';
+import 'package:nomad_alarm/features/home/presentation/saved_places_home_section.dart';
+import 'package:nomad_alarm/shared/widgets/alarm_source_badge.dart';
 import 'package:nomad_alarm/models/recent_search.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/features/alarm/presentation/share_alarm_bottom_sheet.dart';
@@ -91,7 +92,14 @@ class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          if (FeatureFlags.smartPlaces)
+            favoritesAsync.when(
+              loading: () => const SavedPlacesHomeSection(places: []),
+              error: (_, stackTrace) => const SavedPlacesHomeSection(places: []),
+              data: (favorites) => SavedPlacesHomeSection(places: favorites),
+            ),
+          const SizedBox(height: 8),
           activeAlarmsAsync.when(
             loading: () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,42 +177,6 @@ class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
               );
             },
           ),
-          favoritesAsync.when(
-            loading: () => const SizedBox.shrink(),
-            error: (_, stackTrace) => const SizedBox.shrink(),
-            data: (favorites) {
-              if (favorites.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.favorites,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: favorites.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final fav = favorites[index];
-                        return ActionChip(
-                          avatar: Icon(_favoriteIcon(fav)),
-                          label: Text(fav.name),
-                          onPressed: () => _openFavorite(context, fav),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              );
-            },
-          ),
           recentAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Text(l10n.errorPrefix(e.toString())),
@@ -264,18 +236,6 @@ class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
     );
   }
 
-  void _openFavorite(BuildContext context, Favorite fav) {
-    context.push(
-      '/alarm/new',
-      extra: DestinationArgs(
-        name: fav.name,
-        latitude: fav.latitude,
-        longitude: fav.longitude,
-        address: fav.address,
-      ),
-    );
-  }
-
   void _openRecent(BuildContext context, RecentSearch recent) {
     context.push(
       '/alarm/new',
@@ -286,15 +246,6 @@ class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
         address: recent.address,
       ),
     );
-  }
-
-  IconData _favoriteIcon(Favorite fav) {
-    return switch (fav.category) {
-      FavoriteCategory.home => Icons.home_outlined,
-      FavoriteCategory.office => Icons.work_outline,
-      FavoriteCategory.airport => Icons.flight,
-      _ => Icons.star_outline,
-    };
   }
 }
 
@@ -450,9 +401,18 @@ class _AlarmCardBody extends StatelessWidget {
             Icon(Icons.circle, size: 12, color: statusColor),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                alarm.name,
-                style: Theme.of(context).textTheme.titleMedium,
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      alarm.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  AlarmSourceBadge(createdBy: alarm.createdBy),
+                ],
               ),
             ),
             Text(

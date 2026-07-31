@@ -9,6 +9,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+* **Saved Places & Smart Alarm** - save Home/Office/etc.; Smart Alarm modes (Off / Suggest / Automatic); home preview card under search; `/saved-places` management; local confidence engine with AUTO chip on smart alarms; debug confidence breakdown
 * **Transfer Data screen** - Settings backup actions (export, import, HTTPS upload) moved from inline **Data** tiles to **Backup → Transfer Data**; shows last-backup timestamp and disabled Auto Backup placeholder
 * **History saved drafts** - Save only navigates to History; drafts appear under All and Saved filter with Start/Delete actions
 * **FAB create menu** - + opens bottom sheet: New Alarm / Import Alarm (inline import row removed from Alarms)

@@ -59,4 +59,40 @@ void main() {
     expect(loaded, hasLength(1));
     expect(loaded.first.id, favorite.id);
   });
+
+  test('recordStopDismissed increments falsePredictionCount', () async {
+    final place = Favorite.createDefaults(
+      name: 'Home',
+      latitude: 51.5,
+      longitude: -0.1,
+    );
+    await isar.writeTxn(() async {
+      await isar.favorites.put(place);
+    });
+
+    await repository.recordStopDismissed(place.id);
+
+    final updated = await repository.getById(place.id);
+    expect(updated!.falsePredictionCount, 1);
+    expect(updated.lastDismissedAt, isNotNull);
+    expect(updated.predictionAccuracy, lessThan(0.5));
+  });
+
+  test('recordSmartAlarmCompleted improves prediction accuracy', () async {
+    final place = Favorite.createDefaults(
+      name: 'Office',
+      latitude: 51.5,
+      longitude: -0.1,
+    )
+      ..predictionAccuracy = 0.5;
+    await isar.writeTxn(() async {
+      await isar.favorites.put(place);
+    });
+
+    await repository.recordSmartAlarmCompleted(place.id);
+
+    final updated = await repository.getById(place.id);
+    expect(updated!.predictionAccuracy, greaterThan(0.5));
+    expect(updated.lastUsedAt, isNotNull);
+  });
 }

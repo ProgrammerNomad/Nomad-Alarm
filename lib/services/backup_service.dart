@@ -9,7 +9,7 @@ import 'package:nomad_alarm/models/favorite.dart';
 import 'package:nomad_alarm/models/history_entry.dart';
 
 /// Current backup file format version.
-const int backupSchemaVersion = 1;
+const int backupSchemaVersion = 2;
 
 class BackupImportResult {
   const BackupImportResult({
@@ -72,7 +72,7 @@ class BackupService {
     }
 
     final version = decoded['version'];
-    if (version is! int || version != backupSchemaVersion) {
+    if (version is! int || (version != 1 && version != backupSchemaVersion)) {
       throw StorageException(
         'Unsupported backup version: $version (expected $backupSchemaVersion).',
       );
@@ -147,6 +147,8 @@ class BackupService {
         'vibrationEnabled': alarm.vibrationEnabled,
         'flashlightEnabled': alarm.flashlightEnabled,
         'status': AlarmStatus.draft.index,
+        'sourcePlaceId': alarm.sourcePlaceId,
+        'createdBy': alarm.createdBy.index,
         'createdAt': alarm.createdAt.toIso8601String(),
       };
 
@@ -170,6 +172,9 @@ class BackupService {
       ..vibrationEnabled = json['vibrationEnabled'] as bool? ?? true
       ..flashlightEnabled = json['flashlightEnabled'] as bool? ?? false
       ..status = AlarmStatus.draft
+      ..sourcePlaceId = json['sourcePlaceId'] as int?
+      ..createdBy = AlarmCreatedBy
+          .values[json['createdBy'] as int? ?? AlarmCreatedBy.manual.index]
       ..createdAt = DateTime.tryParse(json['createdAt'] as String? ?? '') ?? now
       ..updatedAt = now;
   }
@@ -184,21 +189,54 @@ class BackupService {
         'routePolyline': fav.routePolyline,
         'sortOrder': fav.sortOrder,
         'createdAt': fav.createdAt.toIso8601String(),
+        'isFavorite': fav.isFavorite,
+        'smartAlarmMode': fav.smartAlarmMode.index,
+        'triggerDistanceMeters': fav.triggerDistanceMeters,
+        'providerPlaceId': fav.providerPlaceId,
+        'autoStartedCount': fav.autoStartedCount,
+        'lastUsedAt': fav.lastUsedAt?.toIso8601String(),
+        'lastAutoCreatedAt': fav.lastAutoCreatedAt?.toIso8601String(),
+        'lastDismissedAt': fav.lastDismissedAt?.toIso8601String(),
+        'priority': fav.priority,
+        'predictionAccuracy': fav.predictionAccuracy,
+        'falsePredictionCount': fav.falsePredictionCount,
       };
 
   Favorite _favoriteFromJson(Map<String, dynamic> json) {
-    return Favorite()
+    final categoryIndex = json['category'] as int? ?? 6;
+    final safeCategory = categoryIndex >= 0 &&
+            categoryIndex < FavoriteCategory.values.length
+        ? FavoriteCategory.values[categoryIndex]
+        : FavoriteCategory.custom;
+    return Favorite.createDefaults(
+      name: json['name'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      address: json['address'] as String?,
+      category: safeCategory,
+    )
       ..id = Isar.autoIncrement
-      ..name = json['name'] as String
-      ..category = FavoriteCategory.values[json['category'] as int? ?? 6]
-      ..latitude = (json['latitude'] as num).toDouble()
-      ..longitude = (json['longitude'] as num).toDouble()
-      ..address = json['address'] as String?
       ..linkedTripId = json['linkedTripId'] as int?
       ..routePolyline = json['routePolyline'] as String?
       ..sortOrder = json['sortOrder'] as int? ?? 0
       ..createdAt =
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now();
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now()
+      ..isFavorite = json['isFavorite'] as bool? ?? true
+      ..smartAlarmMode = SmartAlarmMode
+          .values[json['smartAlarmMode'] as int? ?? SmartAlarmMode.off.index]
+      ..triggerDistanceMeters =
+          (json['triggerDistanceMeters'] as num?)?.toDouble() ?? 500
+      ..providerPlaceId = json['providerPlaceId'] as String?
+      ..autoStartedCount = json['autoStartedCount'] as int? ?? 0
+      ..lastUsedAt = DateTime.tryParse(json['lastUsedAt'] as String? ?? '')
+      ..lastAutoCreatedAt =
+          DateTime.tryParse(json['lastAutoCreatedAt'] as String? ?? '')
+      ..lastDismissedAt =
+          DateTime.tryParse(json['lastDismissedAt'] as String? ?? '')
+      ..priority = json['priority'] as int? ?? 0
+      ..predictionAccuracy =
+          (json['predictionAccuracy'] as num?)?.toDouble() ?? 0.5
+      ..falsePredictionCount = json['falsePredictionCount'] as int? ?? 0;
   }
 
   Map<String, dynamic> _historyToJson(HistoryEntry entry) => {
@@ -210,6 +248,8 @@ class BackupService {
         'triggerDistanceMeters': entry.triggerDistanceMeters,
         'snoozeCount': entry.snoozeCount,
         'notes': entry.notes,
+        'sourcePlaceId': entry.sourcePlaceId,
+        'createdBy': entry.createdBy.index,
       };
 
   HistoryEntry _historyFromJson(Map<String, dynamic> json) {
@@ -224,7 +264,10 @@ class BackupService {
       ..triggerDistanceMeters =
           (json['triggerDistanceMeters'] as num?)?.toDouble()
       ..snoozeCount = json['snoozeCount'] as int?
-      ..notes = json['notes'] as String?;
+      ..notes = json['notes'] as String?
+      ..sourcePlaceId = json['sourcePlaceId'] as int?
+      ..createdBy = AlarmCreatedBy
+          .values[json['createdBy'] as int? ?? AlarmCreatedBy.manual.index];
   }
 
   Map<String, dynamic> _settingsToJson(AppSettings settings) => {
@@ -240,6 +283,7 @@ class BackupService {
         'mapLayer': settings.mapLayer.index,
         'lockScreenInfoEnabled': settings.lockScreenInfoEnabled,
         'accessibilityHighContrast': settings.accessibilityHighContrast,
+        'smartPlacesEnabled': settings.smartPlacesEnabled,
       };
 
   void _applySettingsFromJson(AppSettings settings, Map<String, dynamic> json) {
@@ -269,5 +313,7 @@ class BackupService {
     settings.accessibilityHighContrast = json['accessibilityHighContrast']
             as bool? ??
         settings.accessibilityHighContrast;
+    settings.smartPlacesEnabled =
+        json['smartPlacesEnabled'] as bool? ?? settings.smartPlacesEnabled;
   }
 }

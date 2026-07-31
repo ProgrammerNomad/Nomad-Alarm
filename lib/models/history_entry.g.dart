@@ -22,48 +22,59 @@ const HistoryEntrySchema = CollectionSchema(
       name: r'alarmId',
       type: IsarType.long,
     ),
-    r'destLatitude': PropertySchema(
+    r'createdBy': PropertySchema(
       id: 1,
+      name: r'createdBy',
+      type: IsarType.byte,
+      enumMap: _HistoryEntrycreatedByEnumValueMap,
+    ),
+    r'destLatitude': PropertySchema(
+      id: 2,
       name: r'destLatitude',
       type: IsarType.double,
     ),
     r'destLongitude': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'destLongitude',
       type: IsarType.double,
     ),
     r'destinationName': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'destinationName',
       type: IsarType.string,
     ),
     r'notes': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'notes',
       type: IsarType.string,
     ),
     r'occurredAt': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'occurredAt',
       type: IsarType.dateTime,
     ),
     r'snoozeCount': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'snoozeCount',
       type: IsarType.long,
     ),
+    r'sourcePlaceId': PropertySchema(
+      id: 8,
+      name: r'sourcePlaceId',
+      type: IsarType.long,
+    ),
     r'triggerDistanceMeters': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'triggerDistanceMeters',
       type: IsarType.double,
     ),
     r'tripId': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'tripId',
       type: IsarType.long,
     ),
     r'type': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'type',
       type: IsarType.byte,
       enumMap: _HistoryEntrytypeEnumValueMap,
@@ -106,15 +117,17 @@ void _historyEntrySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.alarmId);
-  writer.writeDouble(offsets[1], object.destLatitude);
-  writer.writeDouble(offsets[2], object.destLongitude);
-  writer.writeString(offsets[3], object.destinationName);
-  writer.writeString(offsets[4], object.notes);
-  writer.writeDateTime(offsets[5], object.occurredAt);
-  writer.writeLong(offsets[6], object.snoozeCount);
-  writer.writeDouble(offsets[7], object.triggerDistanceMeters);
-  writer.writeLong(offsets[8], object.tripId);
-  writer.writeByte(offsets[9], object.type.index);
+  writer.writeByte(offsets[1], object.createdBy.index);
+  writer.writeDouble(offsets[2], object.destLatitude);
+  writer.writeDouble(offsets[3], object.destLongitude);
+  writer.writeString(offsets[4], object.destinationName);
+  writer.writeString(offsets[5], object.notes);
+  writer.writeDateTime(offsets[6], object.occurredAt);
+  writer.writeLong(offsets[7], object.snoozeCount);
+  writer.writeLong(offsets[8], object.sourcePlaceId);
+  writer.writeDouble(offsets[9], object.triggerDistanceMeters);
+  writer.writeLong(offsets[10], object.tripId);
+  writer.writeByte(offsets[11], object.type.index);
 }
 
 HistoryEntry _historyEntryDeserialize(
@@ -125,17 +138,21 @@ HistoryEntry _historyEntryDeserialize(
 ) {
   final object = HistoryEntry();
   object.alarmId = reader.readLongOrNull(offsets[0]);
-  object.destLatitude = reader.readDouble(offsets[1]);
-  object.destLongitude = reader.readDouble(offsets[2]);
-  object.destinationName = reader.readString(offsets[3]);
+  object.createdBy =
+      _HistoryEntrycreatedByValueEnumMap[reader.readByteOrNull(offsets[1])] ??
+          AlarmCreatedBy.manual;
+  object.destLatitude = reader.readDouble(offsets[2]);
+  object.destLongitude = reader.readDouble(offsets[3]);
+  object.destinationName = reader.readString(offsets[4]);
   object.id = id;
-  object.notes = reader.readStringOrNull(offsets[4]);
-  object.occurredAt = reader.readDateTime(offsets[5]);
-  object.snoozeCount = reader.readLongOrNull(offsets[6]);
-  object.triggerDistanceMeters = reader.readDoubleOrNull(offsets[7]);
-  object.tripId = reader.readLongOrNull(offsets[8]);
+  object.notes = reader.readStringOrNull(offsets[5]);
+  object.occurredAt = reader.readDateTime(offsets[6]);
+  object.snoozeCount = reader.readLongOrNull(offsets[7]);
+  object.sourcePlaceId = reader.readLongOrNull(offsets[8]);
+  object.triggerDistanceMeters = reader.readDoubleOrNull(offsets[9]);
+  object.tripId = reader.readLongOrNull(offsets[10]);
   object.type =
-      _HistoryEntrytypeValueEnumMap[reader.readByteOrNull(offsets[9])] ??
+      _HistoryEntrytypeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
           HistoryType.completed;
   return object;
 }
@@ -150,22 +167,28 @@ P _historyEntryDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (reader.readDouble(offset)) as P;
+      return (_HistoryEntrycreatedByValueEnumMap[
+              reader.readByteOrNull(offset)] ??
+          AlarmCreatedBy.manual) as P;
     case 2:
       return (reader.readDouble(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 7:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 8:
       return (reader.readLongOrNull(offset)) as P;
     case 9:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 10:
+      return (reader.readLongOrNull(offset)) as P;
+    case 11:
       return (_HistoryEntrytypeValueEnumMap[reader.readByteOrNull(offset)] ??
           HistoryType.completed) as P;
     default:
@@ -173,6 +196,16 @@ P _historyEntryDeserializeProp<P>(
   }
 }
 
+const _HistoryEntrycreatedByEnumValueMap = {
+  'manual': 0,
+  'smart': 1,
+  'imported': 2,
+};
+const _HistoryEntrycreatedByValueEnumMap = {
+  0: AlarmCreatedBy.manual,
+  1: AlarmCreatedBy.smart,
+  2: AlarmCreatedBy.imported,
+};
 const _HistoryEntrytypeEnumValueMap = {
   'completed': 0,
   'missed': 1,
@@ -346,6 +379,62 @@ extension HistoryEntryQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'alarmId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      createdByEqualTo(AlarmCreatedBy value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      createdByGreaterThan(
+    AlarmCreatedBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      createdByLessThan(
+    AlarmCreatedBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      createdByBetween(
+    AlarmCreatedBy lower,
+    AlarmCreatedBy upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createdBy',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -958,6 +1047,80 @@ extension HistoryEntryQueryFilter
   }
 
   QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sourcePlaceId',
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sourcePlaceId',
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
+      sourcePlaceIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sourcePlaceId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterFilterCondition>
       triggerDistanceMetersIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1189,6 +1352,18 @@ extension HistoryEntryQuerySortBy
     });
   }
 
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> sortByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> sortByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
+    });
+  }
+
   QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> sortByDestLatitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'destLatitude', Sort.asc);
@@ -1267,6 +1442,19 @@ extension HistoryEntryQuerySortBy
     });
   }
 
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> sortBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy>
+      sortBySourcePlaceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.desc);
+    });
+  }
+
   QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy>
       sortByTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
@@ -1317,6 +1505,18 @@ extension HistoryEntryQuerySortThenBy
   QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> thenByAlarmIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'alarmId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> thenByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> thenByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
     });
   }
 
@@ -1410,6 +1610,19 @@ extension HistoryEntryQuerySortThenBy
     });
   }
 
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy> thenBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy>
+      thenBySourcePlaceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.desc);
+    });
+  }
+
   QueryBuilder<HistoryEntry, HistoryEntry, QAfterSortBy>
       thenByTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
@@ -1457,6 +1670,12 @@ extension HistoryEntryQueryWhereDistinct
     });
   }
 
+  QueryBuilder<HistoryEntry, HistoryEntry, QDistinct> distinctByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdBy');
+    });
+  }
+
   QueryBuilder<HistoryEntry, HistoryEntry, QDistinct> distinctByDestLatitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'destLatitude');
@@ -1498,6 +1717,13 @@ extension HistoryEntryQueryWhereDistinct
   }
 
   QueryBuilder<HistoryEntry, HistoryEntry, QDistinct>
+      distinctBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sourcePlaceId');
+    });
+  }
+
+  QueryBuilder<HistoryEntry, HistoryEntry, QDistinct>
       distinctByTriggerDistanceMeters() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'triggerDistanceMeters');
@@ -1528,6 +1754,13 @@ extension HistoryEntryQueryProperty
   QueryBuilder<HistoryEntry, int?, QQueryOperations> alarmIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'alarmId');
+    });
+  }
+
+  QueryBuilder<HistoryEntry, AlarmCreatedBy, QQueryOperations>
+      createdByProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdBy');
     });
   }
 
@@ -1565,6 +1798,12 @@ extension HistoryEntryQueryProperty
   QueryBuilder<HistoryEntry, int?, QQueryOperations> snoozeCountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'snoozeCount');
+    });
+  }
+
+  QueryBuilder<HistoryEntry, int?, QQueryOperations> sourcePlaceIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sourcePlaceId');
     });
   }
 

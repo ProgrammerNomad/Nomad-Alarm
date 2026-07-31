@@ -30,6 +30,12 @@ class NotificationL10n {
   String toDestination(String distance) => _l10n.notifToDestination(distance);
   String get pause => _l10n.pause;
   String get cancel => _l10n.cancel;
+  String smartAlarmActiveTitle(String place) =>
+      _l10n.notifSmartAlarmActiveTitle(place);
+  String smartAlarmActiveBody(String distance) =>
+      _l10n.notifSmartAlarmActiveBody(distance);
+  String get smartAlarmStop => _l10n.notifSmartAlarmStop;
+  String get smartAlarmOpen => _l10n.notifSmartAlarmOpen;
   String get widgetNoActiveAlarm => _l10n.widgetNoActiveAlarm;
   String get widgetTracking => _l10n.widgetTracking;
   String get widgetTapToOpen => _l10n.widgetTapToOpen;

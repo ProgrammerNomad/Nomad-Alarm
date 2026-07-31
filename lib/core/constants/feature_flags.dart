@@ -26,6 +26,8 @@ abstract class FeatureFlags {
   static const bool cloudBackup = true;
   static const bool voiceSearch = true;
 
+  static const bool smartPlaces = true;
+
   static const bool debugScreen = kDebugMode;
   static const bool mockLocation = kDebugMode;
 }

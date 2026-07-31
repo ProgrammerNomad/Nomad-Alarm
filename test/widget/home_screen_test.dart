@@ -32,6 +32,33 @@ void main() {
     expect(find.text('Import Shared Alarm'), findsNothing);
     expect(find.text('Current Location'), findsNothing);
     expect(find.text('Search destination…'), findsOneWidget);
+    expect(find.text('Saved Places'), findsOneWidget);
+  });
+
+  testWidgets('Alarms screen shows Saved Places card with preview chips',
+      (tester) async {
+    final home = Favorite.createDefaults(
+      name: 'Home',
+      latitude: 51.5,
+      longitude: -0.1,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          favoritesProvider.overrideWith((ref) => Stream.value([home])),
+          recentSearchesProvider.overrideWith(
+            (ref) => Stream.value(<RecentSearch>[]),
+          ),
+          activeAlarmsProvider.overrideWith((ref) async => []),
+        ],
+        child: buildL10nTestApp(const AlarmsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Saved Places'), findsOneWidget);
+    expect(find.textContaining('Home'), findsOneWidget);
   });
 
   testWidgets('FAB opens create alarm sheet with New Alarm and Import alarm',
@@ -56,6 +83,7 @@ void main() {
     expect(find.text('Create alarm'), findsOneWidget);
     expect(find.text('New alarm'), findsOneWidget);
     expect(find.text('Import alarm'), findsOneWidget);
+    expect(find.text('Saved Places'), findsWidgets);
     expect(find.text('Cancel'), findsOneWidget);
   });
 }

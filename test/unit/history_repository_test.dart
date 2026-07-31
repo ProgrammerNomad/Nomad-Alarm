@@ -83,6 +83,20 @@ void main() {
     expect(missed.first.notes, 'Passed stop');
   });
 
+  test('logs smart alarm metadata on history entry', () async {
+    final alarm = _alarm()
+      ..sourcePlaceId = 42
+      ..createdBy = AlarmCreatedBy.smart;
+
+    final entry = await repository.log(
+      alarm: alarm,
+      type: HistoryType.completed,
+    );
+
+    expect(entry.sourcePlaceId, 42);
+    expect(entry.createdBy, AlarmCreatedBy.smart);
+  });
+
   test('deletes a history entry', () async {
     final entry = await repository.log(
       alarm: _alarm(),

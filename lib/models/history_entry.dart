@@ -21,4 +21,9 @@ class HistoryEntry {
   double? triggerDistanceMeters;
   int? snoozeCount;
   String? notes;
+
+  int? sourcePlaceId;
+
+  @enumerated
+  AlarmCreatedBy createdBy = AlarmCreatedBy.manual;
 }

@@ -42,7 +42,9 @@ class HistoryRepositoryImpl implements HistoryRepository {
       ..occurredAt = DateTime.now()
       ..triggerDistanceMeters = alarm.triggerDistanceMeters
       ..snoozeCount = snoozeCount
-      ..notes = notes;
+      ..notes = notes
+      ..sourcePlaceId = alarm.sourcePlaceId
+      ..createdBy = alarm.createdBy;
 
     try {
       await _isar.writeTxn(() async {

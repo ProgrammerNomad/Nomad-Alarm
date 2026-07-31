@@ -3,6 +3,7 @@ import 'package:nomad_alarm/core/router/app_router.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
+import 'package:nomad_alarm/providers/favorite_providers.dart';
 import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/map_service_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
@@ -39,6 +40,7 @@ final alarmServiceProvider = Provider<AlarmService>((ref) {
     alarmRepository: ref.watch(alarmRepositoryProvider),
     tripRepository: ref.watch(tripRepositoryProvider),
     historyRepository: ref.watch(historyRepositoryProvider),
+    favoriteRepository: ref.watch(favoriteRepositoryProvider),
     notificationService: ref.watch(notificationServiceProvider),
     speechService: ref.watch(speechServiceProvider),
     flashlightService: ref.watch(flashlightServiceProvider),

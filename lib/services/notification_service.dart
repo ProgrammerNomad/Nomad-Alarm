@@ -20,6 +20,7 @@ class NotificationService {
 
   NotificationTapHandler? onNotificationTap;
   void Function(String action, int alarmId)? onNotificationAction;
+  void Function(String action, int alarmId, int placeId)? onSmartAlarmAction;
 
   String _languageCode = 'en';
   NotificationL10n? _l10n;
@@ -99,6 +100,24 @@ class NotificationService {
       if (alarmId != null) {
         onNotificationAction?.call(actionId, alarmId);
         return;
+      }
+    }
+
+    if (payload != null && payload.startsWith('smart:') && actionId != null) {
+      final parts = payload.split(':');
+      if (parts.length >= 3) {
+        final alarmId = int.tryParse(parts[1]);
+        final placeId = int.tryParse(parts[2]);
+        if (alarmId != null && placeId != null) {
+          if (actionId == 'smart_stop') {
+            onSmartAlarmAction?.call(actionId, alarmId, placeId);
+            return;
+          }
+          if (actionId == 'smart_open') {
+            onNotificationTap?.call('active:$alarmId');
+            return;
+          }
+        }
       }
     }
 
@@ -223,6 +242,46 @@ class NotificationService {
 
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
+  }
+
+  static const smartAlarmStartedNotificationId = 400;
+
+  Future<void> showSmartAlarmStartedNotification({
+    required int alarmId,
+    required int placeId,
+    required String placeName,
+    required double triggerDistanceMeters,
+  }) async {
+    final strings = await _strings();
+    final distance = formatDistance(triggerDistanceMeters);
+    await _plugin.show(
+      smartAlarmStartedNotificationId + alarmId,
+      strings.smartAlarmActiveTitle(placeName),
+      strings.smartAlarmActiveBody(distance),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          alertsChannelId,
+          strings.warningsChannelName,
+          importance: Importance.high,
+          priority: Priority.high,
+          actions: [
+            AndroidNotificationAction(
+              'smart_stop',
+              strings.smartAlarmStop,
+              showsUserInterface: false,
+              cancelNotification: true,
+            ),
+            AndroidNotificationAction(
+              'smart_open',
+              strings.smartAlarmOpen,
+              showsUserInterface: true,
+              cancelNotification: true,
+            ),
+          ],
+        ),
+      ),
+      payload: 'smart:$alarmId:$placeId',
+    );
   }
 
   Future<NotificationDetails> _trackingDetails(

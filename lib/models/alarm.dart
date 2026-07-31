@@ -37,4 +37,9 @@ class Alarm {
 
   late DateTime createdAt;
   late DateTime updatedAt;
+
+  int? sourcePlaceId;
+
+  @enumerated
+  AlarmCreatedBy createdBy = AlarmCreatedBy.manual;
 }

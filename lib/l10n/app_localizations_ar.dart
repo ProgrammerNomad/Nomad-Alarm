@@ -39,6 +39,162 @@ class AppLocalizationsAr extends AppLocalizations {
   String get favorites => 'المفضلة';
 
   @override
+  String get savedPlaces => 'Saved Places';
+
+  @override
+  String get savedPlacesManage => 'Manage';
+
+  @override
+  String get savedPlacesMore => '+ More';
+
+  @override
+  String get savedPlacesEmptyTitle => 'No saved places yet';
+
+  @override
+  String get savedPlacesEmptyBody =>
+      'Save places you travel to often. Nomad Alarm can start an alarm automatically when you\'re heading there.';
+
+  @override
+  String get savedPlacesAdd => 'Add places';
+
+  @override
+  String get savedPlacesAddFirst => '+ Add your first place';
+
+  @override
+  String get savedPlacesEdit => 'Edit place';
+
+  @override
+  String get savedPlacesSave => 'Save place';
+
+  @override
+  String get savedPlaceName => 'Name';
+
+  @override
+  String get savedPlaceCategory => 'Category';
+
+  @override
+  String get savedPlaceLocationHint => 'Search destination…';
+
+  @override
+  String get savedPlacesDelete => 'Delete place';
+
+  @override
+  String get savedPlacesSmartAlarmHelp =>
+      'Nomad Alarm will start an alarm when it\'s highly confident you\'re traveling here. You can stop it anytime.';
+
+  @override
+  String get smartAlarm => 'Smart Alarm';
+
+  @override
+  String get smartAlarmOff => 'Off';
+
+  @override
+  String get smartAlarmSuggest => 'Suggest';
+
+  @override
+  String get smartAlarmAutomatic => 'Automatic';
+
+  @override
+  String smartAlarmModeSummary(String mode) {
+    return 'Smart Alarm · $mode';
+  }
+
+  @override
+  String get lastUsed => 'Last used';
+
+  @override
+  String lastUsedFormatted(String when) {
+    return 'Last used · $when';
+  }
+
+  @override
+  String get lastUsedNever => 'Never used';
+
+  @override
+  String autoStartedCount(int count) {
+    return 'Auto started · $count times';
+  }
+
+  @override
+  String get savedPlaceCategoryHome => 'Home';
+
+  @override
+  String get savedPlaceCategoryOffice => 'Office';
+
+  @override
+  String get savedPlaceCategorySchool => 'School';
+
+  @override
+  String get savedPlaceCategoryStation => 'Station';
+
+  @override
+  String get savedPlaceCategoryBusStop => 'Bus stop';
+
+  @override
+  String get savedPlaceCategoryMetro => 'Metro';
+
+  @override
+  String get savedPlaceCategoryAirport => 'Airport';
+
+  @override
+  String get savedPlaceCategoryHospital => 'Hospital';
+
+  @override
+  String get savedPlaceCategoryCustom => 'Custom';
+
+  @override
+  String smartAlarmOnboardingTitle(String name) {
+    return 'Would you like Nomad Alarm to automatically detect when you\'re travelling to $name?';
+  }
+
+  @override
+  String get smartAlarmOnboardingNo => 'No';
+
+  @override
+  String get smartAlarmOnboardingSuggest => 'Suggest';
+
+  @override
+  String get smartAlarmOnboardingAutomatic => 'Automatically start';
+
+  @override
+  String get smartPlacesSettings => 'Smart Places';
+
+  @override
+  String get enableSmartAlarm => 'Enable Smart Alarm';
+
+  @override
+  String get smartPlacesSettingsSubtitle => 'Automatic alarms for saved places';
+
+  @override
+  String get smartPlacesSettingsHelp =>
+      'Automatically detect trips for Saved Places.';
+
+  @override
+  String get alarmSourceAuto => 'AUTO';
+
+  @override
+  String notifSmartAlarmActiveTitle(String place) {
+    return '$place Alarm Active';
+  }
+
+  @override
+  String notifSmartAlarmActiveBody(String distance) {
+    return 'We\'ll alert you $distance before you arrive.';
+  }
+
+  @override
+  String get notifSmartAlarmStop => 'Stop';
+
+  @override
+  String get notifSmartAlarmOpen => 'Open';
+
+  @override
+  String get debugSmartPlaces => 'Smart Places (debug)';
+
+  @override
+  String get debugConfidenceWhy => 'Why?';
+
+  @override
   String get recent => 'الأخيرة';
 
   @override

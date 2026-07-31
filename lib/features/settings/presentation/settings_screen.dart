@@ -12,6 +12,7 @@ import 'package:nomad_alarm/core/utils/locale_resolution.dart';
 import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
+import 'package:nomad_alarm/providers/smart_place_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
@@ -260,6 +261,28 @@ class SettingsScreen extends ConsumerWidget {
                     );
               },
             ),
+            if (FeatureFlags.smartPlaces) ...[
+              _SettingsSectionHeader(
+                icon: Icons.place_outlined,
+                title: l10n.smartPlacesSettings,
+              ),
+              SwitchListTile(
+                secondary: const Icon(Icons.auto_mode_outlined),
+                title: Text(l10n.enableSmartAlarm),
+                subtitle: Text(l10n.smartPlacesSettingsHelp),
+                value: settings.smartPlacesEnabled,
+                onChanged: (value) async {
+                  await ref.read(settingsControllerProvider.notifier).saveSettings(
+                        settings..smartPlacesEnabled = value,
+                      );
+                  if (FeatureFlags.smartPlaces) {
+                    await ref
+                        .read(smartPlaceServiceProvider)
+                        .setEnabled(value);
+                  }
+                },
+              ),
+            ],
             if (FeatureFlags.backupRestore) ...[
               _SettingsSectionHeader(
                 icon: Icons.backup_outlined,

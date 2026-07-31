@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/core/utils/favorite_category_utils.dart';
+import 'package:nomad_alarm/core/utils/place_confidence_engine.dart';
+import 'package:nomad_alarm/providers/favorite_providers.dart';
+import 'package:nomad_alarm/providers/smart_place_providers.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
@@ -158,6 +162,87 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 ],
               ),
             ),
+          if (FeatureFlags.smartPlaces) ...[
+            const Divider(height: 32),
+            Text(
+              l10n.debugSmartPlaces,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Consumer(
+              builder: (context, ref, _) {
+                final favoritesAsync = ref.watch(favoritesProvider);
+                final snapshot =
+                    ref.read(smartPlaceServiceProvider).lastSnapshot;
+                return favoritesAsync.when(
+                  loading: () => const LinearProgressIndicator(),
+                  error: (e, _) => Text(l10n.errorPrefix(e.toString())),
+                  data: (places) {
+                    if (places.isEmpty) {
+                      return Text(l10n.savedPlacesEmptyTitle);
+                    }
+                    final results = snapshot?.results ?? [];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (snapshot != null)
+                          _DebugTile(
+                            label: 'Confirmation buffer',
+                            value:
+                                '${snapshot.confirmationTicks}/3 (place ${snapshot.leadingPlaceId ?? '-'})',
+                          ),
+                        ...places.take(5).map((place) {
+                          PlaceConfidenceResult? match;
+                          for (final r in results) {
+                            if (r.placeId == place.id) {
+                              match = r;
+                              break;
+                            }
+                          }
+                          return Card(
+                            child: ExpansionTile(
+                              title: Text(
+                                '${FavoriteCategoryUtils.emoji(place.category)} '
+                                '${place.name}',
+                              ),
+                              subtitle: match != null
+                                  ? Text('${match.confidencePercent.round()}% (debug)')
+                                  : null,
+                              children: [
+                                if (match != null) ...[
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      8,
+                                    ),
+                                    child: Text(l10n.debugConfidenceWhy),
+                                  ),
+                                  ...match.breakdown.map(
+                                    (factor) => ListTile(
+                                      dense: true,
+                                      leading: Icon(
+                                        factor.status ==
+                                                ConfidenceFactorStatus.pass
+                                            ? Icons.check_circle_outline
+                                            : Icons.cancel_outlined,
+                                        size: 18,
+                                      ),
+                                      title: Text(factor.label),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => _copySnapshot(ref),

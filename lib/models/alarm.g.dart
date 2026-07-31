@@ -32,106 +32,117 @@ const AlarmSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'destLatitude': PropertySchema(
+    r'createdBy': PropertySchema(
       id: 3,
+      name: r'createdBy',
+      type: IsarType.byte,
+      enumMap: _AlarmcreatedByEnumValueMap,
+    ),
+    r'destLatitude': PropertySchema(
+      id: 4,
       name: r'destLatitude',
       type: IsarType.double,
     ),
     r'destLongitude': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'destLongitude',
       type: IsarType.double,
     ),
     r'flashlightEnabled': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'flashlightEnabled',
       type: IsarType.bool,
     ),
     r'name': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'name',
       type: IsarType.string,
     ),
     r'placeId': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'placeId',
       type: IsarType.string,
     ),
     r'radiusMeters': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'radiusMeters',
       type: IsarType.double,
     ),
     r'repeat': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'repeat',
       type: IsarType.bool,
     ),
     r'ringtoneUri': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'ringtoneUri',
       type: IsarType.string,
     ),
     r'scheduledAt': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'scheduledAt',
       type: IsarType.dateTime,
     ),
+    r'sourcePlaceId': PropertySchema(
+      id: 13,
+      name: r'sourcePlaceId',
+      type: IsarType.long,
+    ),
     r'speedThresholdKmh': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'speedThresholdKmh',
       type: IsarType.double,
     ),
     r'startedAt': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'startedAt',
       type: IsarType.dateTime,
     ),
     r'status': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'status',
       type: IsarType.byte,
       enumMap: _AlarmstatusEnumValueMap,
     ),
     r'travelMode': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'travelMode',
       type: IsarType.byte,
       enumMap: _AlarmtravelModeEnumValueMap,
     ),
     r'triggerDistanceMeters': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'triggerDistanceMeters',
       type: IsarType.double,
     ),
     r'triggeredAt': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'triggeredAt',
       type: IsarType.dateTime,
     ),
     r'type': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'type',
       type: IsarType.byte,
       enumMap: _AlarmtypeEnumValueMap,
     ),
     r'updatedAt': PropertySchema(
-      id: 19,
+      id: 21,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
     r'vibrationEnabled': PropertySchema(
-      id: 20,
+      id: 22,
       name: r'vibrationEnabled',
       type: IsarType.bool,
     ),
     r'voiceEnabled': PropertySchema(
-      id: 21,
+      id: 23,
       name: r'voiceEnabled',
       type: IsarType.bool,
     ),
     r'voiceMessage': PropertySchema(
-      id: 22,
+      id: 24,
       name: r'voiceMessage',
       type: IsarType.string,
     )
@@ -193,26 +204,28 @@ void _alarmSerialize(
   writer.writeString(offsets[0], object.address);
   writer.writeDateTime(offsets[1], object.completedAt);
   writer.writeDateTime(offsets[2], object.createdAt);
-  writer.writeDouble(offsets[3], object.destLatitude);
-  writer.writeDouble(offsets[4], object.destLongitude);
-  writer.writeBool(offsets[5], object.flashlightEnabled);
-  writer.writeString(offsets[6], object.name);
-  writer.writeString(offsets[7], object.placeId);
-  writer.writeDouble(offsets[8], object.radiusMeters);
-  writer.writeBool(offsets[9], object.repeat);
-  writer.writeString(offsets[10], object.ringtoneUri);
-  writer.writeDateTime(offsets[11], object.scheduledAt);
-  writer.writeDouble(offsets[12], object.speedThresholdKmh);
-  writer.writeDateTime(offsets[13], object.startedAt);
-  writer.writeByte(offsets[14], object.status.index);
-  writer.writeByte(offsets[15], object.travelMode.index);
-  writer.writeDouble(offsets[16], object.triggerDistanceMeters);
-  writer.writeDateTime(offsets[17], object.triggeredAt);
-  writer.writeByte(offsets[18], object.type.index);
-  writer.writeDateTime(offsets[19], object.updatedAt);
-  writer.writeBool(offsets[20], object.vibrationEnabled);
-  writer.writeBool(offsets[21], object.voiceEnabled);
-  writer.writeString(offsets[22], object.voiceMessage);
+  writer.writeByte(offsets[3], object.createdBy.index);
+  writer.writeDouble(offsets[4], object.destLatitude);
+  writer.writeDouble(offsets[5], object.destLongitude);
+  writer.writeBool(offsets[6], object.flashlightEnabled);
+  writer.writeString(offsets[7], object.name);
+  writer.writeString(offsets[8], object.placeId);
+  writer.writeDouble(offsets[9], object.radiusMeters);
+  writer.writeBool(offsets[10], object.repeat);
+  writer.writeString(offsets[11], object.ringtoneUri);
+  writer.writeDateTime(offsets[12], object.scheduledAt);
+  writer.writeLong(offsets[13], object.sourcePlaceId);
+  writer.writeDouble(offsets[14], object.speedThresholdKmh);
+  writer.writeDateTime(offsets[15], object.startedAt);
+  writer.writeByte(offsets[16], object.status.index);
+  writer.writeByte(offsets[17], object.travelMode.index);
+  writer.writeDouble(offsets[18], object.triggerDistanceMeters);
+  writer.writeDateTime(offsets[19], object.triggeredAt);
+  writer.writeByte(offsets[20], object.type.index);
+  writer.writeDateTime(offsets[21], object.updatedAt);
+  writer.writeBool(offsets[22], object.vibrationEnabled);
+  writer.writeBool(offsets[23], object.voiceEnabled);
+  writer.writeString(offsets[24], object.voiceMessage);
 }
 
 Alarm _alarmDeserialize(
@@ -225,32 +238,36 @@ Alarm _alarmDeserialize(
   object.address = reader.readStringOrNull(offsets[0]);
   object.completedAt = reader.readDateTimeOrNull(offsets[1]);
   object.createdAt = reader.readDateTime(offsets[2]);
-  object.destLatitude = reader.readDouble(offsets[3]);
-  object.destLongitude = reader.readDouble(offsets[4]);
-  object.flashlightEnabled = reader.readBool(offsets[5]);
+  object.createdBy =
+      _AlarmcreatedByValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+          AlarmCreatedBy.manual;
+  object.destLatitude = reader.readDouble(offsets[4]);
+  object.destLongitude = reader.readDouble(offsets[5]);
+  object.flashlightEnabled = reader.readBool(offsets[6]);
   object.id = id;
-  object.name = reader.readString(offsets[6]);
-  object.placeId = reader.readStringOrNull(offsets[7]);
-  object.radiusMeters = reader.readDoubleOrNull(offsets[8]);
-  object.repeat = reader.readBool(offsets[9]);
-  object.ringtoneUri = reader.readStringOrNull(offsets[10]);
-  object.scheduledAt = reader.readDateTimeOrNull(offsets[11]);
-  object.speedThresholdKmh = reader.readDoubleOrNull(offsets[12]);
-  object.startedAt = reader.readDateTimeOrNull(offsets[13]);
+  object.name = reader.readString(offsets[7]);
+  object.placeId = reader.readStringOrNull(offsets[8]);
+  object.radiusMeters = reader.readDoubleOrNull(offsets[9]);
+  object.repeat = reader.readBool(offsets[10]);
+  object.ringtoneUri = reader.readStringOrNull(offsets[11]);
+  object.scheduledAt = reader.readDateTimeOrNull(offsets[12]);
+  object.sourcePlaceId = reader.readLongOrNull(offsets[13]);
+  object.speedThresholdKmh = reader.readDoubleOrNull(offsets[14]);
+  object.startedAt = reader.readDateTimeOrNull(offsets[15]);
   object.status =
-      _AlarmstatusValueEnumMap[reader.readByteOrNull(offsets[14])] ??
+      _AlarmstatusValueEnumMap[reader.readByteOrNull(offsets[16])] ??
           AlarmStatus.draft;
   object.travelMode =
-      _AlarmtravelModeValueEnumMap[reader.readByteOrNull(offsets[15])] ??
+      _AlarmtravelModeValueEnumMap[reader.readByteOrNull(offsets[17])] ??
           TravelMode.train;
-  object.triggerDistanceMeters = reader.readDouble(offsets[16]);
-  object.triggeredAt = reader.readDateTimeOrNull(offsets[17]);
-  object.type = _AlarmtypeValueEnumMap[reader.readByteOrNull(offsets[18])] ??
+  object.triggerDistanceMeters = reader.readDouble(offsets[18]);
+  object.triggeredAt = reader.readDateTimeOrNull(offsets[19]);
+  object.type = _AlarmtypeValueEnumMap[reader.readByteOrNull(offsets[20])] ??
       AlarmType.distance;
-  object.updatedAt = reader.readDateTime(offsets[19]);
-  object.vibrationEnabled = reader.readBool(offsets[20]);
-  object.voiceEnabled = reader.readBool(offsets[21]);
-  object.voiceMessage = reader.readStringOrNull(offsets[22]);
+  object.updatedAt = reader.readDateTime(offsets[21]);
+  object.vibrationEnabled = reader.readBool(offsets[22]);
+  object.voiceEnabled = reader.readBool(offsets[23]);
+  object.voiceMessage = reader.readStringOrNull(offsets[24]);
   return object;
 }
 
@@ -268,53 +285,68 @@ P _alarmDeserializeProp<P>(
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
+      return (_AlarmcreatedByValueEnumMap[reader.readByteOrNull(offset)] ??
+          AlarmCreatedBy.manual) as P;
     case 4:
       return (reader.readDouble(offset)) as P;
     case 5:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
-    case 7:
-      return (reader.readStringOrNull(offset)) as P;
-    case 8:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 9:
       return (reader.readBool(offset)) as P;
-    case 10:
+    case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
       return (reader.readStringOrNull(offset)) as P;
-    case 11:
-      return (reader.readDateTimeOrNull(offset)) as P;
-    case 12:
+    case 9:
       return (reader.readDoubleOrNull(offset)) as P;
-    case 13:
+    case 10:
+      return (reader.readBool(offset)) as P;
+    case 11:
+      return (reader.readStringOrNull(offset)) as P;
+    case 12:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 13:
+      return (reader.readLongOrNull(offset)) as P;
     case 14:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 15:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 16:
       return (_AlarmstatusValueEnumMap[reader.readByteOrNull(offset)] ??
           AlarmStatus.draft) as P;
-    case 15:
+    case 17:
       return (_AlarmtravelModeValueEnumMap[reader.readByteOrNull(offset)] ??
           TravelMode.train) as P;
-    case 16:
-      return (reader.readDouble(offset)) as P;
-    case 17:
-      return (reader.readDateTimeOrNull(offset)) as P;
     case 18:
+      return (reader.readDouble(offset)) as P;
+    case 19:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 20:
       return (_AlarmtypeValueEnumMap[reader.readByteOrNull(offset)] ??
           AlarmType.distance) as P;
-    case 19:
-      return (reader.readDateTime(offset)) as P;
-    case 20:
-      return (reader.readBool(offset)) as P;
     case 21:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 22:
+      return (reader.readBool(offset)) as P;
+    case 23:
+      return (reader.readBool(offset)) as P;
+    case 24:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
+const _AlarmcreatedByEnumValueMap = {
+  'manual': 0,
+  'smart': 1,
+  'imported': 2,
+};
+const _AlarmcreatedByValueEnumMap = {
+  0: AlarmCreatedBy.manual,
+  1: AlarmCreatedBy.smart,
+  2: AlarmCreatedBy.imported,
+};
 const _AlarmstatusEnumValueMap = {
   'draft': 0,
   'active': 1,
@@ -718,6 +750,59 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'createdAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> createdByEqualTo(
+      AlarmCreatedBy value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> createdByGreaterThan(
+    AlarmCreatedBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> createdByLessThan(
+    AlarmCreatedBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> createdByBetween(
+    AlarmCreatedBy lower,
+    AlarmCreatedBy upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createdBy',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1488,6 +1573,75 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sourcePlaceId',
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sourcePlaceId',
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sourcePlaceId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> sourcePlaceIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sourcePlaceId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> speedThresholdKmhIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2192,6 +2346,18 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByDestLatitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'destLatitude', Sort.asc);
@@ -2297,6 +2463,18 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByScheduledAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'scheduledAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortBySourcePlaceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.desc);
     });
   }
 
@@ -2470,6 +2648,18 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByDestLatitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'destLatitude', Sort.asc);
@@ -2587,6 +2777,18 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByScheduledAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'scheduledAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenBySourcePlaceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sourcePlaceId', Sort.desc);
     });
   }
 
@@ -2743,6 +2945,12 @@ extension AlarmQueryWhereDistinct on QueryBuilder<Alarm, Alarm, QDistinct> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdBy');
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QDistinct> distinctByDestLatitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'destLatitude');
@@ -2797,6 +3005,12 @@ extension AlarmQueryWhereDistinct on QueryBuilder<Alarm, Alarm, QDistinct> {
   QueryBuilder<Alarm, Alarm, QDistinct> distinctByScheduledAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'scheduledAt');
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctBySourcePlaceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sourcePlaceId');
     });
   }
 
@@ -2893,6 +3107,12 @@ extension AlarmQueryProperty on QueryBuilder<Alarm, Alarm, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Alarm, AlarmCreatedBy, QQueryOperations> createdByProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdBy');
+    });
+  }
+
   QueryBuilder<Alarm, double, QQueryOperations> destLatitudeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'destLatitude');
@@ -2944,6 +3164,12 @@ extension AlarmQueryProperty on QueryBuilder<Alarm, Alarm, QQueryProperty> {
   QueryBuilder<Alarm, DateTime?, QQueryOperations> scheduledAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'scheduledAt');
+    });
+  }
+
+  QueryBuilder<Alarm, int?, QQueryOperations> sourcePlaceIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sourcePlaceId');
     });
   }
 

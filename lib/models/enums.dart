@@ -44,6 +44,23 @@ enum FavoriteCategory {
   hotel,
   custom,
   trip,
+  school,
+  station,
+  busStop,
+  metro,
+  hospital,
+}
+
+enum SmartAlarmMode {
+  off,
+  suggest,
+  automatic,
+}
+
+enum AlarmCreatedBy {
+  manual,
+  smart,
+  imported,
 }
 
 enum HistoryType {

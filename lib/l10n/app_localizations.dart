@@ -162,6 +162,288 @@ abstract class AppLocalizations {
   /// **'Favorites'**
   String get favorites;
 
+  /// No description provided for @savedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Places'**
+  String get savedPlaces;
+
+  /// No description provided for @savedPlacesManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get savedPlacesManage;
+
+  /// No description provided for @savedPlacesMore.
+  ///
+  /// In en, this message translates to:
+  /// **'+ More'**
+  String get savedPlacesMore;
+
+  /// No description provided for @savedPlacesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved places yet'**
+  String get savedPlacesEmptyTitle;
+
+  /// No description provided for @savedPlacesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Save places you travel to often. Nomad Alarm can start an alarm automatically when you\'re heading there.'**
+  String get savedPlacesEmptyBody;
+
+  /// No description provided for @savedPlacesAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add places'**
+  String get savedPlacesAdd;
+
+  /// No description provided for @savedPlacesAddFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add your first place'**
+  String get savedPlacesAddFirst;
+
+  /// No description provided for @savedPlacesEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit place'**
+  String get savedPlacesEdit;
+
+  /// No description provided for @savedPlacesSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save place'**
+  String get savedPlacesSave;
+
+  /// No description provided for @savedPlaceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get savedPlaceName;
+
+  /// No description provided for @savedPlaceCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get savedPlaceCategory;
+
+  /// No description provided for @savedPlaceLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search destination…'**
+  String get savedPlaceLocationHint;
+
+  /// No description provided for @savedPlacesDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete place'**
+  String get savedPlacesDelete;
+
+  /// No description provided for @savedPlacesSmartAlarmHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Nomad Alarm will start an alarm when it\'s highly confident you\'re traveling here. You can stop it anytime.'**
+  String get savedPlacesSmartAlarmHelp;
+
+  /// No description provided for @smartAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Alarm'**
+  String get smartAlarm;
+
+  /// No description provided for @smartAlarmOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get smartAlarmOff;
+
+  /// No description provided for @smartAlarmSuggest.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest'**
+  String get smartAlarmSuggest;
+
+  /// No description provided for @smartAlarmAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get smartAlarmAutomatic;
+
+  /// No description provided for @smartAlarmModeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Alarm · {mode}'**
+  String smartAlarmModeSummary(String mode);
+
+  /// No description provided for @lastUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last used'**
+  String get lastUsed;
+
+  /// No description provided for @lastUsedFormatted.
+  ///
+  /// In en, this message translates to:
+  /// **'Last used · {when}'**
+  String lastUsedFormatted(String when);
+
+  /// No description provided for @lastUsedNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never used'**
+  String get lastUsedNever;
+
+  /// No description provided for @autoStartedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto started · {count} times'**
+  String autoStartedCount(int count);
+
+  /// No description provided for @savedPlaceCategoryHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get savedPlaceCategoryHome;
+
+  /// No description provided for @savedPlaceCategoryOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get savedPlaceCategoryOffice;
+
+  /// No description provided for @savedPlaceCategorySchool.
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get savedPlaceCategorySchool;
+
+  /// No description provided for @savedPlaceCategoryStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Station'**
+  String get savedPlaceCategoryStation;
+
+  /// No description provided for @savedPlaceCategoryBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Bus stop'**
+  String get savedPlaceCategoryBusStop;
+
+  /// No description provided for @savedPlaceCategoryMetro.
+  ///
+  /// In en, this message translates to:
+  /// **'Metro'**
+  String get savedPlaceCategoryMetro;
+
+  /// No description provided for @savedPlaceCategoryAirport.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport'**
+  String get savedPlaceCategoryAirport;
+
+  /// No description provided for @savedPlaceCategoryHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital'**
+  String get savedPlaceCategoryHospital;
+
+  /// No description provided for @savedPlaceCategoryCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get savedPlaceCategoryCustom;
+
+  /// No description provided for @smartAlarmOnboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like Nomad Alarm to automatically detect when you\'re travelling to {name}?'**
+  String smartAlarmOnboardingTitle(String name);
+
+  /// No description provided for @smartAlarmOnboardingNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get smartAlarmOnboardingNo;
+
+  /// No description provided for @smartAlarmOnboardingSuggest.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest'**
+  String get smartAlarmOnboardingSuggest;
+
+  /// No description provided for @smartAlarmOnboardingAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically start'**
+  String get smartAlarmOnboardingAutomatic;
+
+  /// No description provided for @smartPlacesSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Places'**
+  String get smartPlacesSettings;
+
+  /// No description provided for @enableSmartAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Smart Alarm'**
+  String get enableSmartAlarm;
+
+  /// No description provided for @smartPlacesSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic alarms for saved places'**
+  String get smartPlacesSettingsSubtitle;
+
+  /// No description provided for @smartPlacesSettingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically detect trips for Saved Places.'**
+  String get smartPlacesSettingsHelp;
+
+  /// No description provided for @alarmSourceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'AUTO'**
+  String get alarmSourceAuto;
+
+  /// No description provided for @notifSmartAlarmActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{place} Alarm Active'**
+  String notifSmartAlarmActiveTitle(String place);
+
+  /// No description provided for @notifSmartAlarmActiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll alert you {distance} before you arrive.'**
+  String notifSmartAlarmActiveBody(String distance);
+
+  /// No description provided for @notifSmartAlarmStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get notifSmartAlarmStop;
+
+  /// No description provided for @notifSmartAlarmOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get notifSmartAlarmOpen;
+
+  /// No description provided for @debugSmartPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Places (debug)'**
+  String get debugSmartPlaces;
+
+  /// No description provided for @debugConfidenceWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why?'**
+  String get debugConfidenceWhy;
+
   /// No description provided for @recent.
   ///
   /// In en, this message translates to:
@@ -597,13 +879,13 @@ abstract class AppLocalizations {
   /// No description provided for @battery.
   ///
   /// In en, this message translates to:
-  /// **'Power & battery'**
+  /// **'Power & Battery'**
   String get battery;
 
   /// No description provided for @gpsProfile.
   ///
   /// In en, this message translates to:
-  /// **'GPS profile'**
+  /// **'GPS Profile'**
   String get gpsProfile;
 
   /// No description provided for @batteryBalanced.
@@ -627,7 +909,7 @@ abstract class AppLocalizations {
   /// No description provided for @batteryBalancedDesc.
   ///
   /// In en, this message translates to:
-  /// **'Best for daily travel. Location updates about every 10 meters.'**
+  /// **'Recommended for everyday travel.'**
   String get batteryBalancedDesc;
 
   /// No description provided for @batteryAggressiveDesc.
@@ -2642,7 +2924,7 @@ abstract class AppLocalizations {
   /// No description provided for @resumeAlarmAfterBootBatteryWarning.
   ///
   /// In en, this message translates to:
-  /// **'Automatically resume active alarms after restart. May increase battery usage.'**
+  /// **'Resume active alarms after restart.'**
   String get resumeAlarmAfterBootBatteryWarning;
 
   /// No description provided for @uploadBackupViaHttps.

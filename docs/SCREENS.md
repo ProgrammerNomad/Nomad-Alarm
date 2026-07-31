@@ -77,10 +77,10 @@ Each step: icon, plain-language explanation, Grant / Skip / Open Settings.
 |---------|---------|
 | App bar | "Alarms" |
 | Search bar | Tap → Search screen (primary entry) |
-| Active alarms | Top **5** nearest shown; **View all active in History** when more; live cards with pause/resume/cancel; overflow **Share** |
-| Favorites row | Horizontal chips |
+| Saved Places card | Under search: star header, **Manage >**, quick chips (Home/Office/…), **+ More**; hidden when empty |
+| Active alarms | Top **5** nearest shown; **View all active in History** when more; live cards with pause/resume/cancel; overflow **Share**; **AUTO** chip on smart-started alarms |
 | Recent searches | Last 3 search destinations (first-alarm empty card has no CTA button) |
-| FAB | Sole **+** create action → bottom sheet: **New Alarm**, **Import Alarm**, Cancel (no inline import row) |
+| FAB | Sole **+** create action → bottom sheet: **New Alarm**, **Import Alarm**, **Saved Places**, Cancel |
 
 Settings → Language picker shows each option in **native script** (e.g. हिन्दी, العربية). Settings sections use icons for faster scanning.
 
@@ -89,6 +89,14 @@ Settings → Language picker shows each option in **native script** (e.g. हि
 **After Save only:** navigates to History (All filter) - draft appears there, not on Alarms tab.
 
 **Tap alarm card:** opens Alarm details (`/alarm/active/:id`), not a trapped tracking screen.
+
+---
+
+## Saved Places
+
+**Routes:** `/saved-places`, `/saved-places/new`, `/saved-places/:id/edit`
+
+List shows Smart Alarm mode, last used, auto-started count (no prediction %). Add/edit: category icons, Smart Alarm Off/Suggest/Automatic, alert distance. First Home save shows onboarding sheet.
 
 ---
 
@@ -250,7 +258,8 @@ Subtitle: *Manage app behavior, maps, notifications, and privacy.*
 | Language | Picker tile → bottom sheet (Follow system, en, hi, ar, he with native endonyms) |
 | Alarm | Default alarm distance picker, voice announcements, vibration, flashlight, lock screen |
 | Accessibility | High contrast toggle |
-| Power & battery | GPS profile picker tile → bottom sheet (Balanced recommended); resume after reboot |
+| Power & Battery | GPS Profile picker tile → bottom sheet (Balanced recommended); helper text under selection; resume after reboot |
+| Smart Places | Enable Smart Alarm master toggle only (no Saved Places link) |
 | Backup | **Transfer Data** → dedicated screen (export, import, HTTPS upload, last-backup metadata) |
 | Maps & routing | Link → Map settings |
 | System | Permissions, Privacy, About, Debug (debug builds) |

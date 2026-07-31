@@ -320,7 +320,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     if (result == null) {
       return;
     }
-    await ref.read(favoriteRepositoryProvider).save(
+    await ref.read(favoriteRepositoryProvider).saveNew(
           name: result.name,
           latitude: result.latitude,
           longitude: result.longitude,

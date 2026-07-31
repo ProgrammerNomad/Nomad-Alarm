@@ -137,19 +137,24 @@ const AppSettingsSchema = CollectionSchema(
       type: IsarType.byte,
       enumMap: _AppSettingssearchProviderEnumValueMap,
     ),
-    r'themeMode': PropertySchema(
+    r'smartPlacesEnabled': PropertySchema(
       id: 23,
+      name: r'smartPlacesEnabled',
+      type: IsarType.bool,
+    ),
+    r'themeMode': PropertySchema(
+      id: 24,
       name: r'themeMode',
       type: IsarType.byte,
       enumMap: _AppSettingsthemeModeEnumValueMap,
     ),
     r'useMetric': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'useMetric',
       type: IsarType.bool,
     ),
     r'useRecommendedProviders': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'useRecommendedProviders',
       type: IsarType.bool,
     )
@@ -209,9 +214,10 @@ void _appSettingsSerialize(
   writer.writeBool(offsets[20], object.resumeAlarmAfterBoot);
   writer.writeByte(offsets[21], object.routeProvider.index);
   writer.writeByte(offsets[22], object.searchProvider.index);
-  writer.writeByte(offsets[23], object.themeMode.index);
-  writer.writeBool(offsets[24], object.useMetric);
-  writer.writeBool(offsets[25], object.useRecommendedProviders);
+  writer.writeBool(offsets[23], object.smartPlacesEnabled);
+  writer.writeByte(offsets[24], object.themeMode.index);
+  writer.writeBool(offsets[25], object.useMetric);
+  writer.writeBool(offsets[26], object.useRecommendedProviders);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -255,11 +261,12 @@ AppSettings _appSettingsDeserialize(
   object.searchProvider = _AppSettingssearchProviderValueEnumMap[
           reader.readByteOrNull(offsets[22])] ??
       SearchProviderType.nominatim;
+  object.smartPlacesEnabled = reader.readBool(offsets[23]);
   object.themeMode =
-      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[23])] ??
+      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[24])] ??
           AppThemeMode.system;
-  object.useMetric = reader.readBool(offsets[24]);
-  object.useRecommendedProviders = reader.readBool(offsets[25]);
+  object.useMetric = reader.readBool(offsets[25]);
+  object.useRecommendedProviders = reader.readBool(offsets[26]);
   return object;
 }
 
@@ -326,12 +333,14 @@ P _appSettingsDeserializeProp<P>(
               reader.readByteOrNull(offset)] ??
           SearchProviderType.nominatim) as P;
     case 23:
+      return (reader.readBool(offset)) as P;
+    case 24:
       return (_AppSettingsthemeModeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           AppThemeMode.system) as P;
-    case 24:
-      return (reader.readBool(offset)) as P;
     case 25:
+      return (reader.readBool(offset)) as P;
+    case 26:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1515,6 +1524,16 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      smartPlacesEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'smartPlacesEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       themeModeEqualTo(AppThemeMode value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1908,6 +1927,20 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortBySmartPlacesEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'smartPlacesEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortBySmartPlacesEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'smartPlacesEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByThemeMode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'themeMode', Sort.asc);
@@ -2270,6 +2303,20 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenBySmartPlacesEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'smartPlacesEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenBySmartPlacesEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'smartPlacesEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByThemeMode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'themeMode', Sort.asc);
@@ -2466,6 +2513,13 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctBySmartPlacesEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'smartPlacesEnabled');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByThemeMode() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'themeMode');
@@ -2648,6 +2702,13 @@ extension AppSettingsQueryProperty
       searchProviderProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'searchProvider');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      smartPlacesEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'smartPlacesEnabled');
     });
   }
 

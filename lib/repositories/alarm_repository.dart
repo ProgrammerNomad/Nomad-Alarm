@@ -20,6 +20,8 @@ class AlarmDraft {
     this.flashlightEnabled = false,
     this.ringtoneUri,
     this.notes,
+    this.sourcePlaceId,
+    this.createdBy = AlarmCreatedBy.manual,
   });
 
   final String name;
@@ -36,6 +38,8 @@ class AlarmDraft {
   final bool flashlightEnabled;
   final String? ringtoneUri;
   final String? notes;
+  final int? sourcePlaceId;
+  final AlarmCreatedBy createdBy;
 
   factory AlarmDraft.fromSearchResult(
     SearchResult result, {
@@ -93,6 +97,8 @@ class AlarmRepositoryImpl implements AlarmRepository {
       ..flashlightEnabled = draft.flashlightEnabled
       ..ringtoneUri = draft.ringtoneUri
       ..status = AlarmStatus.draft
+      ..sourcePlaceId = draft.sourcePlaceId
+      ..createdBy = draft.createdBy
       ..createdAt = now
       ..updatedAt = now;
 

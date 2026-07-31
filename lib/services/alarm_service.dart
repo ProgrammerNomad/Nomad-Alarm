@@ -14,6 +14,7 @@ import 'package:nomad_alarm/models/alarm_monitor_config.dart';
 import 'package:nomad_alarm/models/alarm_runtime_state.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/repositories/alarm_repository.dart';
+import 'package:nomad_alarm/repositories/favorite_repository.dart';
 import 'package:nomad_alarm/repositories/history_repository.dart';
 import 'package:nomad_alarm/repositories/trip_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
@@ -85,9 +86,11 @@ class AlarmService {
     RouteService? routeService,
     String languageCode = 'en',
     bool lockScreenInfoEnabled = true,
+    FavoriteRepository? favoriteRepository,
   })  : _alarmRepository = alarmRepository,
         _tripRepository = tripRepository,
         _historyRepository = historyRepository,
+        _favoriteRepository = favoriteRepository,
         _notificationService = notificationService,
         _speechService = speechService,
         _flashlightService = flashlightService,
@@ -101,6 +104,7 @@ class AlarmService {
   final AlarmRepository _alarmRepository;
   final TripRepository _tripRepository;
   final HistoryRepository _historyRepository;
+  final FavoriteRepository? _favoriteRepository;
   final NotificationService _notificationService;
   final SpeechService _speechService;
   final FlashlightService _flashlightService;
@@ -594,6 +598,12 @@ class AlarmService {
       snoozeCount: session?.snoozeCount,
       notes: historyNotes,
     );
+
+    if (historyType == HistoryType.completed &&
+        alarm.createdBy == AlarmCreatedBy.smart &&
+        alarm.sourcePlaceId != null) {
+      await _favoriteRepository?.recordSmartAlarmCompleted(alarm.sourcePlaceId!);
+    }
   }
 
   Future<void> _handleTriggered(int alarmId) async {

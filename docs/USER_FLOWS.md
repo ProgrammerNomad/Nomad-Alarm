@@ -224,6 +224,23 @@ Settings ──► Backup ──► Transfer Data
 
 ---
 
+## Flow 11: Saved Places & Smart Alarm
+
+```
+Alarms home ──► Saved Places card (Manage > or + More)
+       │
+       ├── Quick chip ──► New alarm for that place
+       │
+       └── /saved-places ──► Add / edit place
+                │
+                ├── Smart Alarm: Off | Suggest | Automatic
+                │
+                └── Automatic + travel detected ──► normal alarm (AUTO chip)
+                         └── Notification: "{Place} Alarm Active" [Stop] [Open]
+```
+
+---
+
 ## Navigation Map
 
 ```

@@ -13,6 +13,7 @@ import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/shared/widgets/alarm_journey_detail_sheet.dart';
+import 'package:nomad_alarm/shared/widgets/alarm_source_badge.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_empty_state.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 
@@ -369,7 +370,12 @@ class _ActiveHistoryListTile extends ConsumerWidget {
           size: 12,
           color: _statusColor(alarm.status),
         ),
-        title: Text(alarm.name),
+        title: Row(
+          children: [
+            Expanded(child: Text(alarm.name)),
+            AlarmSourceBadge(createdBy: alarm.createdBy),
+          ],
+        ),
         subtitle: stateAsync.when(
           loading: () => Text('$startedLabel · ${l10n.historyStatusTracking}'),
           error: (_, stackTrace) =>
@@ -549,7 +555,12 @@ class _HistoryListTile extends StatelessWidget {
       child: Card(
         child: ListTile(
           onTap: onTap,
-          title: Text(entry.destinationName),
+          title: Row(
+            children: [
+              Expanded(child: Text(entry.destinationName)),
+              AlarmSourceBadge(createdBy: entry.createdBy),
+            ],
+          ),
           subtitle: Text(date),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,

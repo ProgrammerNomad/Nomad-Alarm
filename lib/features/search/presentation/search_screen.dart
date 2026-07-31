@@ -14,7 +14,11 @@ import 'package:nomad_alarm/services/deep_link_service.dart';
 import 'package:nomad_alarm/features/alarm/presentation/import_alarm_flow.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({this.pickForPlace = false, super.key});
+
+  /// When true, selecting a result pops with [DestinationArgs] instead of
+  /// opening alarm config.
+  final bool pickForPlace;
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -46,6 +50,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (!mounted) {
       return;
     }
+    if (widget.pickForPlace) {
+      context.pop(DestinationArgs.fromSearchResult(result));
+      return;
+    }
     context.push(
       '/alarm/new',
       extra: DestinationArgs.fromSearchResult(result),
@@ -53,7 +61,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Future<void> _saveFavorite(SearchResult result) async {
-    await ref.read(favoriteRepositoryProvider).save(
+    await ref.read(favoriteRepositoryProvider).saveNew(
           name: result.name,
           latitude: result.latitude,
           longitude: result.longitude,

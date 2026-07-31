@@ -93,6 +93,7 @@ class SharedAlarmCodec {
       travelMode: payload.travelMode,
       type: payload.alarmType,
       notes: payload.notes,
+      createdBy: AlarmCreatedBy.imported,
     );
   }
 
