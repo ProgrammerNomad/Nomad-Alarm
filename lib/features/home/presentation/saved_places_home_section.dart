@@ -21,20 +21,21 @@ class SavedPlacesHomeSection extends StatelessWidget {
     }
 
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final preview = FavoriteCategoryUtils.pickHomePreviewPlaces(places);
     final hasMore = places.length > preview.length;
     final isEmpty = places.isEmpty;
+    final manageLinkStyle = theme.textTheme.labelMedium?.copyWith(
+      fontWeight: FontWeight.w500,
+      color: colorScheme.onSurfaceVariant,
+    );
 
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.outlineVariant, width: 1),
-      ),
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -44,33 +45,33 @@ class SavedPlacesHomeSection extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   l10n.savedPlaces,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: theme.textTheme.titleSmall,
                 ),
                 const Spacer(),
-                TextButton(
-                  onPressed: () => context.push(
+                InkWell(
+                  onTap: () => context.push(
                     isEmpty ? '/saved-places/new' : '/saved-places',
                   ),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    isEmpty
-                        ? '${l10n.savedPlacesAddAction} >'
-                        : '${l10n.savedPlacesManage} >',
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    child: Text(
+                      isEmpty
+                          ? '${l10n.savedPlacesAddAction} >'
+                          : '${l10n.savedPlacesManage} >',
+                      style: manageLinkStyle,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             if (isEmpty)
               Text(
                 l10n.savedPlacesEmptyTitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               )
             else
               SingleChildScrollView(
@@ -79,22 +80,17 @@ class SavedPlacesHomeSection extends StatelessWidget {
                   children: [
                     for (var i = 0; i < preview.length; i++) ...[
                       if (i > 0) const SizedBox(width: 8),
-                      ActionChip(
-                        avatar: Text(
-                          FavoriteCategoryUtils.emoji(preview[i].category),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        label: Text(preview[i].name),
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () => _openPlace(context, preview[i]),
+                      _PlaceChip(
+                        emoji: FavoriteCategoryUtils.emoji(preview[i].category),
+                        label: preview[i].name,
+                        onTap: () => _openPlace(context, preview[i]),
                       ),
                     ],
                     if (hasMore) ...[
                       const SizedBox(width: 8),
-                      ActionChip(
-                        label: Text(l10n.savedPlacesMore),
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () => context.push('/saved-places'),
+                      _PlaceChip(
+                        label: l10n.savedPlacesMore,
+                        onTap: () => context.push('/saved-places'),
                       ),
                     ],
                   ],
@@ -115,6 +111,36 @@ class SavedPlacesHomeSection extends StatelessWidget {
         longitude: place.longitude,
         address: place.address,
       ),
+    );
+  }
+}
+
+class _PlaceChip extends StatelessWidget {
+  const _PlaceChip({
+    required this.label,
+    required this.onTap,
+    this.emoji,
+  });
+
+  final String? emoji;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return ActionChip(
+      avatar: emoji != null
+          ? Text(emoji!, style: const TextStyle(fontSize: 14))
+          : null,
+      label: Text(label),
+      side: BorderSide.none,
+      backgroundColor: colorScheme.surfaceContainerHigh,
+      visualDensity: VisualDensity.compact,
+      labelStyle: theme.textTheme.labelLarge,
+      onPressed: onTap,
     );
   }
 }

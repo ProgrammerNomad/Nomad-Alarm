@@ -6,7 +6,7 @@ import 'package:nomad_alarm/models/favorite.dart';
 import '../helpers/l10n_test_helper.dart';
 
 void main() {
-  testWidgets('Saved Places home card shows preview chips', (tester) async {
+  testWidgets('Saved Places home card matches section card styling', (tester) async {
     final home = Favorite.createDefaults(
       name: 'Home',
       latitude: 51.5,
@@ -27,6 +27,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(Card), findsOneWidget);
     expect(find.text('Saved Places'), findsOneWidget);
     expect(find.text('Manage >'), findsOneWidget);
     expect(find.text('Add >'), findsNothing);
@@ -44,11 +45,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(Card), findsOneWidget);
     expect(find.text('Saved Places'), findsOneWidget);
     expect(find.text('Add >'), findsOneWidget);
     expect(find.text('No saved places yet'), findsOneWidget);
     expect(find.text('Manage >'), findsNothing);
-    expect(find.text('+ Add your first place'), findsNothing);
     expect(find.byType(ActionChip), findsNothing);
     expect(find.byIcon(Icons.dashboard_outlined), findsNothing);
   });
