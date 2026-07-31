@@ -300,11 +300,19 @@ class _SavedPlaceFormScreenState extends ConsumerState<SavedPlaceFormScreen> {
             runSpacing: 8,
             children: FavoriteCategoryUtils.pickerCategories.map((category) {
               final selected = _category == category;
+              final visual = FavoriteCategoryUtils.visual(category);
+              final colorScheme = Theme.of(context).colorScheme;
               return ChoiceChip(
-                label: Text(
-                  '${FavoriteCategoryUtils.emoji(category)} '
-                  '${FavoriteCategoryUtils.label(l10n, category)}',
+                avatar: CircleAvatar(
+                  radius: 12,
+                  backgroundColor: visual.backgroundFor(colorScheme),
+                  child: Icon(
+                    visual.icon,
+                    size: 18,
+                    color: visual.color,
+                  ),
                 ),
+                label: Text(FavoriteCategoryUtils.label(l10n, category)),
                 selected: selected,
                 onSelected: (_) => setState(() => _category = category),
               );

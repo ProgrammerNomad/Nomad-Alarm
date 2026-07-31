@@ -198,11 +198,20 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                               break;
                             }
                           }
+                          final visual =
+                              FavoriteCategoryUtils.visual(place.category);
                           return Card(
                             child: ExpansionTile(
-                              title: Text(
-                                '${FavoriteCategoryUtils.emoji(place.category)} '
-                                '${place.name}',
+                              title: Row(
+                                children: [
+                                  Icon(
+                                    visual.icon,
+                                    size: 16,
+                                    color: visual.color,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(place.name)),
+                                ],
                               ),
                               subtitle: match != null
                                   ? Text('${match.confidencePercent.round()}% (debug)')

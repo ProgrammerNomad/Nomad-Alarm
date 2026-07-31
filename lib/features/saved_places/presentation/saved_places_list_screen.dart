@@ -71,9 +71,16 @@ class SavedPlacesListScreen extends ConsumerWidget {
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final place = places[index];
+              final visual = FavoriteCategoryUtils.visual(place.category);
+              final colorScheme = Theme.of(context).colorScheme;
               return ListTile(
                 leading: CircleAvatar(
-                  child: Text(FavoriteCategoryUtils.emoji(place.category)),
+                  backgroundColor: visual.backgroundFor(colorScheme),
+                  child: Icon(
+                    visual.icon,
+                    size: 20,
+                    color: visual.color,
+                  ),
                 ),
                 title: Text(place.name),
                 subtitle: Column(

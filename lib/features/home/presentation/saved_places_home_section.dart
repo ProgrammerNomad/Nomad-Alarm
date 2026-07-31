@@ -41,7 +41,11 @@ class SavedPlacesHomeSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.star, size: 18, color: Colors.amber.shade700),
+                Icon(
+                  Icons.bookmark_rounded,
+                  size: 18,
+                  color: colorScheme.primary,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   l10n.savedPlaces,
@@ -55,11 +59,21 @@ class SavedPlacesHomeSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      isEmpty
-                          ? '${l10n.savedPlacesAddAction} >'
-                          : '${l10n.savedPlacesManage} >',
-                      style: manageLinkStyle,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isEmpty
+                              ? l10n.savedPlacesAddAction
+                              : l10n.savedPlacesManage,
+                          style: manageLinkStyle,
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 16,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -81,7 +95,7 @@ class SavedPlacesHomeSection extends StatelessWidget {
                     for (var i = 0; i < preview.length; i++) ...[
                       if (i > 0) const SizedBox(width: 8),
                       _PlaceChip(
-                        emoji: FavoriteCategoryUtils.emoji(preview[i].category),
+                        visual: FavoriteCategoryUtils.visual(preview[i].category),
                         label: preview[i].name,
                         onTap: () => _openPlace(context, preview[i]),
                       ),
@@ -119,10 +133,10 @@ class _PlaceChip extends StatelessWidget {
   const _PlaceChip({
     required this.label,
     required this.onTap,
-    this.emoji,
+    this.visual,
   });
 
-  final String? emoji;
+  final SavedPlaceVisual? visual;
   final String label;
   final VoidCallback onTap;
 
@@ -132,8 +146,16 @@ class _PlaceChip extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return ActionChip(
-      avatar: emoji != null
-          ? Text(emoji!, style: const TextStyle(fontSize: 14))
+      avatar: visual != null
+          ? CircleAvatar(
+              radius: 12,
+              backgroundColor: visual!.backgroundFor(colorScheme),
+              child: Icon(
+                visual!.icon,
+                size: 16,
+                color: visual!.color,
+              ),
+            )
           : null,
       label: Text(label),
       side: BorderSide.none,

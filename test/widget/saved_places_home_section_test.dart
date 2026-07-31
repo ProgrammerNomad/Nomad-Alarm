@@ -29,11 +29,17 @@ void main() {
 
     expect(find.byType(Card), findsOneWidget);
     expect(find.text('Saved Places'), findsOneWidget);
-    expect(find.text('Manage >'), findsOneWidget);
+    expect(find.text('Manage'), findsOneWidget);
+    expect(find.text('Manage >'), findsNothing);
     expect(find.text('Add >'), findsNothing);
+    expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.star), findsNothing);
     expect(find.textContaining('Home'), findsOneWidget);
     expect(find.textContaining('Office'), findsOneWidget);
     expect(find.byType(ActionChip), findsNWidgets(2));
+    expect(find.byIcon(Icons.home_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.work_rounded), findsOneWidget);
     expect(find.byIcon(Icons.dashboard_outlined), findsNothing);
   });
 
@@ -47,9 +53,13 @@ void main() {
 
     expect(find.byType(Card), findsOneWidget);
     expect(find.text('Saved Places'), findsOneWidget);
-    expect(find.text('Add >'), findsOneWidget);
+    expect(find.text('Add'), findsOneWidget);
+    expect(find.text('Add >'), findsNothing);
     expect(find.text('No saved places yet'), findsOneWidget);
+    expect(find.text('Manage'), findsNothing);
     expect(find.text('Manage >'), findsNothing);
+    expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
     expect(find.byType(ActionChip), findsNothing);
     expect(find.byIcon(Icons.dashboard_outlined), findsNothing);
   });

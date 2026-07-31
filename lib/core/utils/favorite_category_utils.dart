@@ -3,6 +3,20 @@ import 'package:nomad_alarm/l10n/app_localizations.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/favorite.dart';
 
+/// Icon and accent color for rendering a Saved Place category consistently.
+class SavedPlaceVisual {
+  const SavedPlaceVisual({
+    required this.icon,
+    required this.color,
+  });
+
+  final IconData icon;
+  final Color color;
+
+  /// ~10% opacity tint for chips and avatars.
+  Color backgroundFor(ColorScheme scheme) => color.withValues(alpha: 0.10);
+}
+
 /// User-facing category labels and icons for Saved Places.
 class FavoriteCategoryUtils {
   FavoriteCategoryUtils._();
@@ -32,35 +46,55 @@ class FavoriteCategoryUtils {
     };
   }
 
-  static String emoji(FavoriteCategory category) {
+  static SavedPlaceVisual visual(FavoriteCategory category) {
     return switch (normalize(category)) {
-      FavoriteCategory.home => '🏠',
-      FavoriteCategory.office => '🏢',
-      FavoriteCategory.school => '🎓',
-      FavoriteCategory.station => '🚉',
-      FavoriteCategory.busStop => '🚌',
-      FavoriteCategory.metro => '🚇',
-      FavoriteCategory.airport => '✈',
-      FavoriteCategory.hospital => '🏥',
-      FavoriteCategory.custom => '⭐',
-      _ => '⭐',
+      FavoriteCategory.home => SavedPlaceVisual(
+          icon: Icons.home_rounded,
+          color: Colors.orange.shade700,
+        ),
+      FavoriteCategory.office => SavedPlaceVisual(
+          icon: Icons.work_rounded,
+          color: Colors.blue.shade700,
+        ),
+      FavoriteCategory.school => SavedPlaceVisual(
+          icon: Icons.school_rounded,
+          color: Colors.purple.shade700,
+        ),
+      FavoriteCategory.station => SavedPlaceVisual(
+          icon: Icons.train_rounded,
+          color: Colors.green.shade700,
+        ),
+      FavoriteCategory.busStop => SavedPlaceVisual(
+          icon: Icons.directions_bus_rounded,
+          color: Colors.teal.shade700,
+        ),
+      FavoriteCategory.metro => SavedPlaceVisual(
+          icon: Icons.subway_rounded,
+          color: Colors.teal.shade700,
+        ),
+      FavoriteCategory.airport => SavedPlaceVisual(
+          icon: Icons.flight_rounded,
+          color: Colors.indigo.shade700,
+        ),
+      FavoriteCategory.hospital => SavedPlaceVisual(
+          icon: Icons.local_hospital_rounded,
+          color: Colors.red.shade700,
+        ),
+      FavoriteCategory.custom => SavedPlaceVisual(
+          icon: Icons.bookmark_rounded,
+          color: Colors.blueGrey.shade600,
+        ),
+      _ => SavedPlaceVisual(
+          icon: Icons.place_rounded,
+          color: Colors.blueGrey.shade600,
+        ),
     };
   }
 
-  static IconData icon(FavoriteCategory category) {
-    return switch (normalize(category)) {
-      FavoriteCategory.home => Icons.home_outlined,
-      FavoriteCategory.office => Icons.work_outline,
-      FavoriteCategory.school => Icons.school_outlined,
-      FavoriteCategory.station => Icons.train_outlined,
-      FavoriteCategory.busStop => Icons.directions_bus_outlined,
-      FavoriteCategory.metro => Icons.subway_outlined,
-      FavoriteCategory.airport => Icons.flight,
-      FavoriteCategory.hospital => Icons.local_hospital_outlined,
-      FavoriteCategory.custom => Icons.star_outline,
-      _ => Icons.place_outlined,
-    };
-  }
+  static SavedPlaceVisual visualFor(Favorite favorite) =>
+      visual(normalize(favorite.category));
+
+  static IconData icon(FavoriteCategory category) => visual(category).icon;
 
   static String label(AppLocalizations l10n, FavoriteCategory category) {
     return switch (normalize(category)) {
