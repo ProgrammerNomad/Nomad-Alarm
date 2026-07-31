@@ -12,6 +12,7 @@
   "favorites": "Favorites",
   "savedPlaces": "Saved Places",
   "savedPlacesManage": "Manage",
+  "savedPlacesAddAction": "Add",
   "savedPlacesMore": "+ More",
   "savedPlacesEmptyTitle": "No saved places yet",
   "savedPlacesEmptyBody": "Save places you travel to often. Nomad Alarm can start an alarm automatically when you're heading there.",

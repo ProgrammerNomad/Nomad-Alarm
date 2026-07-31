@@ -45,6 +45,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savedPlacesManage => 'Manage';
 
   @override
+  String get savedPlacesAddAction => 'Add';
+
+  @override
   String get savedPlacesMore => '+ More';
 
   @override

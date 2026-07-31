@@ -92,14 +92,14 @@ class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           if (FeatureFlags.smartPlaces)
             favoritesAsync.when(
               loading: () => const SavedPlacesHomeSection(places: []),
               error: (_, stackTrace) => const SavedPlacesHomeSection(places: []),
               data: (favorites) => SavedPlacesHomeSection(places: favorites),
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           activeAlarmsAsync.when(
             loading: () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,

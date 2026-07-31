@@ -174,6 +174,12 @@ abstract class AppLocalizations {
   /// **'Manage'**
   String get savedPlacesManage;
 
+  /// No description provided for @savedPlacesAddAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get savedPlacesAddAction;
+
   /// No description provided for @savedPlacesMore.
   ///
   /// In en, this message translates to:
