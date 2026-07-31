@@ -46,7 +46,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
     }
     await ref.read(settingsControllerProvider.notifier).completePermissions();
     if (mounted) {
-      context.go('/home');
+      context.go('/alarms');
     }
   }
 

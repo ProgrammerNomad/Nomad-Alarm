@@ -24,13 +24,17 @@ class SettingsController extends AsyncNotifier<AppSettings> {
   }
 
   Future<void> saveSettings(AppSettings settings) async {
-    state = const AsyncLoading();
+    final previous = state;
+    state = AsyncValue.data(settings);
     state = await AsyncValue.guard(() async {
       await _repo.updateSettings(settings);
       final updated = await _repo.getSettings();
       await BootPrefsSync.syncResumeAfterBoot(updated.resumeAlarmAfterBoot);
       return updated;
     });
+    if (state.hasError && previous.hasValue) {
+      state = previous;
+    }
   }
 
   Future<void> completeWelcome() async {

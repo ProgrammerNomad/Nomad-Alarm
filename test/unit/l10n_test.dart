@@ -21,8 +21,10 @@ void main() {
     final hi = await AppLocalizations.delegate.load(const Locale('hi'));
     expect(en.mapTitle, 'Map');
     expect(hi.mapTitle, 'मानचित्र');
-    expect(en.tripsTitle, 'Trips');
-    expect(hi.tripsTitle, 'यात्राएँ');
+    expect(en.navAlarms, 'Alarms');
+    expect(hi.navAlarms, 'अलार्म');
+    expect(en.alarmsTitle, 'Alarms');
+    expect(en.settingsSubtitle, isNotEmpty);
     expect(en.notifTrackingChannel, 'Active Alarm');
     expect(hi.notifTrackingChannel, 'सक्रिय अलार्म');
   });

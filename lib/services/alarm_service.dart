@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -191,27 +192,47 @@ class AlarmService {
     }
     _eventsBound = true;
 
-    BackgroundAlarmService.listenEvents(
-      onState: _handleBackgroundState,
-      onTriggered: _handleTriggered,
-      onStopped: () async {
-        if (_sessions.isNotEmpty) {
-          await _disposeAllSessions();
-        }
-      },
-    );
+    if (_backgroundEventsSupported) {
+      try {
+        BackgroundAlarmService.listenEvents(
+          onState: _handleBackgroundState,
+          onTriggered: _handleTriggered,
+          onStopped: () async {
+            if (_sessions.isNotEmpty) {
+              await _disposeAllSessions();
+            }
+          },
+        );
+      } catch (_) {
+        // Plugin unavailable outside Android/iOS runtimes (e.g. desktop tests).
+      }
+    }
 
     _notificationService.onNotificationTap = _handleNotificationTap;
     _notificationService.onNotificationAction = _handleNotificationAction;
   }
 
-  Stream<AlarmRuntimeState> watchActiveAlarm(int alarmId) {
+  bool get _backgroundEventsSupported {
+    if (kIsWeb) {
+      return false;
+    }
+    return defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+  }
+
+  Stream<AlarmRuntimeState> watchActiveAlarm(int alarmId) async* {
     bindBackgroundEvents();
     final session = _sessions[alarmId];
     if (session != null) {
-      return session.controller.stream;
+      if (session.lastState != null) {
+        yield session.lastState!;
+      } else {
+        yield await _buildStaticState(alarmId);
+      }
+      yield* session.controller.stream;
+      return;
     }
-    return Stream.fromFuture(_buildStaticState(alarmId));
+    yield await _buildStaticState(alarmId);
   }
 
   Future<AlarmRuntimeState?> getRuntimeState(int alarmId) async {
@@ -317,6 +338,29 @@ class AlarmService {
     }
 
     await BackgroundAlarmService.resumeAlarmMonitoring(_monitorConfig(alarm));
+
+    final session = _sessions[alarmId];
+    if (session?.lastState != null) {
+      _emitState(alarmId, session!.lastState!.copyWith(status: AlarmStatus.active));
+    } else {
+      _emitState(
+        alarmId,
+        AlarmRuntimeState(
+          alarmId: alarm.id,
+          destinationName: alarm.name,
+          address: alarm.address,
+          destLatitude: alarm.destLatitude,
+          destLongitude: alarm.destLongitude,
+          distanceMeters: 0,
+          speedKmh: 0,
+          accuracyMeters: 0,
+          lastFixAt: DateTime.now(),
+          isGpsLost: false,
+          hasPassedDestination: false,
+          status: AlarmStatus.active,
+        ),
+      );
+    }
     await _syncWidgetFromSessions();
   }
 
@@ -689,6 +733,18 @@ class AlarmService {
     if (!session.controller.isClosed) {
       session.controller.add(state);
     }
+  }
+
+  @visibleForTesting
+  void seedSessionStateForTest(int alarmId, AlarmRuntimeState state) {
+    final session = _sessions.putIfAbsent(
+      alarmId,
+      () => _AlarmSession(
+        alarmId: alarmId,
+        controller: StreamController<AlarmRuntimeState>.broadcast(),
+      ),
+    );
+    session.lastState = state;
   }
 
   Future<AlarmRuntimeState> _buildStaticState(int alarmId) async {

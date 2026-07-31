@@ -19,12 +19,11 @@ Open **Settings** from the bottom navigation bar.
 | Screen | Path | What it controls |
 |--------|------|------------------|
 | **Appearance** | Settings | Theme (light / dark / system), units (km / mi), language |
-| **Map** | Settings → Map | Map, search, and route providers (bundled); map layer; offline tile cache; explicit **Save** |
-| **API keys** | Settings → Advanced → API Keys | Status dashboard: Google (Maps/Places/Directions tests), Mapbox, HERE, GraphHopper |
+| **Map** | Settings → Map | Map, search, and route providers (bundled); inline API key setup when selecting Google/Mapbox/HERE; map layer; offline tile cache |
 | **Permissions** | Settings → Permissions | Location, notifications, background location, battery |
 | **Alarm defaults** | Settings → Alarm | Default trigger distance, voice, vibration |
 | **Battery** | Settings → Battery | GPS profile (balanced / aggressive / saver) |
-| **Data** | Settings | Backup / restore, family bundle share |
+| **Backup** | Settings → Transfer Data | Export / import JSON backup, optional HTTPS upload, last-backup metadata |
 
 Keys are stored **encrypted on device** and are **not** included in JSON backups.
 
@@ -55,8 +54,10 @@ Open **APIs & Services → Library** and enable:
 | API | Required for |
 |-----|----------------|
 | **Maps SDK for Android** | Native Google map tiles in the app |
-| **Places API** | Search autocomplete (classic Places API) |
+| **Places API** (New or Legacy) | Search autocomplete |
 | **Directions API** | Route polylines and ETA |
+
+Distance Matrix API is **not required** by Nomad Alarm today.
 
 Search each name → click **Enable**.
 
@@ -98,16 +99,16 @@ Look for `Variant: debug` → `SHA1` under `Task :app:signingReport`.
 
 ### 6. Configure Nomad Alarm
 
-1. Open **Settings → Map**, select Google Maps, tap **Save** (or **Settings → Advanced → API Keys**)
-2. Paste your key in **Google API key** → **Save**
-3. Tap **Test** - should report success if all three APIs are enabled
-4. Open **Settings → Map**:
-   - **Map provider:** Google Maps
-   - **Search provider:** Google Places (optional)
-   - **Route provider:** Google Directions (optional)
-5. Open the **Map** screen - tiles should load (not a grey blank map)
+1. Open **Settings → Map**
+2. Select **Google Maps** - an inline credential sheet appears
+3. Enter your **standard Google API key** (the same key from step 4)
+4. Tap **Test** - confirm Maps, Places, and Directions status for that key
+5. Tap **Save & Use Google Maps**
+6. Open the **Map** screen - tiles should load (not a grey blank map)
 
-Tap **Setup guide** on the API keys screen to open this page.
+Optional: long-press a configured provider in the picker, or use the overflow menu on the Map provider row, to **Edit**, **Test**, or **Remove** credentials.
+
+Tap **Setup guide** in the credential sheet to open this page.
 
 ---
 
@@ -130,20 +131,17 @@ Tap **Setup guide** on the API keys screen to open this page.
 
 1. Create account at [mapbox.com](https://www.mapbox.com/)
 2. Copy **Default public token** (`pk.…`)
-3. Settings → API keys → **Mapbox access token** → Save
-4. Settings → Map → Map provider: **Mapbox**
+3. **Settings → Map** → select **Mapbox** → enter token → **Test** → **Save & Use Mapbox**
 
 ### HERE
 
 1. [developer.here.com](https://developer.here.com/) → create project → REST API key
-2. Settings → API keys → **HERE API key** → Save
-3. Settings → Map → Map / Search / Route: **HERE**
+2. **Settings → Map** → select **HERE** → enter key → **Test** → **Save & Use HERE**
 
 ### GraphHopper
 
 1. [graphhopper.com](https://www.graphhopper.com/) → Dashboard → API keys
-2. Settings → API keys → **GraphHopper API key** → Save
-3. Settings → Map → Route provider: **GraphHopper**
+2. **Settings → Map** → enable **Override route provider** → select **GraphHopper** → tap **Save** (inline credential sheet)
 
 ---
 

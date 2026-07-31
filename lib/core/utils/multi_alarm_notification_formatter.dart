@@ -15,7 +15,9 @@ class MultiAlarmNotificationContent {
 /// Builds collapsed foreground-service notification text for one or many alarms.
 MultiAlarmNotificationContent formatMultiAlarmNotification(
   List<AlarmRuntimeState> states, {
-  String appName = 'Nomad Alarm',
+  String noActiveAlarmsLabel = 'No active alarms',
+  String Function(int count)? activeAlarmsTitle,
+  String nearestLabel = 'Nearest',
 }) {
   final tracking = states
       .where(
@@ -28,8 +30,8 @@ MultiAlarmNotificationContent formatMultiAlarmNotification(
 
   if (tracking.isEmpty) {
     return MultiAlarmNotificationContent(
-      title: appName,
-      content: 'No active alarms',
+      title: noActiveAlarmsLabel,
+      content: noActiveAlarmsLabel,
     );
   }
 
@@ -39,8 +41,8 @@ MultiAlarmNotificationContent formatMultiAlarmNotification(
     final eta = state.etaMinutes != null ? formatEta(state.etaMinutes) : null;
     final body = eta != null ? '$distance · $eta' : distance;
     return MultiAlarmNotificationContent(
-      title: appName,
-      content: '${state.destinationName} · $body',
+      title: state.destinationName,
+      content: body,
     );
   }
 
@@ -48,10 +50,11 @@ MultiAlarmNotificationContent formatMultiAlarmNotification(
   final distance = formatDistance(nearest.distanceMeters);
   final eta = nearest.etaMinutes != null ? formatEta(nearest.etaMinutes) : null;
   final nearestBody = eta != null ? '$distance · $eta' : distance;
+  final title = activeAlarmsTitle?.call(tracking.length) ??
+      '${tracking.length} active alarms';
   return MultiAlarmNotificationContent(
-    title: appName,
-    content:
-        '${tracking.length} active alarms · Nearest: ${nearest.destinationName} · $nearestBody',
+    title: title,
+    content: '$nearestLabel: ${nearest.destinationName} · $nearestBody',
   );
 }
 

@@ -6,6 +6,8 @@ import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
+import 'package:nomad_alarm/core/constants/feature_flags.dart';
+import 'package:nomad_alarm/features/alarm/presentation/share_alarm_bottom_sheet.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 
@@ -177,6 +179,19 @@ class ActiveAlarmScreen extends ConsumerWidget {
                   label: Text(l10n.openMap),
                 ),
                 const SizedBox(height: 8),
+                if (FeatureFlags.groupTravel)
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final alarm =
+                          await ref.read(alarmRepositoryProvider).getById(alarmId);
+                      if (alarm != null && context.mounted) {
+                        await showShareAlarmSheet(context, alarm: alarm);
+                      }
+                    },
+                    icon: const Icon(Icons.share_outlined),
+                    label: Text(l10n.shareAlarmConfig),
+                  ),
+                if (FeatureFlags.groupTravel) const SizedBox(height: 8),
                 Semantics(
                   label: l10n.semCancelAlarm,
                   button: true,
@@ -187,7 +202,7 @@ class ActiveAlarmScreen extends ConsumerWidget {
                           .cancelAlarm(alarmId);
                       ref.invalidate(activeAlarmsProvider);
                       if (context.mounted) {
-                        context.go('/home');
+                        context.go('/alarms');
                       }
                     },
                     icon: const Icon(Icons.cancel_outlined),

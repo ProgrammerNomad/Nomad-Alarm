@@ -16,3 +16,10 @@ final activeAlarmsProvider = FutureProvider<List<Alarm>>((ref) async {
   await ref.watch(isarServiceProvider.future);
   return ref.watch(alarmRepositoryProvider).getRunning();
 });
+
+final draftAlarmsProvider = FutureProvider<List<Alarm>>((ref) async {
+  await ref.watch(isarServiceProvider.future);
+  final drafts = await ref.watch(alarmRepositoryProvider).getDrafts();
+  drafts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return drafts;
+});

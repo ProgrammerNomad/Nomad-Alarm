@@ -46,6 +46,9 @@ class AppSettings {
   late bool overrideSearchProvider;
   late bool overrideRouteProvider;
 
+  late bool autoBackupEnabled;
+  DateTime? lastBackupAt;
+
   static AppSettings defaults() {
     return AppSettings()
       ..themeMode = AppThemeMode.system
@@ -71,6 +74,8 @@ class AppSettings {
       ..resumeAlarmAfterBoot = false
       ..useRecommendedProviders = true
       ..overrideSearchProvider = false
-      ..overrideRouteProvider = false;
+      ..overrideRouteProvider = false
+      ..autoBackupEnabled = false
+      ..lastBackupAt = null;
   }
 }

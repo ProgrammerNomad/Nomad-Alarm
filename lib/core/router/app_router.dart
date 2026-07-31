@@ -6,25 +6,34 @@ import 'package:nomad_alarm/features/about/presentation/about_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/active_alarm_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/alarm_config_screen.dart';
 import 'package:nomad_alarm/features/alarm/presentation/alarm_ring_screen.dart';
+import 'package:nomad_alarm/features/alarm/presentation/import_alarm_preview_screen.dart';
+import 'package:nomad_alarm/features/alarm/presentation/import_qr_scan_screen.dart';
+import 'package:nomad_alarm/models/shared_alarm_payload.dart';
 import 'package:nomad_alarm/features/debug/presentation/debug_screen.dart';
 import 'package:nomad_alarm/features/history/presentation/history_screen.dart';
-import 'package:nomad_alarm/features/home/presentation/home_screen.dart';
+import 'package:nomad_alarm/providers/history_trip_providers.dart';
+import 'package:nomad_alarm/features/home/presentation/alarms_screen.dart';
 import 'package:nomad_alarm/features/map/presentation/map_screen.dart';
 import 'package:nomad_alarm/features/permission/presentation/permissions_screen.dart';
 import 'package:nomad_alarm/features/privacy/presentation/privacy_screen.dart';
 import 'package:nomad_alarm/features/search/presentation/search_screen.dart';
-import 'package:nomad_alarm/features/settings/presentation/api_keys_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/map_settings_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/permission_center_screen.dart';
 import 'package:nomad_alarm/features/settings/presentation/settings_screen.dart';
+import 'package:nomad_alarm/features/settings/presentation/transfer_data_screen.dart';
 import 'package:nomad_alarm/features/splash/presentation/splash_screen.dart';
-import 'package:nomad_alarm/features/trip/presentation/trips_screen.dart';
 import 'package:nomad_alarm/features/welcome/presentation/welcome_screen.dart';
 import 'package:nomad_alarm/shared/widgets/main_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      if (state.uri.path == '/home') {
+        return '/alarms';
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',
@@ -46,16 +55,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/home',
-                builder: (context, state) => const HomeScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/trips',
-                builder: (context, state) => const TripsScreen(),
+                path: '/alarms',
+                builder: (context, state) => const AlarmsScreen(),
               ),
             ],
           ),
@@ -63,7 +64,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/history',
-                builder: (context, state) => const HistoryScreen(),
+                builder: (context, state) => HistoryScreen(
+                  initialFilter: HistoryFilterQuery.fromQueryParameter(
+                    state.uri.queryParameters['filter'],
+                  ),
+                ),
               ),
             ],
           ),
@@ -86,8 +91,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MapSettingsScreen(),
       ),
       GoRoute(
-        path: '/settings/api-keys',
-        builder: (context, state) => const ApiKeysScreen(),
+        path: '/settings/transfer-data',
+        builder: (context, state) => const TransferDataScreen(),
       ),
       GoRoute(
         path: '/about',
@@ -139,6 +144,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = int.parse(state.pathParameters['id']!);
           return ActiveAlarmScreen(alarmId: id);
         },
+      ),
+      GoRoute(
+        path: '/alarm/import/preview',
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is List<SharedAlarmPayload>) {
+            return ImportAlarmPreviewScreen(payloads: extra);
+          }
+          return ImportAlarmPreviewScreen(
+            payloads: [extra as SharedAlarmPayload],
+          );
+        },
+      ),
+      GoRoute(
+        path: '/alarm/import/qr',
+        builder: (context, state) => const ImportQrScanScreen(),
       ),
       GoRoute(
         path: '/alarm/ring/:id',

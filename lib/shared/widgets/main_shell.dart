@@ -28,14 +28,9 @@ class MainShell extends StatelessWidget {
         onDestinationSelected: _onTap,
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: l10n.navHome,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.route_outlined),
-            selectedIcon: const Icon(Icons.route),
-            label: l10n.navTrips,
+            icon: const Icon(Icons.notifications_active_outlined),
+            selectedIcon: const Icon(Icons.notifications_active),
+            label: l10n.navAlarms,
           ),
           NavigationDestination(
             icon: const Icon(Icons.history_outlined),

@@ -52,7 +52,7 @@ final alarmServiceProvider = Provider<AlarmService>((ref) {
         ),
     onNavigateToAlarm: (alarmId, {isRing = false}) {
       if (alarmId < 0) {
-        router.go('/home');
+        router.go('/alarms');
         return;
       }
       if (isRing) {

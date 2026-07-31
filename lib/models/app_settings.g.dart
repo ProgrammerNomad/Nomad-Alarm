@@ -27,119 +27,129 @@ const AppSettingsSchema = CollectionSchema(
       name: r'accessibilityHighContrast',
       type: IsarType.bool,
     ),
-    r'batteryProfile': PropertySchema(
+    r'autoBackupEnabled': PropertySchema(
       id: 2,
+      name: r'autoBackupEnabled',
+      type: IsarType.bool,
+    ),
+    r'batteryProfile': PropertySchema(
+      id: 3,
       name: r'batteryProfile',
       type: IsarType.byte,
       enumMap: _AppSettingsbatteryProfileEnumValueMap,
     ),
     r'debugLoggingEnabled': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'debugLoggingEnabled',
       type: IsarType.bool,
     ),
     r'defaultFlashlightEnabled': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'defaultFlashlightEnabled',
       type: IsarType.bool,
     ),
     r'defaultTriggerDistanceMeters': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'defaultTriggerDistanceMeters',
       type: IsarType.double,
     ),
     r'defaultVibrationEnabled': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'defaultVibrationEnabled',
       type: IsarType.bool,
     ),
     r'defaultVoiceEnabled': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'defaultVoiceEnabled',
       type: IsarType.bool,
     ),
     r'fontFamily': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'fontFamily',
       type: IsarType.string,
     ),
     r'hasCompletedPermissions': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'hasCompletedPermissions',
       type: IsarType.bool,
     ),
     r'hasCompletedWelcome': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'hasCompletedWelcome',
       type: IsarType.bool,
     ),
     r'languageCode': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'languageCode',
       type: IsarType.string,
     ),
+    r'lastBackupAt': PropertySchema(
+      id: 13,
+      name: r'lastBackupAt',
+      type: IsarType.dateTime,
+    ),
     r'lockScreenInfoEnabled': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'lockScreenInfoEnabled',
       type: IsarType.bool,
     ),
     r'mapLayer': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'mapLayer',
       type: IsarType.byte,
       enumMap: _AppSettingsmapLayerEnumValueMap,
     ),
     r'mapProvider': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'mapProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsmapProviderEnumValueMap,
     ),
     r'overrideRouteProvider': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'overrideRouteProvider',
       type: IsarType.bool,
     ),
     r'overrideSearchProvider': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'overrideSearchProvider',
       type: IsarType.bool,
     ),
     r'persistentNotificationEnabled': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'persistentNotificationEnabled',
       type: IsarType.bool,
     ),
     r'resumeAlarmAfterBoot': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'resumeAlarmAfterBoot',
       type: IsarType.bool,
     ),
     r'routeProvider': PropertySchema(
-      id: 19,
+      id: 21,
       name: r'routeProvider',
       type: IsarType.byte,
       enumMap: _AppSettingsrouteProviderEnumValueMap,
     ),
     r'searchProvider': PropertySchema(
-      id: 20,
+      id: 22,
       name: r'searchProvider',
       type: IsarType.byte,
       enumMap: _AppSettingssearchProviderEnumValueMap,
     ),
     r'themeMode': PropertySchema(
-      id: 21,
+      id: 23,
       name: r'themeMode',
       type: IsarType.byte,
       enumMap: _AppSettingsthemeModeEnumValueMap,
     ),
     r'useMetric': PropertySchema(
-      id: 22,
+      id: 24,
       name: r'useMetric',
       type: IsarType.bool,
     ),
     r'useRecommendedProviders': PropertySchema(
-      id: 23,
+      id: 25,
       name: r'useRecommendedProviders',
       type: IsarType.bool,
     )
@@ -178,28 +188,30 @@ void _appSettingsSerialize(
 ) {
   writer.writeString(offsets[0], object.accentColor);
   writer.writeBool(offsets[1], object.accessibilityHighContrast);
-  writer.writeByte(offsets[2], object.batteryProfile.index);
-  writer.writeBool(offsets[3], object.debugLoggingEnabled);
-  writer.writeBool(offsets[4], object.defaultFlashlightEnabled);
-  writer.writeDouble(offsets[5], object.defaultTriggerDistanceMeters);
-  writer.writeBool(offsets[6], object.defaultVibrationEnabled);
-  writer.writeBool(offsets[7], object.defaultVoiceEnabled);
-  writer.writeString(offsets[8], object.fontFamily);
-  writer.writeBool(offsets[9], object.hasCompletedPermissions);
-  writer.writeBool(offsets[10], object.hasCompletedWelcome);
-  writer.writeString(offsets[11], object.languageCode);
-  writer.writeBool(offsets[12], object.lockScreenInfoEnabled);
-  writer.writeByte(offsets[13], object.mapLayer.index);
-  writer.writeByte(offsets[14], object.mapProvider.index);
-  writer.writeBool(offsets[15], object.overrideRouteProvider);
-  writer.writeBool(offsets[16], object.overrideSearchProvider);
-  writer.writeBool(offsets[17], object.persistentNotificationEnabled);
-  writer.writeBool(offsets[18], object.resumeAlarmAfterBoot);
-  writer.writeByte(offsets[19], object.routeProvider.index);
-  writer.writeByte(offsets[20], object.searchProvider.index);
-  writer.writeByte(offsets[21], object.themeMode.index);
-  writer.writeBool(offsets[22], object.useMetric);
-  writer.writeBool(offsets[23], object.useRecommendedProviders);
+  writer.writeBool(offsets[2], object.autoBackupEnabled);
+  writer.writeByte(offsets[3], object.batteryProfile.index);
+  writer.writeBool(offsets[4], object.debugLoggingEnabled);
+  writer.writeBool(offsets[5], object.defaultFlashlightEnabled);
+  writer.writeDouble(offsets[6], object.defaultTriggerDistanceMeters);
+  writer.writeBool(offsets[7], object.defaultVibrationEnabled);
+  writer.writeBool(offsets[8], object.defaultVoiceEnabled);
+  writer.writeString(offsets[9], object.fontFamily);
+  writer.writeBool(offsets[10], object.hasCompletedPermissions);
+  writer.writeBool(offsets[11], object.hasCompletedWelcome);
+  writer.writeString(offsets[12], object.languageCode);
+  writer.writeDateTime(offsets[13], object.lastBackupAt);
+  writer.writeBool(offsets[14], object.lockScreenInfoEnabled);
+  writer.writeByte(offsets[15], object.mapLayer.index);
+  writer.writeByte(offsets[16], object.mapProvider.index);
+  writer.writeBool(offsets[17], object.overrideRouteProvider);
+  writer.writeBool(offsets[18], object.overrideSearchProvider);
+  writer.writeBool(offsets[19], object.persistentNotificationEnabled);
+  writer.writeBool(offsets[20], object.resumeAlarmAfterBoot);
+  writer.writeByte(offsets[21], object.routeProvider.index);
+  writer.writeByte(offsets[22], object.searchProvider.index);
+  writer.writeByte(offsets[23], object.themeMode.index);
+  writer.writeBool(offsets[24], object.useMetric);
+  writer.writeBool(offsets[25], object.useRecommendedProviders);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -211,41 +223,43 @@ AppSettings _appSettingsDeserialize(
   final object = AppSettings();
   object.accentColor = reader.readString(offsets[0]);
   object.accessibilityHighContrast = reader.readBool(offsets[1]);
+  object.autoBackupEnabled = reader.readBool(offsets[2]);
   object.batteryProfile = _AppSettingsbatteryProfileValueEnumMap[
-          reader.readByteOrNull(offsets[2])] ??
+          reader.readByteOrNull(offsets[3])] ??
       BatteryProfile.balanced;
-  object.debugLoggingEnabled = reader.readBool(offsets[3]);
-  object.defaultFlashlightEnabled = reader.readBool(offsets[4]);
-  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[5]);
-  object.defaultVibrationEnabled = reader.readBool(offsets[6]);
-  object.defaultVoiceEnabled = reader.readBool(offsets[7]);
-  object.fontFamily = reader.readString(offsets[8]);
-  object.hasCompletedPermissions = reader.readBool(offsets[9]);
-  object.hasCompletedWelcome = reader.readBool(offsets[10]);
+  object.debugLoggingEnabled = reader.readBool(offsets[4]);
+  object.defaultFlashlightEnabled = reader.readBool(offsets[5]);
+  object.defaultTriggerDistanceMeters = reader.readDouble(offsets[6]);
+  object.defaultVibrationEnabled = reader.readBool(offsets[7]);
+  object.defaultVoiceEnabled = reader.readBool(offsets[8]);
+  object.fontFamily = reader.readString(offsets[9]);
+  object.hasCompletedPermissions = reader.readBool(offsets[10]);
+  object.hasCompletedWelcome = reader.readBool(offsets[11]);
   object.id = id;
-  object.languageCode = reader.readString(offsets[11]);
-  object.lockScreenInfoEnabled = reader.readBool(offsets[12]);
+  object.languageCode = reader.readString(offsets[12]);
+  object.lastBackupAt = reader.readDateTimeOrNull(offsets[13]);
+  object.lockScreenInfoEnabled = reader.readBool(offsets[14]);
   object.mapLayer =
-      _AppSettingsmapLayerValueEnumMap[reader.readByteOrNull(offsets[13])] ??
+      _AppSettingsmapLayerValueEnumMap[reader.readByteOrNull(offsets[15])] ??
           MapLayerType.standard;
   object.mapProvider =
-      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[14])] ??
+      _AppSettingsmapProviderValueEnumMap[reader.readByteOrNull(offsets[16])] ??
           MapProviderType.osm;
-  object.overrideRouteProvider = reader.readBool(offsets[15]);
-  object.overrideSearchProvider = reader.readBool(offsets[16]);
-  object.persistentNotificationEnabled = reader.readBool(offsets[17]);
-  object.resumeAlarmAfterBoot = reader.readBool(offsets[18]);
+  object.overrideRouteProvider = reader.readBool(offsets[17]);
+  object.overrideSearchProvider = reader.readBool(offsets[18]);
+  object.persistentNotificationEnabled = reader.readBool(offsets[19]);
+  object.resumeAlarmAfterBoot = reader.readBool(offsets[20]);
   object.routeProvider = _AppSettingsrouteProviderValueEnumMap[
-          reader.readByteOrNull(offsets[19])] ??
+          reader.readByteOrNull(offsets[21])] ??
       RouteProviderType.osrm;
   object.searchProvider = _AppSettingssearchProviderValueEnumMap[
-          reader.readByteOrNull(offsets[20])] ??
+          reader.readByteOrNull(offsets[22])] ??
       SearchProviderType.nominatim;
   object.themeMode =
-      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[21])] ??
+      _AppSettingsthemeModeValueEnumMap[reader.readByteOrNull(offsets[23])] ??
           AppThemeMode.system;
-  object.useMetric = reader.readBool(offsets[22]);
-  object.useRecommendedProviders = reader.readBool(offsets[23]);
+  object.useMetric = reader.readBool(offsets[24]);
+  object.useRecommendedProviders = reader.readBool(offsets[25]);
   return object;
 }
 
@@ -261,59 +275,63 @@ P _appSettingsDeserializeProp<P>(
     case 1:
       return (reader.readBool(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
       return (_AppSettingsbatteryProfileValueEnumMap[
               reader.readByteOrNull(offset)] ??
           BatteryProfile.balanced) as P;
-    case 3:
-      return (reader.readBool(offset)) as P;
     case 4:
       return (reader.readBool(offset)) as P;
     case 5:
-      return (reader.readDouble(offset)) as P;
-    case 6:
       return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readDouble(offset)) as P;
     case 7:
       return (reader.readBool(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
-    case 9:
       return (reader.readBool(offset)) as P;
+    case 9:
+      return (reader.readString(offset)) as P;
     case 10:
       return (reader.readBool(offset)) as P;
     case 11:
-      return (reader.readString(offset)) as P;
-    case 12:
       return (reader.readBool(offset)) as P;
+    case 12:
+      return (reader.readString(offset)) as P;
     case 13:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 14:
+      return (reader.readBool(offset)) as P;
+    case 15:
       return (_AppSettingsmapLayerValueEnumMap[reader.readByteOrNull(offset)] ??
           MapLayerType.standard) as P;
-    case 14:
+    case 16:
       return (_AppSettingsmapProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MapProviderType.osm) as P;
-    case 15:
-      return (reader.readBool(offset)) as P;
-    case 16:
-      return (reader.readBool(offset)) as P;
     case 17:
       return (reader.readBool(offset)) as P;
     case 18:
       return (reader.readBool(offset)) as P;
     case 19:
+      return (reader.readBool(offset)) as P;
+    case 20:
+      return (reader.readBool(offset)) as P;
+    case 21:
       return (_AppSettingsrouteProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           RouteProviderType.osrm) as P;
-    case 20:
+    case 22:
       return (_AppSettingssearchProviderValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SearchProviderType.nominatim) as P;
-    case 21:
+    case 23:
       return (_AppSettingsthemeModeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           AppThemeMode.system) as P;
-    case 22:
+    case 24:
       return (reader.readBool(offset)) as P;
-    case 23:
+    case 25:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -627,6 +645,16 @@ extension AppSettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'accessibilityHighContrast',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      autoBackupEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'autoBackupEnabled',
         value: value,
       ));
     });
@@ -1140,6 +1168,80 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastBackupAt',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastBackupAt',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastBackupAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastBackupAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastBackupAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastBackupAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastBackupAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       lockScreenInfoEnabledEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1523,6 +1625,20 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAutoBackupEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoBackupEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAutoBackupEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoBackupEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByBatteryProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'batteryProfile', Sort.asc);
@@ -1656,6 +1772,19 @@ extension AppSettingsQuerySortBy
       sortByLanguageCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'languageCode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByLastBackupAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastBackupAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByLastBackupAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastBackupAt', Sort.desc);
     });
   }
 
@@ -1846,6 +1975,20 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAutoBackupEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoBackupEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAutoBackupEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoBackupEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByBatteryProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'batteryProfile', Sort.asc);
@@ -1991,6 +2134,19 @@ extension AppSettingsQuerySortThenBy
       thenByLanguageCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'languageCode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByLastBackupAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastBackupAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByLastBackupAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastBackupAt', Sort.desc);
     });
   }
 
@@ -2169,6 +2325,13 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByAutoBackupEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'autoBackupEnabled');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByBatteryProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'batteryProfile');
@@ -2235,6 +2398,12 @@ extension AppSettingsQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'languageCode', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByLastBackupAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastBackupAt');
     });
   }
 
@@ -2338,6 +2507,13 @@ extension AppSettingsQueryProperty
     });
   }
 
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      autoBackupEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'autoBackupEnabled');
+    });
+  }
+
   QueryBuilder<AppSettings, BatteryProfile, QQueryOperations>
       batteryProfileProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -2403,6 +2579,13 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, String, QQueryOperations> languageCodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'languageCode');
+    });
+  }
+
+  QueryBuilder<AppSettings, DateTime?, QQueryOperations>
+      lastBackupAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastBackupAt');
     });
   }
 

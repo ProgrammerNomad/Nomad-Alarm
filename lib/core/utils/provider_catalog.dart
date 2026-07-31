@@ -248,4 +248,49 @@ class ProviderCatalog {
 
     return requirements;
   }
+
+  static bool requiresMapCredentials(MapProviderType mapProvider) {
+    return switch (mapProvider) {
+      MapProviderType.google ||
+      MapProviderType.mapbox ||
+      MapProviderType.here =>
+        true,
+      MapProviderType.osm || MapProviderType.apple => false,
+    };
+  }
+
+  static List<CredentialRequirement> credentialsForMapProvider(
+    MapProviderType mapProvider,
+  ) {
+    return switch (mapProvider) {
+      MapProviderType.google => const [
+          CredentialRequirement(
+            kind: CredentialKind.googleMaps,
+            apiKeyId: ApiKeyId.googleMaps,
+          ),
+        ],
+      MapProviderType.mapbox => const [
+          CredentialRequirement(
+            kind: CredentialKind.mapbox,
+            apiKeyId: ApiKeyId.mapboxToken,
+          ),
+        ],
+      MapProviderType.here => const [
+          CredentialRequirement(
+            kind: CredentialKind.here,
+            apiKeyId: ApiKeyId.hereApiKey,
+          ),
+        ],
+      MapProviderType.osm || MapProviderType.apple => const [],
+    };
+  }
+
+  static ApiKeyId? apiKeyIdForMapProvider(MapProviderType mapProvider) {
+    return switch (mapProvider) {
+      MapProviderType.google => ApiKeyId.googleMaps,
+      MapProviderType.mapbox => ApiKeyId.mapboxToken,
+      MapProviderType.here => ApiKeyId.hereApiKey,
+      MapProviderType.osm || MapProviderType.apple => null,
+    };
+  }
 }

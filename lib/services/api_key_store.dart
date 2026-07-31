@@ -82,6 +82,31 @@ class ApiKeyStore {
     return null;
   }
 
+  /// Reads the effective key for a Google service, falling back to Maps SDK key.
+  Future<String?> readGoogleKeyFor(CredentialKind kind) async {
+    return switch (kind) {
+      CredentialKind.googleMaps => read(ApiKeyId.googleMaps),
+      CredentialKind.googlePlaces => _firstNonEmpty([
+          await read(ApiKeyId.googlePlaces),
+          await read(ApiKeyId.googleMaps),
+        ]),
+      CredentialKind.googleDirections => _firstNonEmpty([
+          await read(ApiKeyId.googleDirections),
+          await read(ApiKeyId.googleMaps),
+        ]),
+      _ => null,
+    };
+  }
+
+  String? _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      if (value != null && value.isNotEmpty) {
+        return value;
+      }
+    }
+    return null;
+  }
+
   /// Writes the same key to all Google slots (Maps, Places, Directions).
   Future<void> writeGoogleApiKey(String value) async {
     for (final id in ApiKeyId.googleSlots) {
@@ -104,22 +129,32 @@ class ApiKeyStore {
 
   Future<GoogleApiKeyTestStatus> testGoogleApiKeyStatus({
     http.Client? client,
+    String? mapsKey,
+    String? placesKey,
+    String? directionsKey,
   }) async {
-    final key = await readGoogleApiKey();
-    if (key == null || key.isEmpty) {
+    final effectiveMaps = mapsKey ?? await read(ApiKeyId.googleMaps);
+    if (effectiveMaps == null || effectiveMaps.isEmpty) {
       return const GoogleApiKeyTestStatus(
         maps: false,
         places: false,
         directions: false,
       );
     }
+    final effectivePlaces = placesKey ??
+        await read(ApiKeyId.googlePlaces) ??
+        effectiveMaps;
+    final effectiveDirections = directionsKey ??
+        await read(ApiKeyId.googleDirections) ??
+        effectiveMaps;
+
     final c = client ?? http.Client();
     final ownsClient = client == null;
     try {
       final maps = await _googleEndpointOk(
         c,
         Uri.parse('https://maps.googleapis.com/maps/api/geocode/json').replace(
-          queryParameters: {'address': 'London', 'key': key},
+          queryParameters: {'address': 'London', 'key': effectiveMaps},
         ),
       );
       final places = await _googleEndpointOk(
@@ -127,16 +162,18 @@ class ApiKeyStore {
         Uri.parse(
           'https://maps.googleapis.com/maps/api/place/autocomplete/json',
         ).replace(
-          queryParameters: {'input': 'London', 'key': key},
+          queryParameters: {'input': 'London', 'key': effectivePlaces},
         ),
       );
       final directions = await _googleEndpointOk(
         c,
-        Uri.parse('https://maps.googleapis.com/maps/api/directions/json').replace(
+        Uri.parse(
+          'https://maps.googleapis.com/maps/api/directions/json',
+        ).replace(
           queryParameters: {
             'origin': '51.5074,-0.1278',
             'destination': '51.5155,-0.0922',
-            'key': key,
+            'key': effectiveDirections,
           },
         ),
       );

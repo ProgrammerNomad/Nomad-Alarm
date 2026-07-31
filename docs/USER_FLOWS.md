@@ -51,13 +51,12 @@ Home
  Alarm Config Screen
  (distance, voice, vibration, travel mode)
        │
-       ├── Save only ──► Home (alarm saved, not active)
+       ├── Save only ──► History (All filter, draft row with Saved badge)
        │
        └── Save & Start
               │
               ▼
-        Active Alarm Screen
-        + Persistent notification
+        Alarms tab (active alarm card + notification)
               │
               ▼
         [User travels toward destination]
@@ -214,11 +213,13 @@ Settings Tab
 ## Flow 10: Backup & Restore (v1.5)
 
 ```
-Settings ──► Backup
+Settings ──► Backup ──► Transfer Data
        │
-       ├── Export ──► JSON file (share/save)
+       ├── Export ──► JSON file (share/save) ──► updates Last Backup
        │
-       └── Import ──► Pick file ──► Validate ──► Merge/Replace
+       ├── Import ──► Pick file ──► Validate ──► Merge/Replace
+       │
+       └── Upload (HTTPS) ──► User URL ──► updates Last Backup
 ```
 
 ---

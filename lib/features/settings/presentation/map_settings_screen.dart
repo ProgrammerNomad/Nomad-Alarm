@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
@@ -12,6 +11,7 @@ import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/search_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:nomad_alarm/services/api_key_store.dart';
 import 'package:nomad_alarm/services/map_viewport_store.dart';
 import 'package:nomad_alarm/services/offline_tile_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
@@ -30,11 +30,28 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
   AppSettings? _saved;
   AppSettings? _pending;
   bool _initialized = false;
+  Map<MapProviderType, bool> _configuredProviders = {};
 
   @override
   void initState() {
     super.initState();
     _refreshCacheSize();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshConfiguredProviders();
+    });
+  }
+
+  Future<void> _refreshConfiguredProviders() async {
+    final store = ref.read(apiKeyStoreProvider);
+    final map = <MapProviderType, bool>{};
+    for (final provider in ProviderCatalog.mapProvidersForPlatform()) {
+      if (ProviderCatalog.requiresMapCredentials(provider)) {
+        map[provider] = await hasMapProviderCredential(store, provider);
+      }
+    }
+    if (mounted) {
+      setState(() => _configuredProviders = map);
+    }
   }
 
   void _syncFromSaved(AppSettings settings) {
@@ -64,13 +81,136 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     if (saved == null || pending == null) {
       return false;
     }
-    return saved.mapProvider != pending.mapProvider ||
-        saved.mapLayer != pending.mapLayer ||
+    return saved.mapLayer != pending.mapLayer ||
         saved.searchProvider != pending.searchProvider ||
         saved.routeProvider != pending.routeProvider ||
         saved.useRecommendedProviders != pending.useRecommendedProviders ||
         saved.overrideSearchProvider != pending.overrideSearchProvider ||
         saved.overrideRouteProvider != pending.overrideRouteProvider;
+  }
+
+  Future<void> _applyAndPersistMapProvider(MapProviderType picked) async {
+    final l10n = context.l10n;
+    final savedSnapshot = ref.read(settingsControllerProvider).valueOrNull;
+    final pending = _pending;
+    if (savedSnapshot == null || pending == null) {
+      return;
+    }
+
+    applyMapProviderChange(pending, picked);
+    if (pending.useRecommendedProviders) {
+      pending
+        ..overrideSearchProvider = false
+        ..overrideRouteProvider = false;
+    }
+
+    final updated = savedSnapshot
+      ..mapProvider = pending.mapProvider
+      ..searchProvider = pending.searchProvider
+      ..routeProvider = pending.routeProvider
+      ..useRecommendedProviders = pending.useRecommendedProviders
+      ..overrideSearchProvider = pending.overrideSearchProvider
+      ..overrideRouteProvider = pending.overrideRouteProvider;
+
+    await ref.read(settingsControllerProvider.notifier).saveSettings(updated);
+    ref.invalidate(mapProviderProvider);
+    ref.invalidate(searchProviderProvider);
+    ref.invalidate(searchRepositoryProvider);
+    ref.invalidate(routeServiceProvider);
+    ref.invalidate(googleApiKeyProvider);
+
+    setState(() {
+      _saved = _cloneMapSettings(updated);
+      _pending = _cloneMapSettings(updated);
+    });
+    await _refreshConfiguredProviders();
+
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ProviderCatalog.requiresMapCredentials(picked)
+              ? l10n.providerChangedSuccess
+              : l10n.noApiKeyRequired,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onMapProviderSelected(MapProviderType picked) async {
+    final saved = _saved;
+    if (saved == null || picked == saved.mapProvider) {
+      return;
+    }
+
+    if (!ProviderCatalog.requiresMapCredentials(picked)) {
+      await _applyAndPersistMapProvider(picked);
+      return;
+    }
+
+    final store = ref.read(apiKeyStoreProvider);
+    if (await hasMapProviderCredential(store, picked)) {
+      await _applyAndPersistMapProvider(picked);
+      return;
+    }
+
+    final ok = await showMapProviderCredentialSheet(
+      context,
+      ref,
+      provider: picked,
+    );
+    if (!ok || !mounted) {
+      return;
+    }
+
+    await _applyAndPersistMapProvider(picked);
+  }
+
+  Future<void> _openMapProviderPicker() async {
+    final l10n = context.l10n;
+    final pending = _pending!;
+    final providers = ProviderCatalog.mapProvidersForPlatform();
+    final picked = await showSettingsPickerSheet<MapProviderType>(
+      context: context,
+      title: l10n.mapProviderLabel,
+      options: providers,
+      value: pending.mapProvider,
+      labelFor: (p) => _mapProviderLabel(l10n, p),
+      cancelLabel: l10n.cancel,
+      trailingFor: (p) {
+        final badge = ProviderCatalog.badgeForMap(p);
+        final configured = _configuredProviders[p] == true;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (configured)
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Text(
+                  l10n.providerConfigured,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+            if (badge != null) ProviderBadge(kind: badge),
+          ],
+        );
+      },
+      onLongPressFor: (p) {
+        if (_configuredProviders[p] == true &&
+            ProviderCatalog.requiresMapCredentials(p)) {
+          showManageProviderCredentialsSheet(
+            context,
+            ref,
+            provider: p,
+          ).then((_) => _refreshConfiguredProviders());
+        }
+      },
+    );
+    if (picked != null) {
+      await _onMapProviderSelected(picked);
+    }
   }
 
   Future<void> _refreshCacheSize() async {
@@ -117,7 +257,6 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     }
 
     final updated = savedSnapshot
-      ..mapProvider = pending.mapProvider
       ..mapLayer = pending.mapLayer
       ..searchProvider = pending.searchProvider
       ..routeProvider = pending.routeProvider
@@ -208,15 +347,131 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     }
   }
 
-  void _onMapProviderChanged(MapProviderType value) {
-    setState(() {
-      applyMapProviderChange(_pending!, value);
-      if (_pending!.useRecommendedProviders) {
-        _pending!
-          ..overrideSearchProvider = false
-          ..overrideRouteProvider = false;
-      }
-    });
+  String _mapProviderSubtitle(dynamic l10n, MapProviderType provider) {
+    final label = _mapProviderLabel(l10n, provider);
+    if (_configuredProviders[provider] == true &&
+        ProviderCatalog.requiresMapCredentials(provider)) {
+      return '$label · ${l10n.providerConfigured}';
+    }
+    return label;
+  }
+
+  Widget? _mapProviderTrailing(MapProviderType provider) {
+    if (_configuredProviders[provider] != true ||
+        !ProviderCatalog.requiresMapCredentials(provider)) {
+      return const Icon(Icons.chevron_right);
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PopupMenuButton<String>(
+          onSelected: (value) async {
+            switch (value) {
+              case 'edit':
+                await showMapProviderCredentialSheet(
+                  context,
+                  ref,
+                  provider: provider,
+                );
+              case 'test':
+                await _runProviderConnectionTest(provider);
+              case 'remove':
+                await _confirmRemoveMapCredentials(provider);
+            }
+            await _refreshConfiguredProviders();
+          },
+          itemBuilder: (context) {
+            final l10n = context.l10n;
+            return [
+              PopupMenuItem(
+                value: 'edit',
+                child: Text(l10n.editCredentials),
+              ),
+              PopupMenuItem(
+                value: 'test',
+                child: Text(l10n.testConnection),
+              ),
+              PopupMenuItem(
+                value: 'remove',
+                child: Text(l10n.removeCredentials),
+              ),
+            ];
+          },
+        ),
+        const Icon(Icons.chevron_right),
+      ],
+    );
+  }
+
+  Future<void> _runProviderConnectionTest(MapProviderType provider) async {
+    final l10n = context.l10n;
+    final store = ref.read(apiKeyStoreProvider);
+    var passed = false;
+    switch (provider) {
+      case MapProviderType.google:
+        passed = (await store.testGoogleApiKeyStatus()).maps;
+      case MapProviderType.mapbox:
+        passed = await store.testConnection(ApiKeyId.mapboxToken);
+      case MapProviderType.here:
+        passed = await store.testConnection(ApiKeyId.hereApiKey);
+      case MapProviderType.osm:
+      case MapProviderType.apple:
+        passed = true;
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(passed ? l10n.testPassed : l10n.testFailed)),
+      );
+    }
+  }
+
+  Future<void> _confirmRemoveMapCredentials(MapProviderType provider) async {
+    final l10n = context.l10n;
+    final providerLabel = _mapProviderLabel(l10n, provider);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.removeCredentials),
+        content: Text(l10n.removeCredentialsConfirm(providerLabel)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.removeCredentials),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    final store = ref.read(apiKeyStoreProvider);
+    switch (provider) {
+      case MapProviderType.google:
+        await store.clearGoogleApiKey();
+        ref.invalidate(googleApiKeyProvider);
+      case MapProviderType.mapbox:
+        await store.clear(ApiKeyId.mapboxToken);
+      case MapProviderType.here:
+        await store.clear(ApiKeyId.hereApiKey);
+      case MapProviderType.osm:
+      case MapProviderType.apple:
+        break;
+    }
+
+    if (_saved?.mapProvider == provider) {
+      await _applyAndPersistMapProvider(MapProviderType.osm);
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.removeCredentials)),
+      );
+    }
   }
 
   @override
@@ -227,6 +482,7 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
     return NomadScaffold(
       title: l10n.mapSettingsTitle,
       body: settingsAsync.when(
+        skipLoadingOnReload: true,
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
         data: (settings) {
@@ -244,27 +500,13 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 8),
-                    SettingsPickerTile(
-                      title: l10n.mapProviderLabel,
-                      valueLabel: _mapProviderLabel(l10n, pending.mapProvider),
-                      onTap: () async {
-                        final providers = ProviderCatalog.mapProvidersForPlatform();
-                        final picked = await showSettingsPickerSheet<MapProviderType>(
-                          context: context,
-                          title: l10n.mapProviderLabel,
-                          options: providers,
-                          value: pending.mapProvider,
-                          labelFor: (p) => _mapProviderLabel(l10n, p),
-                          cancelLabel: l10n.cancel,
-                          trailingFor: (p) {
-                            final badge = ProviderCatalog.badgeForMap(p);
-                            return badge == null ? null : ProviderBadge(kind: badge);
-                          },
-                        );
-                        if (picked != null) {
-                          _onMapProviderChanged(picked);
-                        }
-                      },
+                    ListTile(
+                      title: Text(l10n.mapProviderLabel),
+                      subtitle: Text(
+                        _mapProviderSubtitle(l10n, pending.mapProvider),
+                      ),
+                      trailing: _mapProviderTrailing(pending.mapProvider),
+                      onTap: _openMapProviderPicker,
                     ),
                     ProviderSummaryRow(
                       title: l10n.searchProviderLabel,
@@ -375,12 +617,6 @@ class _MapSettingsScreenState extends ConsumerState<MapSettingsScreen> {
                                 () => pending.overrideRouteProvider = value,
                               );
                             },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.vpn_key_outlined),
-                      title: Text(l10n.advancedApiKeys),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => context.push('/settings/api-keys'),
                     ),
                     _SectionHeader(title: l10n.mapLayerLabel),
                     SettingsPickerTile(

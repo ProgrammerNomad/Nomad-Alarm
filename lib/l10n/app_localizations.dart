@@ -114,6 +114,12 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get navHome;
 
+  /// No description provided for @navAlarms.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarms'**
+  String get navAlarms;
+
   /// No description provided for @navTrips.
   ///
   /// In en, this message translates to:
@@ -161,6 +167,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recent'**
   String get recent;
+
+  /// No description provided for @recentSearches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get recentSearches;
 
   /// No description provided for @firstAlarmTitle.
   ///
@@ -435,7 +447,7 @@ abstract class AppLocalizations {
   /// No description provided for @voiceAlert.
   ///
   /// In en, this message translates to:
-  /// **'Voice alert'**
+  /// **'Voice announcements'**
   String get voiceAlert;
 
   /// No description provided for @voiceAlertSubtitle.
@@ -459,7 +471,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashlightSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'LED strobe when alarm rings'**
+  /// **'Flash LED when alarm rings.'**
   String get flashlightSubtitle;
 
   /// No description provided for @saveAndStart.
@@ -479,6 +491,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsTitle;
+
+  /// No description provided for @settingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage app behavior, maps, notifications, and privacy.'**
+  String get settingsSubtitle;
+
+  /// No description provided for @alarmsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarms'**
+  String get alarmsTitle;
 
   /// No description provided for @appearance.
   ///
@@ -561,19 +585,19 @@ abstract class AppLocalizations {
   /// No description provided for @alarmDefaults.
   ///
   /// In en, this message translates to:
-  /// **'Alarm defaults'**
+  /// **'Alarm'**
   String get alarmDefaults;
 
   /// No description provided for @defaultAlertDistance.
   ///
   /// In en, this message translates to:
-  /// **'Default alert distance'**
+  /// **'Default alarm distance'**
   String get defaultAlertDistance;
 
   /// No description provided for @battery.
   ///
   /// In en, this message translates to:
-  /// **'Battery'**
+  /// **'Power & battery'**
   String get battery;
 
   /// No description provided for @gpsProfile.
@@ -603,7 +627,7 @@ abstract class AppLocalizations {
   /// No description provided for @batteryBalancedDesc.
   ///
   /// In en, this message translates to:
-  /// **'Best for daily commutes - updates every ~10 m'**
+  /// **'Best for daily travel. Location updates about every 10 meters.'**
   String get batteryBalancedDesc;
 
   /// No description provided for @batteryAggressiveDesc.
@@ -623,6 +647,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data'**
   String get data;
+
+  /// No description provided for @backupSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupSection;
+
+  /// No description provided for @transferData.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Data'**
+  String get transferData;
+
+  /// No description provided for @transferDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Data'**
+  String get transferDataTitle;
+
+  /// No description provided for @transferDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move, backup, or restore your data'**
+  String get transferDataSubtitle;
+
+  /// No description provided for @transferDataIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your backups and transfer your data.'**
+  String get transferDataIntro;
+
+  /// No description provided for @exportBackupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save alarms, places, settings, and history.'**
+  String get exportBackupDescription;
+
+  /// No description provided for @importBackupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore a previously exported backup.'**
+  String get importBackupDescription;
+
+  /// No description provided for @uploadBackupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload an encrypted backup to your own HTTPS server.'**
+  String get uploadBackupDescription;
+
+  /// No description provided for @autoBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Backup'**
+  String get autoBackup;
+
+  /// No description provided for @autoBackupComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled backups coming in a future update'**
+  String get autoBackupComingSoon;
+
+  /// No description provided for @lastBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Backup'**
+  String get lastBackup;
+
+  /// No description provided for @lastBackupNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get lastBackupNever;
 
   /// No description provided for @exportBackup.
   ///
@@ -692,7 +788,7 @@ abstract class AppLocalizations {
   /// No description provided for @more.
   ///
   /// In en, this message translates to:
-  /// **'More'**
+  /// **'System'**
   String get more;
 
   /// No description provided for @permissionsMenu.
@@ -983,6 +1079,18 @@ abstract class AppLocalizations {
   /// **'All'**
   String get filterAll;
 
+  /// No description provided for @filterActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get filterActive;
+
+  /// No description provided for @filterSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get filterSaved;
+
   /// No description provided for @filterCompleted.
   ///
   /// In en, this message translates to:
@@ -995,6 +1103,54 @@ abstract class AppLocalizations {
   /// **'Missed'**
   String get filterMissed;
 
+  /// No description provided for @filterDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get filterDismissed;
+
+  /// No description provided for @filterSnoozed.
+  ///
+  /// In en, this message translates to:
+  /// **'Snoozed'**
+  String get filterSnoozed;
+
+  /// No description provided for @historyStatsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get historyStatsCompleted;
+
+  /// No description provided for @historyStatsActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get historyStatsActive;
+
+  /// No description provided for @historyStatsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get historyStatsSaved;
+
+  /// No description provided for @historyStatsMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get historyStatsMissed;
+
+  /// No description provided for @historyStatsSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success rate'**
+  String get historyStatsSuccessRate;
+
+  /// No description provided for @journeyDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey details'**
+  String get journeyDetailsTitle;
+
   /// No description provided for @noHistoryTitle.
   ///
   /// In en, this message translates to:
@@ -1004,8 +1160,50 @@ abstract class AppLocalizations {
   /// No description provided for @noHistoryMessage.
   ///
   /// In en, this message translates to:
-  /// **'Completed and missed alarms will be logged here.'**
+  /// **'Running alarms appear under Active or All. Saved alarms appear here when you use Save only. Completed and missed alarms are logged after they finish.'**
   String get noHistoryMessage;
+
+  /// No description provided for @historyActiveEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No active alarms'**
+  String get historyActiveEmptyTitle;
+
+  /// No description provided for @historyActiveEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Running alarms appear here while tracking.'**
+  String get historyActiveEmptyMessage;
+
+  /// No description provided for @historySavedEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved alarms'**
+  String get historySavedEmptyTitle;
+
+  /// No description provided for @historySavedEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarms you save without starting appear here.'**
+  String get historySavedEmptyMessage;
+
+  /// No description provided for @viewAllActiveInHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View all active in History'**
+  String get viewAllActiveInHistory;
+
+  /// No description provided for @historyStatusTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get historyStatusTracking;
+
+  /// No description provided for @historyStartedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get historyStartedAt;
 
   /// No description provided for @deleteEntryTitle.
   ///
@@ -1412,13 +1610,13 @@ abstract class AppLocalizations {
   /// No description provided for @fgsStartingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Nomad Alarm'**
+  /// **'Starting location tracking…'**
   String get fgsStartingTitle;
 
   /// No description provided for @fgsStartingContent.
   ///
   /// In en, this message translates to:
-  /// **'Starting location tracking…'**
+  /// **'Preparing GPS…'**
   String get fgsStartingContent;
 
   /// No description provided for @resumeAlarmAfterBoot.
@@ -1610,13 +1808,13 @@ abstract class AppLocalizations {
   /// No description provided for @googleMapKeyRequired.
   ///
   /// In en, this message translates to:
-  /// **'Google Maps requires an API key. Add one in Settings, then choose Google as the map provider.'**
+  /// **'Google Maps requires an API key. Open Map settings and choose Google Maps to configure one.'**
   String get googleMapKeyRequired;
 
   /// No description provided for @googleMapKeyRequiredAction.
   ///
   /// In en, this message translates to:
-  /// **'Open API keys'**
+  /// **'Open map settings'**
   String get googleMapKeyRequiredAction;
 
   /// No description provided for @googleMapKeySetupGuide.
@@ -1934,7 +2132,7 @@ abstract class AppLocalizations {
   /// No description provided for @cloudBackupUrlHint.
   ///
   /// In en, this message translates to:
-  /// **'HTTPS upload URL'**
+  /// **'Upload backups to your own HTTPS server.'**
   String get cloudBackupUrlHint;
 
   /// No description provided for @cloudBackupSuccess.
@@ -1964,7 +2162,7 @@ abstract class AppLocalizations {
   /// No description provided for @lockScreenInfoSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Display distance and ETA on lock screen notifications'**
+  /// **'Show distance and ETA on the lock screen.'**
   String get lockScreenInfoSubtitle;
 
   /// No description provided for @notifInternetLostTitle.
@@ -2021,6 +2219,12 @@ abstract class AppLocalizations {
   /// **'Increase contrast for readability'**
   String get highContrastSubtitle;
 
+  /// No description provided for @accessibilitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility'**
+  String get accessibilitySection;
+
   /// No description provided for @voiceSearchHint.
   ///
   /// In en, this message translates to:
@@ -2062,6 +2266,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New alarm'**
   String get newAlarm;
+
+  /// No description provided for @createAlarmSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create alarm'**
+  String get createAlarmSheetTitle;
+
+  /// No description provided for @importAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Import alarm'**
+  String get importAlarm;
+
+  /// No description provided for @alarmStatusSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get alarmStatusSaved;
+
+  /// No description provided for @startAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startAlarm;
+
+  /// No description provided for @deleteSavedAlarmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete saved alarm?'**
+  String get deleteSavedAlarmTitle;
+
+  /// No description provided for @deleteSavedAlarmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\"?'**
+  String deleteSavedAlarmBody(String name);
+
+  /// No description provided for @activeAlarmsNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active alarms'**
+  String activeAlarmsNotificationTitle(int count);
 
   /// No description provided for @alarmStatusTracking.
   ///
@@ -2117,6 +2363,84 @@ abstract class AppLocalizations {
   /// **'Configure & Save'**
   String get configureAndSave;
 
+  /// No description provided for @configure.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure'**
+  String get configure;
+
+  /// No description provided for @saveAndUseProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Use {provider}'**
+  String saveAndUseProvider(String provider);
+
+  /// No description provided for @manageCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage credentials'**
+  String get manageCredentials;
+
+  /// No description provided for @editCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit credentials'**
+  String get editCredentials;
+
+  /// No description provided for @removeCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove credentials'**
+  String get removeCredentials;
+
+  /// No description provided for @testConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get testConnection;
+
+  /// No description provided for @credentialRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get credentialRequired;
+
+  /// No description provided for @credentialOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get credentialOptional;
+
+  /// No description provided for @providerConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get providerConfigured;
+
+  /// No description provided for @googleMapsConfiguredSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps configured.'**
+  String get googleMapsConfiguredSuccess;
+
+  /// No description provided for @removeCredentialsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove stored credentials for {provider}?'**
+  String removeCredentialsConfirm(String provider);
+
+  /// No description provided for @testFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed'**
+  String get testFailed;
+
+  /// No description provided for @testPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection successful'**
+  String get testPassed;
+
   /// No description provided for @providerSaveBlocked.
   ///
   /// In en, this message translates to:
@@ -2138,8 +2462,20 @@ abstract class AppLocalizations {
   /// No description provided for @credentialGoogleMapsBody.
   ///
   /// In en, this message translates to:
-  /// **'One key covers Maps, Places, and Directions when those providers are enabled.'**
+  /// **'Use one standard Google API key. Enable the APIs below on the same project in Google Cloud Console, then paste your key.'**
   String get credentialGoogleMapsBody;
+
+  /// No description provided for @googleTestResultOk.
+  ///
+  /// In en, this message translates to:
+  /// **'{service}: OK'**
+  String googleTestResultOk(String service);
+
+  /// No description provided for @googleTestResultFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'{service}: failed'**
+  String googleTestResultFailed(String service);
 
   /// No description provided for @credentialMapboxTitle.
   ///
@@ -2306,7 +2642,7 @@ abstract class AppLocalizations {
   /// No description provided for @resumeAlarmAfterBootBatteryWarning.
   ///
   /// In en, this message translates to:
-  /// **'Relaunch tracking when the device restarts. Uses more battery.'**
+  /// **'Automatically resume active alarms after restart. May increase battery usage.'**
   String get resumeAlarmAfterBootBatteryWarning;
 
   /// No description provided for @uploadBackupViaHttps.
@@ -2318,7 +2654,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareLiveTrip.
   ///
   /// In en, this message translates to:
-  /// **'Share Live Trip'**
+  /// **'Share alarm'**
   String get shareLiveTrip;
 
   /// No description provided for @importSharedAlarm.
@@ -2386,6 +2722,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language names are shown in their native script'**
   String get languageEndonymHint;
+
+  /// No description provided for @shareAlarmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Alarm'**
+  String get shareAlarmTitle;
+
+  /// No description provided for @shareAlarmSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this alarm with someone else.'**
+  String get shareAlarmSubtitle;
+
+  /// No description provided for @shareModePackageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm Package'**
+  String get shareModePackageTitle;
+
+  /// No description provided for @shareModePackageSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete alarm configuration file (.nomadalarm)'**
+  String get shareModePackageSubtitle;
+
+  /// No description provided for @shareModeDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination Only'**
+  String get shareModeDestinationTitle;
+
+  /// No description provided for @shareModeDestinationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maps link anyone can open'**
+  String get shareModeDestinationSubtitle;
+
+  /// No description provided for @shareModeQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code'**
+  String get shareModeQrTitle;
+
+  /// No description provided for @shareModeQrSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a scannable code'**
+  String get shareModeQrSubtitle;
+
+  /// No description provided for @shareModeCopyCoordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Coordinates'**
+  String get shareModeCopyCoordsTitle;
+
+  /// No description provided for @sharePreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share preview'**
+  String get sharePreviewTitle;
+
+  /// No description provided for @shareCoordsCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinates copied'**
+  String get shareCoordsCopied;
+
+  /// No description provided for @recommendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommendedLabel;
+
+  /// No description provided for @enabledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get enabledLabel;
+
+  /// No description provided for @disabledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get disabledLabel;
+
+  /// No description provided for @importPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Shared Alarm'**
+  String get importPreviewTitle;
+
+  /// No description provided for @importPreviewDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get importPreviewDestination;
+
+  /// No description provided for @importPreviewCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinates'**
+  String get importPreviewCoordinates;
+
+  /// No description provided for @importEditBeforeSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Before Saving'**
+  String get importEditBeforeSaving;
+
+  /// No description provided for @importSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm Imported'**
+  String get importSuccessTitle;
+
+  /// No description provided for @importStartNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Now'**
+  String get importStartNow;
+
+  /// No description provided for @importSuccessEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get importSuccessEdit;
+
+  /// No description provided for @importSuccessBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get importSuccessBack;
+
+  /// No description provided for @importErrorMissingCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing coordinates.'**
+  String get importErrorMissingCoordinates;
+
+  /// No description provided for @importErrorUnsupportedVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported version.'**
+  String get importErrorUnsupportedVersion;
+
+  /// No description provided for @importErrorCorruptedFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Corrupted file.'**
+  String get importErrorCorruptedFile;
+
+  /// No description provided for @importDuplicateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This alarm already exists.'**
+  String get importDuplicateTitle;
+
+  /// No description provided for @importDuplicateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'An alarm for this destination is already saved.'**
+  String get importDuplicateBody;
+
+  /// No description provided for @importDuplicateUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Existing'**
+  String get importDuplicateUpdate;
+
+  /// No description provided for @importDuplicateCreateCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Copy'**
+  String get importDuplicateCreateCopy;
+
+  /// No description provided for @importSourceFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse file (.nomadalarm / .json)'**
+  String get importSourceFile;
+
+  /// No description provided for @importSourceQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get importSourceQr;
+
+  /// No description provided for @importSourceClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get importSourceClipboard;
+
+  /// No description provided for @importClipboardDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared alarm detected.'**
+  String get importClipboardDetected;
+
+  /// No description provided for @importBundleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} alarms found'**
+  String importBundleTitle(int count);
+
+  /// No description provided for @importBundleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Import all alarms from this bundle?'**
+  String get importBundleBody;
+
+  /// No description provided for @importBundleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Import All'**
+  String get importBundleAll;
+
+  /// No description provided for @importBundleFirstOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'First Only'**
+  String get importBundleFirstOnly;
+
+  /// No description provided for @importPreviewProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm {current} of {total}'**
+  String importPreviewProgress(int current, int total);
+
+  /// No description provided for @importProgressSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {current} of {total}'**
+  String importProgressSaved(int current, int total);
 }
 
 class _AppLocalizationsDelegate

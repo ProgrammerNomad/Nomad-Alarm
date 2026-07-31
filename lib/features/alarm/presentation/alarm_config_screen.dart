@@ -12,7 +12,7 @@ import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 import 'package:nomad_alarm/repositories/alarm_repository.dart';
-import 'package:nomad_alarm/services/group_travel_service.dart';
+import 'package:nomad_alarm/features/alarm/presentation/share_alarm_bottom_sheet.dart';
 
 class AlarmConfigScreen extends ConsumerStatefulWidget {
   const AlarmConfigScreen({
@@ -37,7 +37,6 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
   double? _speedThresholdKmh;
   String? _ringtoneUri;
   bool _saving = false;
-  final _groupTravel = const GroupTravelService();
 
   @override
   void initState() {
@@ -116,13 +115,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
       );
       return;
     }
-    await _groupTravel.copyToClipboardFromDraft(draft);
-    if (!mounted) {
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.shareAlarmConfigSuccess)),
-    );
+    await showShareAlarmSheet(context, draft: draft);
   }
   Future<void> _save({required bool start}) async {
     final l10n = context.l10n;
@@ -140,18 +133,23 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
     setState(() => _saving = true);
     try {
       final alarm = await ref.read(alarmRepositoryProvider).create(draft);
-      ref.invalidate(alarmsProvider);
-      ref.invalidate(activeAlarmsProvider);
 
       if (start) {
         await ref.read(alarmServiceProvider).startAlarm(alarm.id);
+      }
+
+      ref.invalidate(alarmsProvider);
+      ref.invalidate(activeAlarmsProvider);
+      ref.invalidate(draftAlarmsProvider);
+
+      if (start) {
         if (!mounted) {
           return;
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.alarmCreatedSuccess)),
         );
-        context.go('/home');
+        context.go('/alarms');
         return;
       }
 
@@ -161,7 +159,7 @@ class _AlarmConfigScreenState extends ConsumerState<AlarmConfigScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.alarmSaved)),
       );
-      context.go('/home');
+      context.go('/history');
     } finally {
       if (mounted) {
         setState(() => _saving = false);

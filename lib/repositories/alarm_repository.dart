@@ -19,6 +19,7 @@ class AlarmDraft {
     this.vibrationEnabled = true,
     this.flashlightEnabled = false,
     this.ringtoneUri,
+    this.notes,
   });
 
   final String name;
@@ -34,6 +35,7 @@ class AlarmDraft {
   final bool vibrationEnabled;
   final bool flashlightEnabled;
   final String? ringtoneUri;
+  final String? notes;
 
   factory AlarmDraft.fromSearchResult(
     SearchResult result, {
@@ -62,6 +64,7 @@ abstract class AlarmRepository {
   Future<List<Alarm>> getAll();
   Future<List<Alarm>> getActive();
   Future<List<Alarm>> getRunning();
+  Future<List<Alarm>> getDrafts();
   Future<void> update(Alarm alarm);
   Future<void> delete(int id);
 }
@@ -126,6 +129,12 @@ class AlarmRepositoryImpl implements AlarmRepository {
               a.status == AlarmStatus.triggered,
         )
         .toList();
+  }
+
+  @override
+  Future<List<Alarm>> getDrafts() async {
+    final all = await getAll();
+    return all.where((a) => a.status == AlarmStatus.draft).toList();
   }
 
   @override

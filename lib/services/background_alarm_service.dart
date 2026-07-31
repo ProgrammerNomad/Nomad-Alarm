@@ -171,6 +171,10 @@ class _MonitorEntry {
   AlarmRuntimeState? lastState;
 }
 
+/// Snapshot map values before async iteration to avoid concurrent modification.
+List<T> snapshotMonitorValues<T>(Map<dynamic, T> monitors) =>
+    monitors.values.toList();
+
 @pragma('vm:entry-point')
 Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
@@ -180,6 +184,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   StreamSubscription<Position>? subscription;
   LocationSettings? activeSettings;
   Future<void> Function(Position position)? onPosition;
+  var processingPosition = false;
 
   Future<void> stopAll() async {
     await subscription?.cancel();
@@ -194,7 +199,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   Future<void> startGpsStream(double nearestDistanceMeters) async {
     var profile = BatteryProfile.balanced;
     var triggerDistance = AlarmConstants.defaultTriggerDistanceM;
-    for (final entry in monitors.values) {
+    for (final entry in snapshotMonitorValues(monitors)) {
       if (entry.paused) {
         continue;
       }
@@ -259,53 +264,57 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   }
 
   onPosition = (Position position) async {
-    if (monitors.isEmpty) {
+    if (processingPosition || monitors.isEmpty) {
       return;
     }
+    processingPosition = true;
+    try {
+      final emitted = <AlarmRuntimeState>[];
+      var nearestDistance = double.infinity;
 
-    final emitted = <AlarmRuntimeState>[];
-    var nearestDistance = double.infinity;
-
-    for (final entry in monitors.values) {
-      if (entry.paused) {
-        if (entry.lastState != null) {
-          emitted.add(entry.lastState!);
+      for (final entry in snapshotMonitorValues(monitors)) {
+        if (entry.paused) {
+          if (entry.lastState != null) {
+            emitted.add(entry.lastState!);
+          }
+          continue;
         }
-        continue;
+
+        final routeEta = await resolveRouteEta(entry, position);
+        final state = entry.evaluator.evaluate(
+          config: entry.config,
+          position: position,
+          currentStatus: entry.currentStatus,
+          snoozeSuppressedUntil: entry.snoozeSuppressedUntil,
+          routeEtaMinutes: routeEta,
+        );
+
+        entry.lastState = state;
+        emitted.add(state);
+        if (state.distanceMeters < nearestDistance) {
+          nearestDistance = state.distanceMeters;
+        }
+
+        service.invoke('state', state.toJson());
+
+        if (state.status == AlarmStatus.triggered &&
+            entry.currentStatus != AlarmStatus.triggered) {
+          entry.currentStatus = AlarmStatus.triggered;
+          service.invoke('triggered', {'alarmId': entry.config.alarmId});
+        }
+
+        if (state.hasPassedDestination && !entry.passedHandled) {
+          entry.passedHandled = true;
+        }
       }
 
-      final routeEta = await resolveRouteEta(entry, position);
-      final state = entry.evaluator.evaluate(
-        config: entry.config,
-        position: position,
-        currentStatus: entry.currentStatus,
-        snoozeSuppressedUntil: entry.snoozeSuppressedUntil,
-        routeEtaMinutes: routeEta,
-      );
-
-      entry.lastState = state;
-      emitted.add(state);
-      if (state.distanceMeters < nearestDistance) {
-        nearestDistance = state.distanceMeters;
+      if (nearestDistance.isFinite) {
+        await startGpsStream(nearestDistance);
       }
-
-      service.invoke('state', state.toJson());
-
-      if (state.status == AlarmStatus.triggered &&
-          entry.currentStatus != AlarmStatus.triggered) {
-        entry.currentStatus = AlarmStatus.triggered;
-        service.invoke('triggered', {'alarmId': entry.config.alarmId});
-      }
-
-      if (state.hasPassedDestination && !entry.passedHandled) {
-        entry.passedHandled = true;
-      }
+      updateForegroundNotification(emitted);
+    } finally {
+      processingPosition = false;
     }
-
-    if (nearestDistance.isFinite) {
-      await startGpsStream(nearestDistance);
-    }
-    updateForegroundNotification(emitted);
   };
 
   void addMonitor(AlarmMonitorConfig config) {
@@ -352,7 +361,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
   });
 
   service.on('pauseAll').listen((_) {
-    for (final entry in monitors.values) {
+    for (final entry in snapshotMonitorValues(monitors)) {
       entry.paused = true;
       entry.currentStatus = AlarmStatus.paused;
     }
@@ -385,7 +394,7 @@ Future<void> backgroundServiceOnStart(ServiceInstance service) async {
         return;
       }
     }
-    for (final entry in monitors.values) {
+    for (final entry in snapshotMonitorValues(monitors)) {
       entry.currentStatus = AlarmStatus.active;
       entry.snoozeSuppressedUntil = DateTime.now().add(
         const Duration(minutes: AlarmConstants.snoozeDurationMin),

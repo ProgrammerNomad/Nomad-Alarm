@@ -7,7 +7,12 @@ import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/services/deep_link_service.dart';
+import 'package:nomad_alarm/services/import_intent_service.dart';
+import 'package:nomad_alarm/features/alarm/presentation/import_alarm_flow.dart';
+import 'package:nomad_alarm/services/shared_alarm_codec.dart';
+import 'package:nomad_alarm/models/shared_alarm_payload.dart';
 import 'package:nomad_alarm/services/widget_service.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_logo.dart';
@@ -107,7 +112,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (!mounted) {
           return;
         }
-        context.go('/home');
+        context.go('/alarms');
         return;
       }
       context.go(widgetRoute);
@@ -120,6 +125,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
     if (deepLinkArgs != null) {
       context.go('/alarm/new', extra: deepLinkArgs);
+      return;
+    }
+
+    final importRaw = ImportIntentService.consumePendingRaw();
+    if (!mounted) {
+      return;
+    }
+    if (importRaw != null) {
+      try {
+        final payloads = SharedAlarmCodec.decodeBundle(importRaw);
+        if (payloads.isEmpty) {
+          throw const SharedAlarmParseException(SharedAlarmParseError.corruptedFile);
+        }
+        context.go(
+          '/alarm/import/preview',
+          extra: payloads.length > 1 ? payloads : payloads.first,
+        );
+      } on SharedAlarmParseException catch (e) {
+        context.go('/alarms');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ImportAlarmFlow.parseErrorMessage(context.l10n, e.error)),
+          ),
+        );
+      }
       return;
     }
 
@@ -149,13 +179,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         context.go('/alarm/ring/${triggered.first.id}');
         return;
       }
-      context.go('/home');
+      context.go('/alarms');
       return;
     }
     if (!mounted) {
       return;
     }
-    context.go('/home');
+    context.go('/alarms');
   }
 
   void _retryBootstrap() {

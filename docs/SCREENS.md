@@ -9,7 +9,7 @@ permalink: /SCREENS/
 
 Detailed UI specs for every screen in Nomad Alarm.
 
-Navigation uses **go_router** with a bottom nav shell for Home, Trips, History, and Settings.
+Navigation uses **go_router** with a 3-tab bottom nav shell: **Alarms**, History, and Settings.
 
 ---
 
@@ -32,7 +32,7 @@ Navigation uses **go_router** with a bottom nav shell for Home, Trips, History, 
 |---------|----------|
 | App logo | Centered, fade-in animation |
 | Loading | Initialize Isar, services, read settings |
-| Redirect | Welcome (first launch) → Permissions (if needed) → Home or Active Alarm |
+| Redirect | Welcome (first launch) → Permissions (if needed) → Alarms or Active Alarm |
 
 **Duration:** Max 2 seconds; skip animation if ready sooner.
 
@@ -65,27 +65,28 @@ Guided step-by-step flow (not one scary dialog):
 
 Each step: icon, plain-language explanation, Grant / Skip / Open Settings.
 
-**CTA:** "Continue to Home" when minimum permissions granted (location + notifications).
+**CTA:** "Continue to Alarms" when minimum permissions granted (location + notifications).
 
 ---
 
-## Home
+## Alarms
 
-**Route:** `/home` (bottom nav) - **multi-alarm dashboard**
+**Route:** `/alarms` (bottom nav) - **multi-alarm dashboard** (`/home` redirects here)
 
 | Section | Content |
 |---------|---------|
-| App bar | "Nomad Alarm" |
-| Current location | Card with place name (reverse geocode) or coordinates fallback; tap → Map |
-| Search bar | Tap → Search screen (primary entry, below location) |
-| Active alarms | Always shown; empty hint when none; live cards with pause/resume/cancel when active |
-| Recent | Last 3 destinations (first-alarm empty card has no CTA button) |
+| App bar | "Alarms" |
+| Search bar | Tap → Search screen (primary entry) |
+| Active alarms | Top **5** nearest shown; **View all active in History** when more; live cards with pause/resume/cancel; overflow **Share** |
 | Favorites row | Horizontal chips |
-| FAB | Sole **+** create action → Alarm Config (no duplicate top buttons) |
+| Recent searches | Last 3 search destinations (first-alarm empty card has no CTA button) |
+| FAB | Sole **+** create action → bottom sheet: **New Alarm**, **Import Alarm**, Cancel (no inline import row) |
 
-Settings → Language shows each option in **native script** (e.g. हिन्दी, العربية) so users can recover from accidental language changes. Settings sections use icons for faster scanning.
+Settings → Language picker shows each option in **native script** (e.g. हिन्दी, العربية). Settings sections use icons for faster scanning.
 
 **After Save & Start:** returns here with "Alarm created successfully" snackbar.
+
+**After Save only:** navigates to History (All filter) - draft appears there, not on Alarms tab.
 
 **Tap alarm card:** opens Alarm details (`/alarm/active/:id`), not a trapped tracking screen.
 
@@ -95,7 +96,7 @@ Settings → Language shows each option in **native script** (e.g. हिन्�
 
 **Route:** `/alarm/active/:id`
 
-Detail page for one alarm: destination, distance, ETA, speed, accuracy, map link, pause/cancel. Back returns to Home. Ring screen still opens automatically when triggered.
+Detail page for one alarm: destination, distance, ETA, speed, accuracy, map link, **Share**, pause/cancel. Back returns to Alarms. Ring screen still opens automatically when triggered.
 
 ---
 
@@ -208,22 +209,15 @@ Turn-by-turn lite: heading arrow, distance remaining, no full navigation engine 
 
 | Element | Behavior |
 |---------|----------|
-| Tabs | All, Completed, Missed |
-| List item | Destination, date, outcome badge, distance |
-| Tap | Detail bottom sheet |
-| Swipe | Delete entry (with confirm) |
+| Stats header | Active, **Saved**, completed, missed counts; success rate |
+| Filters | Horizontally scrollable chips: All, **Active**, **Saved**, Completed, Missed, Cancelled, Snoozed |
+| List item | **Active rows:** destination, started time, live distance/ETA, tap → active alarm screen. **Saved (draft) rows:** destination, saved time, grey Saved badge, Start + Delete actions. **Past rows:** destination, date, outcome badge, distance |
+| Tap | Active → `/alarm/active/:id`; draft → edit via alarm config (optional); past → detail bottom sheet with journey map when trip linked |
+| Swipe | Delete entry (with confirm) - past entries only |
 
----
+**Saved filter:** shows draft alarms only (alarms saved without starting). Empty state when none.
 
-## Trips
-
-**Route:** `/trips` (bottom nav)
-
-| Element | Behavior |
-|---------|----------|
-| List | Trips sorted by date desc |
-| Item | Destination, duration, distance, outcome |
-| Tap | Trip detail: map polyline, stats, linked alarm |
+**All filter:** merges active + saved drafts + past history (active first, then drafts by created date, then past).
 
 ---
 
@@ -247,19 +241,30 @@ Full recent search list with clear-all option.
 
 **Route:** `/settings` (bottom nav)
 
+Subtitle: *Manage app behavior, maps, notifications, and privacy.*
+
 | Section | Items |
 |---------|-------|
 | Appearance | Theme picker tile → bottom sheet (system / light / dark) |
 | Units | km / mi segmented control |
 | Language | Picker tile → bottom sheet (Follow system, en, hi, ar, he with native endonyms) |
-| Alarm defaults | Default distance picker tile → presets + custom slider, voice, vibration |
-| Battery | GPS profile picker tile → bottom sheet (Balanced recommended) |
-| Maps | Link → Map settings |
-| Advanced | Link → API Keys dashboard |
-| Permissions | Link → Permission Center |
-| Privacy | Link → Privacy screen |
-| About | Version, privacy, terms, licenses, GitHub, support |
-| Debug | Visible in debug builds only |
+| Alarm | Default alarm distance picker, voice announcements, vibration, flashlight, lock screen |
+| Accessibility | High contrast toggle |
+| Power & battery | GPS profile picker tile → bottom sheet (Balanced recommended); resume after reboot |
+| Backup | **Transfer Data** → dedicated screen (export, import, HTTPS upload, last-backup metadata) |
+| Maps & routing | Link → Map settings |
+| System | Permissions, Privacy, About, Debug (debug builds) |
+
+---
+
+## Transfer Data
+
+**Route:** `/settings/transfer-data`
+
+| Section | Content |
+|---------|---------|
+| Actions | Export backup (share JSON), Import backup (confirm + merge), Upload via HTTPS (when enabled) |
+| Metadata | Auto Backup switch (disabled, coming soon); Last Backup timestamp or **Never** |
 
 ---
 
@@ -269,22 +274,12 @@ Full recent search list with clear-all option.
 
 | Section | Content |
 |---------|---------|
-| Providers | Map provider picker tile → bottom sheet with badges; recommended search/route summary; **Use recommended providers** toggle |
-| Advanced | Override search/route toggles + picker tiles when enabled; link → API Keys |
+| Providers | Map provider row → bottom sheet with badges and **Configured** label; inline credential sheet when selecting a key-based provider; overflow menu (Edit / Test / Remove) on configured provider |
+| Advanced | Override search/route toggles + picker tiles when enabled |
 | Map layer | Picker tile → bottom sheet (standard / dark / satellite / terrain) |
 | Offline tiles | Cache size, download sample region, clear (when enabled) |
 
-Changes are staged locally until **Save**. Save runs credential checks inline (bottom sheet for missing keys). OSM saves immediately with success snackbar.
-
----
-
-## API Keys
-
-**Route:** `/settings/api-keys` (Advanced only)
-
-Status dashboard for **all** providers: Google (per-service Maps/Places/Directions test status), Mapbox, HERE, GraphHopper. Actions: add/update, test, clear. **Test all configured keys** batch action. Security footer notes encryption and backup exclusion.
-
-When Google Maps is selected but no key is saved, the Map screen prompts **Open map settings** instead of a blank grey map.
+Map provider changes persist **immediately** (OSM with no prompt; Google/Mapbox/HERE via inline bottom sheet with Test and **Save & Use**). Map layer and override changes are staged until **Save**.
 
 ---
 
@@ -352,10 +347,11 @@ GPS coords stream, mock location toggle, service status, log viewer, crash test 
 
 | Tab | Icon | Route |
 |-----|------|-------|
-| Home | home | `/home` |
-| Trips | route | `/trips` |
+| Alarms | notifications_active | `/alarms` |
 | History | history | `/history` |
 | Settings | settings | `/settings` |
+
+Legacy `/home` redirects to `/alarms`.
 
 Use `NavigationBar` (Material 3). Hide bottom nav on full-screen flows (Alarm Ring, Permissions wizard).
 

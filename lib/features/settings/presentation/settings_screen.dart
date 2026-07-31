@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/alarm_constants.dart';
@@ -13,12 +12,8 @@ import 'package:nomad_alarm/core/utils/locale_resolution.dart';
 import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
-import 'package:nomad_alarm/providers/alarm_providers.dart';
-import 'package:nomad_alarm/providers/app_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
-import 'package:nomad_alarm/repositories/backup_repository.dart';
 import 'package:nomad_alarm/services/background_alarm_service.dart';
-import 'package:nomad_alarm/services/group_travel_service.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 import 'package:nomad_alarm/shared/widgets/settings_controls.dart';
 import 'package:nomad_alarm/l10n/app_localizations.dart';
@@ -57,11 +52,13 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final settingsAsync = ref.watch(settingsControllerProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
 
     return NomadScaffold(
       title: l10n.settingsTitle,
+      subtitle: l10n.settingsSubtitle,
       body: settingsAsync.when(
+        skipLoadingOnReload: true,
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.errorPrefix(e.toString()))),
         data: (settings) => ListView(
@@ -99,13 +96,6 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.straighten,
               title: l10n.units,
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-              child: Text(
-                l10n.distanceUnitsLabel,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
             SettingsSegmentedControl<bool>(
               options: const [true, false],
               value: settings.useMetric,
@@ -119,13 +109,6 @@ class SettingsScreen extends ConsumerWidget {
             _SettingsSectionHeader(
               icon: Icons.translate,
               title: l10n.language,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-              child: Text(
-                l10n.languageEndonymHint,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
             ),
             SettingsPickerTile(
               leading: Icons.language_outlined,
@@ -214,6 +197,10 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(alarmServiceProvider).updateLockScreenInfoEnabled(value);
               },
             ),
+            _SettingsSectionHeader(
+              icon: Icons.accessibility_new_outlined,
+              title: l10n.accessibilitySection,
+            ),
             SwitchListTile(
               secondary: const Icon(Icons.contrast_outlined),
               title: Text(l10n.highContrast),
@@ -275,10 +262,16 @@ class SettingsScreen extends ConsumerWidget {
             ),
             if (FeatureFlags.backupRestore) ...[
               _SettingsSectionHeader(
-                icon: Icons.storage_outlined,
-                title: l10n.data,
+                icon: Icons.backup_outlined,
+                title: l10n.backupSection,
               ),
-              const _BackupDataSection(),
+              ListTile(
+                leading: const Icon(Icons.swap_horiz_outlined),
+                title: Text(l10n.transferData),
+                subtitle: Text(l10n.transferDataSubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/settings/transfer-data'),
+              ),
             ],
             _SettingsSectionHeader(
               icon: Icons.map_outlined,
@@ -292,17 +285,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.push('/settings/map'),
             ),
             _SettingsSectionHeader(
-              icon: Icons.tune,
-              title: l10n.advancedSection,
-            ),
-            ListTile(
-              leading: const Icon(Icons.vpn_key_outlined),
-              title: Text(l10n.advancedApiKeys),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/settings/api-keys'),
-            ),
-            _SettingsSectionHeader(
-              icon: Icons.more_horiz,
+              icon: Icons.settings_suggest_outlined,
               title: l10n.more,
             ),
             ListTile(
@@ -453,275 +436,6 @@ class _DefaultAlertDistanceSectionState
                 },
               ),
             ],
-          ),
-      ],
-    );
-  }
-}
-
-class _BackupDataSection extends ConsumerStatefulWidget {
-  const _BackupDataSection();
-
-  @override
-  ConsumerState<_BackupDataSection> createState() => _BackupDataSectionState();
-}
-
-class _BackupDataSectionState extends ConsumerState<_BackupDataSection> {
-  bool _busy = false;
-
-  Future<void> _exportBackup() async {
-    final l10n = context.l10n;
-    setState(() => _busy = true);
-    try {
-      final repo = ref.read(backupRepositoryProvider);
-      final json = await repo.exportBackup();
-      await repo.shareBackup(json);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.backupReady)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorPrefix(e.toString()))),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _importBackup() async {
-    final l10n = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.importBackupTitle),
-        content: Text(l10n.importBackupBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.import),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) {
-      return;
-    }
-
-    setState(() => _busy = true);
-    try {
-      final result = await ref.read(backupRepositoryProvider).importBackup();
-      ref.invalidate(settingsControllerProvider);
-      ref.invalidate(alarmServiceProvider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              l10n.importedSummary(
-                result.alarmsImported,
-                result.favoritesImported,
-                result.historyImported,
-                result.settingsImported ? l10n.importedSettingsSuffix : '',
-              ),
-            ),
-          ),
-        );
-      }
-    } on BackupCancelledException {
-      // User cancelled file picker.
-    } on StorageException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.userMessage)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorPrefix(e.toString()))),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _shareActiveAlarms() async {
-    final l10n = context.l10n;
-    setState(() => _busy = true);
-    try {
-      final alarms = await ref.read(alarmRepositoryProvider).getActive();
-      if (alarms.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.widgetNoActiveAlarm)),
-          );
-        }
-        return;
-      }
-      await const GroupTravelService().shareBundle(alarms);
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _importAlarmBundle() async {
-    final l10n = context.l10n;
-    final data = await Clipboard.getData(Clipboard.kTextPlain);
-    final text = data?.text?.trim();
-    if (text == null || text.isEmpty) {
-      return;
-    }
-    setState(() => _busy = true);
-    try {
-      const service = GroupTravelService();
-      final drafts = service.parseBundle(text);
-      if (drafts.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.deepLinkInvalid)),
-          );
-        }
-        return;
-      }
-      final repo = ref.read(alarmRepositoryProvider);
-      for (final draft in drafts) {
-        await repo.create(draft);
-      }
-      ref.invalidate(alarmsProvider);
-      ref.invalidate(activeAlarmsProvider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.alarmBundleImported(drafts.length))),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _uploadCloudBackup() async {
-    final l10n = context.l10n;
-    final controller = TextEditingController();
-    final url = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.uploadBackupViaHttps),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: l10n.cloudBackupUrlHint),
-          keyboardType: TextInputType.url,
-          autocorrect: false,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(l10n.uploadBackupViaHttps),
-          ),
-        ],
-      ),
-    );
-    if (url == null || url.isEmpty || !mounted) {
-      return;
-    }
-
-    setState(() => _busy = true);
-    try {
-      final ok = await ref.read(cloudBackupServiceProvider).uploadToUrl(url);
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(ok ? l10n.cloudBackupSuccess : l10n.cloudBackupFailed),
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorPrefix(e.toString()))),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return Column(
-      children: [
-        Semantics(
-          label: l10n.semExportBackup,
-          button: true,
-          child: ListTile(
-            leading: const Icon(Icons.upload_file_outlined),
-            title: Text(l10n.exportBackup),
-            subtitle: Text(l10n.exportBackupSubtitle),
-            enabled: !_busy,
-            onTap: _exportBackup,
-          ),
-        ),
-        Semantics(
-          label: l10n.semImportBackup,
-          button: true,
-          child: ListTile(
-            leading: const Icon(Icons.download_outlined),
-            title: Text(l10n.importBackup),
-            subtitle: Text(l10n.importBackupSubtitle),
-            enabled: !_busy,
-            onTap: _importBackup,
-          ),
-        ),
-        if (FeatureFlags.cloudBackup)
-          ListTile(
-            leading: const Icon(Icons.cloud_upload_outlined),
-            title: Text(l10n.uploadBackupViaHttps),
-            subtitle: Text(l10n.cloudBackupUrlHint),
-            enabled: !_busy,
-            onTap: _uploadCloudBackup,
-          ),
-        if (FeatureFlags.familySharing) ...[
-          ListTile(
-            leading: const Icon(Icons.group_outlined),
-            title: Text(l10n.shareLiveTrip),
-            enabled: !_busy,
-            onTap: _shareActiveAlarms,
-          ),
-          ListTile(
-            leading: const Icon(Icons.group_add_outlined),
-            title: Text(l10n.importSharedAlarm),
-            enabled: !_busy,
-            onTap: _importAlarmBundle,
-          ),
-        ],
-        if (_busy)
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: LinearProgressIndicator(),
           ),
       ],
     );

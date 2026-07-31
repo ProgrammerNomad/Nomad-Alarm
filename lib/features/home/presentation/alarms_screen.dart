@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
+import 'package:nomad_alarm/features/history/history_list_item.dart';
+import 'package:nomad_alarm/features/alarm/presentation/create_alarm_sheet.dart';
+import 'package:nomad_alarm/features/alarm/presentation/import_alarm_flow.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
 import 'package:nomad_alarm/models/alarm.dart';
@@ -11,18 +14,32 @@ import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/favorite.dart';
 import 'package:nomad_alarm/models/recent_search.dart';
 import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
+import 'package:nomad_alarm/features/alarm/presentation/share_alarm_bottom_sheet.dart';
 import 'package:nomad_alarm/providers/alarm_providers.dart';
-import 'package:nomad_alarm/providers/current_location_label_provider.dart';
 import 'package:nomad_alarm/providers/favorite_providers.dart';
-import 'package:nomad_alarm/providers/location_providers.dart';
 import 'package:nomad_alarm/providers/search_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+class AlarmsScreen extends ConsumerStatefulWidget {
+  const AlarmsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AlarmsScreen> createState() => _AlarmsScreenState();
+}
+
+class _AlarmsScreenState extends ConsumerState<AlarmsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ImportAlarmFlow.maybePromptClipboardImport(context, ref);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final useMetric =
         ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
@@ -32,22 +49,20 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Text(l10n.alarmsTitle),
       ),
       floatingActionButton: Semantics(
         label: l10n.semCreateAlarm,
         button: true,
         child: FloatingActionButton(
           tooltip: l10n.newAlarm,
-          onPressed: () => context.push('/alarm/new'),
+          onPressed: () => showCreateAlarmSheet(context),
           child: const Icon(Icons.add),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const _CurrentLocationCard(),
-          const SizedBox(height: 12),
           Material(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(28),
@@ -110,7 +125,16 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 );
               }
-              final sorted = _sortAlarmsByDistance(ref, alarms);
+              final sorted = sortActiveAlarms(
+                alarms,
+                distanceFor: (alarm) {
+                  final state =
+                      ref.read(activeAlarmStateProvider(alarm.id)).valueOrNull;
+                  return state?.distanceMeters ?? double.infinity;
+                },
+              );
+              final preview = sorted.take(5).toList();
+              final hasMore = sorted.length > 5;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -119,10 +143,61 @@ class HomeScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
-                  ...sorted.map(
+                  ...preview.map(
                     (alarm) => _ActiveAlarmCard(
                       alarm: alarm,
                       useMetric: useMetric,
+                      onShare: () async {
+                        final full =
+                            await ref.read(alarmRepositoryProvider).getById(alarm.id);
+                        if (full != null && context.mounted) {
+                          await showShareAlarmSheet(context, alarm: full);
+                        }
+                      },
+                    ),
+                  ),
+                  if (hasMore)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: () => context.go('/history?filter=active'),
+                        child: Text(l10n.viewAllActiveInHistory),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                ],
+              );
+            },
+          ),
+          favoritesAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, stackTrace) => const SizedBox.shrink(),
+            data: (favorites) {
+              if (favorites.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.favorites,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 40,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: favorites.length,
+                      separatorBuilder: (context, index) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final fav = favorites[index];
+                        return ActionChip(
+                          avatar: Icon(_favoriteIcon(fav)),
+                          label: Text(fav.name),
+                          onPressed: () => _openFavorite(context, fav),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -167,7 +242,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.recent,
+                    l10n.recentSearches,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -180,42 +255,6 @@ class HomeScreen extends ConsumerWidget {
                       onTap: () => _openRecent(context, item),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-              );
-            },
-          ),
-          favoritesAsync.when(
-            loading: () => const SizedBox.shrink(),
-            error: (_, stackTrace) => const SizedBox.shrink(),
-            data: (favorites) {
-              if (favorites.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.favorites,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: favorites.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final fav = favorites[index];
-                        return ActionChip(
-                          avatar: Icon(_favoriteIcon(fav)),
-                          label: Text(fav.name),
-                          onPressed: () => _openFavorite(context, fav),
-                        );
-                      },
-                    ),
-                  ),
                 ],
               );
             },
@@ -223,35 +262,6 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  List<Alarm> _sortAlarmsByDistance(WidgetRef ref, List<Alarm> alarms) {
-    double distanceFor(Alarm alarm) {
-      final state = ref.watch(activeAlarmStateProvider(alarm.id)).valueOrNull;
-      if (state == null) {
-        return double.infinity;
-      }
-      return state.distanceMeters;
-    }
-
-    final sorted = [...alarms];
-    sorted.sort((a, b) {
-      final statusOrder = _statusSortOrder(a.status).compareTo(_statusSortOrder(b.status));
-      if (statusOrder != 0) {
-        return statusOrder;
-      }
-      return distanceFor(a).compareTo(distanceFor(b));
-    });
-    return sorted;
-  }
-
-  int _statusSortOrder(AlarmStatus status) {
-    return switch (status) {
-      AlarmStatus.active => 0,
-      AlarmStatus.triggered => 1,
-      AlarmStatus.paused => 2,
-      _ => 3,
-    };
   }
 
   void _openFavorite(BuildContext context, Favorite fav) {
@@ -288,62 +298,16 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _CurrentLocationCard extends ConsumerWidget {
-  const _CurrentLocationCard();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final positionAsync = ref.watch(currentPositionProvider);
-    final addressAsync = ref.watch(currentLocationLabelProvider);
-
-    final subtitle = positionAsync.when(
-      loading: () => l10n.gettingLocation,
-      error: (_, stackTrace) => l10n.locationUnavailable,
-      data: (position) {
-        if (position == null) {
-          return l10n.locationUnavailable;
-        }
-        return addressAsync.when(
-          loading: () => _formatCoordinates(position),
-          error: (_, stackTrace) => _formatCoordinates(position),
-          data: (address) =>
-              address != null && address.isNotEmpty
-                  ? address
-                  : _formatCoordinates(position),
-        );
-      },
-    );
-
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        leading: Icon(
-          Icons.location_on_outlined,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        title: Text(l10n.currentLocationLabel),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => context.push('/map'),
-      ),
-    );
-  }
-
-  String _formatCoordinates(Position position) {
-    return '${position.latitude.toStringAsFixed(4)}, '
-        '${position.longitude.toStringAsFixed(4)}';
-  }
-}
-
 class _ActiveAlarmCard extends ConsumerWidget {
   const _ActiveAlarmCard({
     required this.alarm,
     required this.useMetric,
+    required this.onShare,
   });
 
   final Alarm alarm;
   final bool useMetric;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -373,6 +337,7 @@ class _ActiveAlarmCard extends ConsumerWidget {
               onPause: null,
               onResume: null,
               onCancel: () => _cancel(ref, context),
+              onShare: onShare,
             ),
             error: (_, stackTrace) => _AlarmCardBody(
               alarm: alarm,
@@ -383,6 +348,7 @@ class _ActiveAlarmCard extends ConsumerWidget {
               onPause: null,
               onResume: null,
               onCancel: () => _cancel(ref, context),
+              onShare: onShare,
             ),
             data: (state) => _AlarmCardBody(
               alarm: alarm,
@@ -397,6 +363,7 @@ class _ActiveAlarmCard extends ConsumerWidget {
                   ? () => _resume(ref, context)
                   : null,
               onCancel: () => _cancel(ref, context),
+              onShare: onShare,
             ),
           ),
         ),
@@ -458,6 +425,7 @@ class _AlarmCardBody extends StatelessWidget {
     required this.onPause,
     required this.onResume,
     required this.onCancel,
+    required this.onShare,
   });
 
   final Alarm alarm;
@@ -468,6 +436,7 @@ class _AlarmCardBody extends StatelessWidget {
   final VoidCallback? onPause;
   final VoidCallback? onResume;
   final VoidCallback? onCancel;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -490,6 +459,20 @@ class _AlarmCardBody extends StatelessWidget {
               l10n.alarmNumberLabel(alarm.id),
               style: Theme.of(context).textTheme.labelSmall,
             ),
+            if (FeatureFlags.groupTravel)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'share') {
+                    onShare();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'share',
+                    child: Text(l10n.shareAlarmConfig),
+                  ),
+                ],
+              ),
           ],
         ),
         const SizedBox(height: 4),

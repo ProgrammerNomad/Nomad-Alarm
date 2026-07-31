@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navHome => 'Home';
 
   @override
+  String get navAlarms => 'Alarms';
+
+  @override
   String get navTrips => 'Trips';
 
   @override
@@ -37,6 +40,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recent => 'Recent';
+
+  @override
+  String get recentSearches => 'Recent searches';
 
   @override
   String get firstAlarmTitle => 'Set your first destination alarm';
@@ -186,7 +192,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alertDistance => 'Alert distance';
 
   @override
-  String get voiceAlert => 'Voice alert';
+  String get voiceAlert => 'Voice announcements';
 
   @override
   String get voiceAlertSubtitle => 'Spoken alert when triggered';
@@ -198,7 +204,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashlight => 'Flashlight';
 
   @override
-  String get flashlightSubtitle => 'LED strobe when alarm rings';
+  String get flashlightSubtitle => 'Flash LED when alarm rings.';
 
   @override
   String get saveAndStart => 'Save & Start';
@@ -208,6 +214,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsSubtitle =>
+      'Manage app behavior, maps, notifications, and privacy.';
+
+  @override
+  String get alarmsTitle => 'Alarms';
 
   @override
   String get appearance => 'Appearance';
@@ -249,13 +262,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hindi => 'Hindi';
 
   @override
-  String get alarmDefaults => 'Alarm defaults';
+  String get alarmDefaults => 'Alarm';
 
   @override
-  String get defaultAlertDistance => 'Default alert distance';
+  String get defaultAlertDistance => 'Default alarm distance';
 
   @override
-  String get battery => 'Battery';
+  String get battery => 'Power & battery';
 
   @override
   String get gpsProfile => 'GPS profile';
@@ -271,7 +284,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get batteryBalancedDesc =>
-      'Best for daily commutes - updates every ~10 m';
+      'Best for daily travel. Location updates about every 10 meters.';
 
   @override
   String get batteryAggressiveDesc =>
@@ -282,6 +295,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get data => 'Data';
+
+  @override
+  String get backupSection => 'Backup';
+
+  @override
+  String get transferData => 'Transfer Data';
+
+  @override
+  String get transferDataTitle => 'Transfer Data';
+
+  @override
+  String get transferDataSubtitle => 'Move, backup, or restore your data';
+
+  @override
+  String get transferDataIntro => 'Manage your backups and transfer your data.';
+
+  @override
+  String get exportBackupDescription =>
+      'Save alarms, places, settings, and history.';
+
+  @override
+  String get importBackupDescription => 'Restore a previously exported backup.';
+
+  @override
+  String get uploadBackupDescription =>
+      'Upload an encrypted backup to your own HTTPS server.';
+
+  @override
+  String get autoBackup => 'Auto Backup';
+
+  @override
+  String get autoBackupComingSoon =>
+      'Scheduled backups coming in a future update';
+
+  @override
+  String get lastBackup => 'Last Backup';
+
+  @override
+  String get lastBackupNever => 'Never';
 
   @override
   String get exportBackup => 'Export backup';
@@ -323,7 +375,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importedSettingsSuffix => ', settings';
 
   @override
-  String get more => 'More';
+  String get more => 'System';
 
   @override
   String get permissionsMenu => 'Permissions';
@@ -477,17 +529,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterAll => 'All';
 
   @override
+  String get filterActive => 'Active';
+
+  @override
+  String get filterSaved => 'Saved';
+
+  @override
   String get filterCompleted => 'Completed';
 
   @override
   String get filterMissed => 'Missed';
 
   @override
+  String get filterDismissed => 'Cancelled';
+
+  @override
+  String get filterSnoozed => 'Snoozed';
+
+  @override
+  String get historyStatsCompleted => 'Completed';
+
+  @override
+  String get historyStatsActive => 'Active';
+
+  @override
+  String get historyStatsSaved => 'Saved';
+
+  @override
+  String get historyStatsMissed => 'Missed';
+
+  @override
+  String get historyStatsSuccessRate => 'Success rate';
+
+  @override
+  String get journeyDetailsTitle => 'Journey details';
+
+  @override
   String get noHistoryTitle => 'No history yet';
 
   @override
   String get noHistoryMessage =>
-      'Completed and missed alarms will be logged here.';
+      'Running alarms appear under Active or All. Saved alarms appear here when you use Save only. Completed and missed alarms are logged after they finish.';
+
+  @override
+  String get historyActiveEmptyTitle => 'No active alarms';
+
+  @override
+  String get historyActiveEmptyMessage =>
+      'Running alarms appear here while tracking.';
+
+  @override
+  String get historySavedEmptyTitle => 'No saved alarms';
+
+  @override
+  String get historySavedEmptyMessage =>
+      'Alarms you save without starting appear here.';
+
+  @override
+  String get viewAllActiveInHistory => 'View all active in History';
+
+  @override
+  String get historyStatusTracking => 'Tracking';
+
+  @override
+  String get historyStartedAt => 'Started';
 
   @override
   String get deleteEntryTitle => 'Delete entry?';
@@ -701,10 +806,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debugSnapshotCopied => 'Debug snapshot copied';
 
   @override
-  String get fgsStartingTitle => 'Nomad Alarm';
+  String get fgsStartingTitle => 'Starting location tracking…';
 
   @override
-  String get fgsStartingContent => 'Starting location tracking…';
+  String get fgsStartingContent => 'Preparing GPS…';
 
   @override
   String get resumeAlarmAfterBoot => 'Resume alarm after reboot';
@@ -803,10 +908,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get googleMapKeyRequired =>
-      'Google Maps requires an API key. Add one in Settings, then choose Google as the map provider.';
+      'Google Maps requires an API key. Open Map settings and choose Google Maps to configure one.';
 
   @override
-  String get googleMapKeyRequiredAction => 'Open API keys';
+  String get googleMapKeyRequiredAction => 'Open map settings';
 
   @override
   String get googleMapKeySetupGuide => 'How to create a Google API key';
@@ -968,7 +1073,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cloudBackupUpload => 'Upload backup to cloud';
 
   @override
-  String get cloudBackupUrlHint => 'HTTPS upload URL';
+  String get cloudBackupUrlHint => 'Upload backups to your own HTTPS server.';
 
   @override
   String get cloudBackupSuccess => 'Backup uploaded successfully';
@@ -984,7 +1089,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lockScreenInfoSubtitle =>
-      'Display distance and ETA on lock screen notifications';
+      'Show distance and ETA on the lock screen.';
 
   @override
   String get notifInternetLostTitle => 'Internet connection lost';
@@ -1017,6 +1122,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get highContrastSubtitle => 'Increase contrast for readability';
 
   @override
+  String get accessibilitySection => 'Accessibility';
+
+  @override
   String get voiceSearchHint => 'Speak destination name';
 
   @override
@@ -1036,6 +1144,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newAlarm => 'New alarm';
+
+  @override
+  String get createAlarmSheetTitle => 'Create alarm';
+
+  @override
+  String get importAlarm => 'Import alarm';
+
+  @override
+  String get alarmStatusSaved => 'Saved';
+
+  @override
+  String get startAlarm => 'Start';
+
+  @override
+  String get deleteSavedAlarmTitle => 'Delete saved alarm?';
+
+  @override
+  String deleteSavedAlarmBody(String name) {
+    return 'Remove \"$name\"?';
+  }
+
+  @override
+  String activeAlarmsNotificationTitle(int count) {
+    return '$count active alarms';
+  }
 
   @override
   String get alarmStatusTracking => 'Tracking';
@@ -1070,6 +1203,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configureAndSave => 'Configure & Save';
 
   @override
+  String get configure => 'Configure';
+
+  @override
+  String saveAndUseProvider(String provider) {
+    return 'Save & Use $provider';
+  }
+
+  @override
+  String get manageCredentials => 'Manage credentials';
+
+  @override
+  String get editCredentials => 'Edit credentials';
+
+  @override
+  String get removeCredentials => 'Remove credentials';
+
+  @override
+  String get testConnection => 'Test connection';
+
+  @override
+  String get credentialRequired => 'Required';
+
+  @override
+  String get credentialOptional => 'Optional';
+
+  @override
+  String get providerConfigured => 'Configured';
+
+  @override
+  String get googleMapsConfiguredSuccess => 'Google Maps configured.';
+
+  @override
+  String removeCredentialsConfirm(String provider) {
+    return 'Remove stored credentials for $provider?';
+  }
+
+  @override
+  String get testFailed => 'Connection failed';
+
+  @override
+  String get testPassed => 'Connection successful';
+
+  @override
   String get providerSaveBlocked =>
       'Save blocked until a valid API key is entered.';
 
@@ -1082,7 +1258,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get credentialGoogleMapsBody =>
-      'One key covers Maps, Places, and Directions when those providers are enabled.';
+      'Use one standard Google API key. Enable the APIs below on the same project in Google Cloud Console, then paste your key.';
+
+  @override
+  String googleTestResultOk(String service) {
+    return '$service: OK';
+  }
+
+  @override
+  String googleTestResultFailed(String service) {
+    return '$service: failed';
+  }
 
   @override
   String get credentialMapboxTitle => 'Mapbox requires an access token';
@@ -1172,13 +1358,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resumeAlarmAfterBootBatteryWarning =>
-      'Relaunch tracking when the device restarts. Uses more battery.';
+      'Automatically resume active alarms after restart. May increase battery usage.';
 
   @override
   String get uploadBackupViaHttps => 'Upload Backup via HTTPS';
 
   @override
-  String get shareLiveTrip => 'Share Live Trip';
+  String get shareLiveTrip => 'Share alarm';
 
   @override
   String get importSharedAlarm => 'Import Shared Alarm';
@@ -1213,4 +1399,129 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get languageEndonymHint =>
       'Language names are shown in their native script';
+
+  @override
+  String get shareAlarmTitle => 'Share Alarm';
+
+  @override
+  String get shareAlarmSubtitle => 'Share this alarm with someone else.';
+
+  @override
+  String get shareModePackageTitle => 'Alarm Package';
+
+  @override
+  String get shareModePackageSubtitle =>
+      'Complete alarm configuration file (.nomadalarm)';
+
+  @override
+  String get shareModeDestinationTitle => 'Destination Only';
+
+  @override
+  String get shareModeDestinationSubtitle => 'Maps link anyone can open';
+
+  @override
+  String get shareModeQrTitle => 'QR Code';
+
+  @override
+  String get shareModeQrSubtitle => 'Generate a scannable code';
+
+  @override
+  String get shareModeCopyCoordsTitle => 'Copy Coordinates';
+
+  @override
+  String get sharePreviewTitle => 'Share preview';
+
+  @override
+  String get shareCoordsCopied => 'Coordinates copied';
+
+  @override
+  String get recommendedLabel => 'Recommended';
+
+  @override
+  String get enabledLabel => 'Enabled';
+
+  @override
+  String get disabledLabel => 'Disabled';
+
+  @override
+  String get importPreviewTitle => 'Import Shared Alarm';
+
+  @override
+  String get importPreviewDestination => 'Destination';
+
+  @override
+  String get importPreviewCoordinates => 'Coordinates';
+
+  @override
+  String get importEditBeforeSaving => 'Edit Before Saving';
+
+  @override
+  String get importSuccessTitle => 'Alarm Imported';
+
+  @override
+  String get importStartNow => 'Start Now';
+
+  @override
+  String get importSuccessEdit => 'Edit';
+
+  @override
+  String get importSuccessBack => 'Back';
+
+  @override
+  String get importErrorMissingCoordinates => 'Missing coordinates.';
+
+  @override
+  String get importErrorUnsupportedVersion => 'Unsupported version.';
+
+  @override
+  String get importErrorCorruptedFile => 'Corrupted file.';
+
+  @override
+  String get importDuplicateTitle => 'This alarm already exists.';
+
+  @override
+  String get importDuplicateBody =>
+      'An alarm for this destination is already saved.';
+
+  @override
+  String get importDuplicateUpdate => 'Update Existing';
+
+  @override
+  String get importDuplicateCreateCopy => 'Create Copy';
+
+  @override
+  String get importSourceFile => 'Browse file (.nomadalarm / .json)';
+
+  @override
+  String get importSourceQr => 'Scan QR code';
+
+  @override
+  String get importSourceClipboard => 'Paste from clipboard';
+
+  @override
+  String get importClipboardDetected => 'Shared alarm detected.';
+
+  @override
+  String importBundleTitle(int count) {
+    return '$count alarms found';
+  }
+
+  @override
+  String get importBundleBody => 'Import all alarms from this bundle?';
+
+  @override
+  String get importBundleAll => 'Import All';
+
+  @override
+  String get importBundleFirstOnly => 'First Only';
+
+  @override
+  String importPreviewProgress(int current, int total) {
+    return 'Alarm $current of $total';
+  }
+
+  @override
+  String importProgressSaved(int current, int total) {
+    return 'Saved $current of $total';
+  }
 }

@@ -126,7 +126,7 @@ class _AlarmRingScreenState extends ConsumerState<AlarmRingScreen>
     if (snooze) {
       context.go('/alarm/active/${widget.alarmId}');
     } else {
-      context.go('/home');
+      context.go('/alarms');
     }
   }
 

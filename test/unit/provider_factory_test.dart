@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nomad_alarm/core/utils/provider_catalog.dart';
 import 'package:nomad_alarm/models/app_settings.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/providers/map/google_map_provider.dart';
@@ -17,6 +18,11 @@ class _MockApiKeyStore extends Mock implements ApiKeyStore {}
 void main() {
   late _MockApiKeyStore apiKeyStore;
   late ProviderFactory factory;
+
+  setUpAll(() {
+    registerFallbackValue(ApiKeyId.googleMaps);
+    registerFallbackValue(CredentialKind.googleMaps);
+  });
 
   setUp(() {
     apiKeyStore = _MockApiKeyStore();
@@ -75,7 +81,7 @@ void main() {
       ..mapProvider = MapProviderType.google
       ..searchProvider = SearchProviderType.nominatim
       ..useRecommendedProviders = true;
-    when(() => apiKeyStore.readGoogleApiKey())
+    when(() => apiKeyStore.readGoogleKeyFor(CredentialKind.googlePlaces))
         .thenAnswer((_) async => 'AIza.test');
     final provider = await factory.createSearchProvider(settings);
     expect(provider, isA<GooglePlacesSearchProvider>());

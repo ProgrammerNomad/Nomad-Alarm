@@ -1,29 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
 import 'package:nomad_alarm/core/utils/distance_utils.dart';
+import 'package:nomad_alarm/features/history/history_list_item.dart';
+import 'package:nomad_alarm/models/alarm.dart';
 import 'package:nomad_alarm/models/enums.dart';
 import 'package:nomad_alarm/models/history_entry.dart';
+import 'package:nomad_alarm/providers/alarm_engine_providers.dart';
+import 'package:nomad_alarm/providers/alarm_providers.dart';
 import 'package:nomad_alarm/providers/history_trip_providers.dart';
 import 'package:nomad_alarm/providers/settings_providers.dart';
+import 'package:nomad_alarm/shared/widgets/alarm_journey_detail_sheet.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_empty_state.dart';
 import 'package:nomad_alarm/shared/widgets/nomad_scaffold.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
-  const HistoryScreen({super.key});
+  const HistoryScreen({this.initialFilter, super.key});
+
+  final HistoryFilter? initialFilter;
 
   @override
   ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
-  HistoryFilter _filter = HistoryFilter.all;
+  late HistoryFilter _filter;
+
+  @override
+  void initState() {
+    super.initState();
+    _filter = widget.initialFilter ?? HistoryFilter.all;
+  }
+
+  @override
+  void didUpdateWidget(HistoryScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialFilter != null &&
+        widget.initialFilter != oldWidget.initialFilter) {
+      _filter = widget.initialFilter!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final entriesAsync = ref.watch(historyEntriesByTypeProvider(_filter));
+    final itemsAsync = ref.watch(unifiedHistoryProvider(_filter));
+    final allEntriesAsync = ref.watch(historyEntriesProvider);
+    final activeAsync = ref.watch(activeAlarmsProvider);
+    final draftsAsync = ref.watch(draftAlarmsProvider);
     final useMetric =
         ref.watch(appSettingsProvider).valueOrNull?.useMetric ?? true;
 
@@ -31,36 +57,67 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       title: l10n.historyTitle,
       body: Column(
         children: [
-          Padding(
+          allEntriesAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, stackTrace) => const SizedBox.shrink(),
+            data: (allEntries) => activeAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (_, stackTrace) => const SizedBox.shrink(),
+              data: (activeAlarms) => draftsAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, stackTrace) => const SizedBox.shrink(),
+                data: (drafts) => _HistoryStatsHeader(
+                  activeCount: activeAlarms.length,
+                  savedCount: drafts.length,
+                  entries: allEntries,
+                ),
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: SegmentedButton<HistoryFilter>(
-              segments: [
-                ButtonSegment(
-                  value: HistoryFilter.all,
-                  label: Text(l10n.filterAll),
-                ),
-                ButtonSegment(
-                  value: HistoryFilter.completed,
-                  label: Text(l10n.filterCompleted),
-                ),
-                ButtonSegment(
-                  value: HistoryFilter.missed,
-                  label: Text(l10n.filterMissed),
-                ),
-              ],
-              selected: {_filter},
-              onSelectionChanged: (selection) {
-                setState(() => _filter = selection.first);
-              },
+            child: Row(
+              children: HistoryFilter.values.map((filter) {
+                final label = switch (filter) {
+                  HistoryFilter.all => l10n.filterAll,
+                  HistoryFilter.active => l10n.filterActive,
+                  HistoryFilter.saved => l10n.filterSaved,
+                  HistoryFilter.completed => l10n.filterCompleted,
+                  HistoryFilter.missed => l10n.filterMissed,
+                  HistoryFilter.dismissed => l10n.filterDismissed,
+                  HistoryFilter.snoozed => l10n.filterSnoozed,
+                };
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(label),
+                    selected: _filter == filter,
+                    onSelected: (_) => setState(() => _filter = filter),
+                  ),
+                );
+              }).toList(),
             ),
           ),
           Expanded(
-            child: entriesAsync.when(
+            child: itemsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, _) =>
                   Center(child: Text(l10n.errorPrefix(error.toString()))),
-              data: (entries) {
-                if (entries.isEmpty) {
+              data: (items) {
+                if (items.isEmpty) {
+                  if (_filter == HistoryFilter.active) {
+                    return NomadEmptyState(
+                      title: l10n.historyActiveEmptyTitle,
+                      message: l10n.historyActiveEmptyMessage,
+                    );
+                  }
+                  if (_filter == HistoryFilter.saved) {
+                    return NomadEmptyState(
+                      title: l10n.historySavedEmptyTitle,
+                      message: l10n.historySavedEmptyMessage,
+                    );
+                  }
                   return NomadEmptyState(
                     title: l10n.noHistoryTitle,
                     message: l10n.noHistoryMessage,
@@ -68,17 +125,35 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: entries.length,
+                  itemCount: items.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final entry = entries[index];
-                    return _HistoryListTile(
-                      entry: entry,
-                      useMetric: useMetric,
-                      onTap: () => _showDetail(context, entry, useMetric),
-                      onDelete: () => _confirmDelete(context, entry),
-                    );
+                    final item = items[index];
+                    return switch (item) {
+                      ActiveHistoryItem(:final alarm) => _ActiveHistoryListTile(
+                          alarm: alarm,
+                          useMetric: useMetric,
+                          onTap: () => _openActiveAlarm(context, alarm),
+                        ),
+                      DraftHistoryItem(:final alarm) => _DraftHistoryListTile(
+                          alarm: alarm,
+                          useMetric: useMetric,
+                          onStart: () => _startDraftAlarm(alarm.id),
+                          onDelete: () => _confirmDeleteDraft(context, alarm),
+                        ),
+                      PastHistoryItem(:final entry) => _HistoryListTile(
+                          entry: entry,
+                          useMetric: useMetric,
+                          onTap: () => showAlarmJourneyDetailSheet(
+                            context: context,
+                            ref: ref,
+                            entry: entry,
+                            useMetric: useMetric,
+                          ),
+                          onDelete: () => _confirmDelete(context, entry),
+                        ),
+                    };
                   },
                 );
               },
@@ -87,6 +162,60 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ],
       ),
     );
+  }
+
+  void _openActiveAlarm(BuildContext context, Alarm alarm) {
+    if (alarm.status == AlarmStatus.triggered) {
+      context.push('/alarm/ring/${alarm.id}');
+    } else {
+      context.push('/alarm/active/${alarm.id}');
+    }
+  }
+
+  Future<void> _startDraftAlarm(int alarmId) async {
+    final l10n = context.l10n;
+    try {
+      await ref.read(alarmServiceProvider).startAlarm(alarmId);
+      ref.invalidate(activeAlarmsProvider);
+      ref.invalidate(draftAlarmsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.alarmCreatedSuccess)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorPrefix(e.toString()))),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteDraft(BuildContext context, Alarm alarm) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteSavedAlarmTitle),
+        content: Text(l10n.deleteSavedAlarmBody(alarm.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await ref.read(alarmRepositoryProvider).delete(alarm.id);
+      ref.invalidate(draftAlarmsProvider);
+      ref.invalidate(alarmsProvider);
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context, HistoryEntry entry) async {
@@ -112,44 +241,262 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       await ref.read(historyRepositoryProvider).delete(entry.id);
     }
   }
+}
 
-  void _showDetail(BuildContext context, HistoryEntry entry, bool useMetric) {
+class _HistoryStatsHeader extends StatelessWidget {
+  const _HistoryStatsHeader({
+    required this.activeCount,
+    required this.savedCount,
+    required this.entries,
+  });
+
+  final int activeCount;
+  final int savedCount;
+  final List<HistoryEntry> entries;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              entry.destinationName,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            _OutcomeBadge(type: entry.type),
-            const SizedBox(height: 16),
-            _DetailRow(
-              label: l10n.dateLabel,
-              value: DateFormat.yMMMd().add_jm().format(entry.occurredAt),
-            ),
-            if (entry.triggerDistanceMeters != null)
-              _DetailRow(
-                label: l10n.triggerDistanceLabel,
-                value: formatDistance(
-                  entry.triggerDistanceMeters!,
-                  useMetric: useMetric,
+    final completed =
+        entries.where((e) => e.type == HistoryType.completed).length;
+    final missed = entries.where((e) => e.type == HistoryType.missed).length;
+    final totalOutcomes = completed + missed;
+    final successRate = totalOutcomes > 0
+        ? (completed / totalOutcomes * 100).round()
+        : null;
+
+    if (activeCount == 0 && savedCount == 0 && entries.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: _StatItem(
+                  label: l10n.historyStatsActive,
+                  value: '$activeCount',
                 ),
               ),
-            if (entry.snoozeCount != null && entry.snoozeCount! > 0)
-              _DetailRow(
-                label: l10n.snoozesLabel,
-                value: '${entry.snoozeCount}',
+              Expanded(
+                child: _StatItem(
+                  label: l10n.historyStatsSaved,
+                  value: '$savedCount',
+                ),
               ),
-            if (entry.notes != null && entry.notes!.isNotEmpty)
-              _DetailRow(label: l10n.notesLabel, value: entry.notes!),
+              Expanded(
+                child: _StatItem(
+                  label: l10n.historyStatsCompleted,
+                  value: '$completed',
+                ),
+              ),
+              Expanded(
+                child: _StatItem(
+                  label: l10n.historyStatsMissed,
+                  value: '$missed',
+                ),
+              ),
+              if (successRate != null)
+                Expanded(
+                  child: _StatItem(
+                    label: l10n.historyStatsSuccessRate,
+                    value: '$successRate%',
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  const _StatItem({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _ActiveHistoryListTile extends ConsumerWidget {
+  const _ActiveHistoryListTile({
+    required this.alarm,
+    required this.useMetric,
+    required this.onTap,
+  });
+
+  final Alarm alarm;
+  final bool useMetric;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final stateAsync = ref.watch(activeAlarmStateProvider(alarm.id));
+    final startedAt = alarm.startedAt;
+    final startedLabel = startedAt != null
+        ? DateFormat.MMMd().add_jm().format(startedAt)
+        : l10n.historyStartedAt;
+
+    return Card(
+      child: ListTile(
+        onTap: onTap,
+        leading: Icon(
+          Icons.circle,
+          size: 12,
+          color: _statusColor(alarm.status),
+        ),
+        title: Text(alarm.name),
+        subtitle: stateAsync.when(
+          loading: () => Text('$startedLabel · ${l10n.historyStatusTracking}'),
+          error: (_, stackTrace) =>
+              Text('$startedLabel · ${l10n.historyStatusTracking}'),
+          data: (state) {
+            final statusLabel = switch (state.status) {
+              AlarmStatus.paused => l10n.alarmStatusPaused,
+              AlarmStatus.triggered => l10n.stopApproaching,
+              _ => l10n.historyStatusTracking,
+            };
+            final distance =
+                formatDistance(state.distanceMeters, useMetric: useMetric);
+            final eta = formatEta(state.etaMinutes);
+            final detail = state.etaMinutes != null ? '$distance · $eta' : distance;
+            return Text('$startedLabel · $statusLabel · $detail');
+          },
+        ),
+        trailing: _ActiveStatusBadge(status: alarm.status),
+      ),
+    );
+  }
+
+  Color _statusColor(AlarmStatus status) {
+    return switch (status) {
+      AlarmStatus.paused => Colors.amber,
+      AlarmStatus.triggered => Colors.red,
+      _ => Colors.green,
+    };
+  }
+}
+
+class _ActiveStatusBadge extends StatelessWidget {
+  const _ActiveStatusBadge({required this.status});
+
+  final AlarmStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final label = switch (status) {
+      AlarmStatus.paused => l10n.alarmStatusPaused,
+      AlarmStatus.triggered => l10n.stopApproaching,
+      _ => l10n.filterActive,
+    };
+    final color = switch (status) {
+      AlarmStatus.paused => Colors.amber,
+      AlarmStatus.triggered => Colors.red,
+      _ => Colors.green,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
+      ),
+    );
+  }
+}
+
+class _DraftHistoryListTile extends StatelessWidget {
+  const _DraftHistoryListTile({
+    required this.alarm,
+    required this.useMetric,
+    required this.onStart,
+    required this.onDelete,
+  });
+
+  final Alarm alarm;
+  final bool useMetric;
+  final VoidCallback onStart;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final savedAt = DateFormat.MMMd().add_jm().format(alarm.createdAt);
+    final trigger =
+        formatDistance(alarm.triggerDistanceMeters, useMetric: useMetric);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        alarm.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text('$savedAt · $trigger'),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.alarmStatusSaved,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                TextButton(onPressed: onStart, child: Text(l10n.startAlarm)),
+                TextButton(onPressed: onDelete, child: Text(l10n.delete)),
+              ],
+            ),
           ],
         ),
       ),
@@ -177,7 +524,7 @@ class _HistoryListTile extends StatelessWidget {
     final trigger = entry.triggerDistanceMeters;
 
     return Dismissible(
-      key: ValueKey(entry.id),
+      key: ValueKey('history-${entry.id}'),
       direction: DismissDirection.endToStart,
       confirmDismiss: (_) async {
         onDelete();
@@ -208,7 +555,7 @@ class _HistoryListTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _OutcomeBadge(type: entry.type, compact: true),
+              HistoryOutcomeBadge(type: entry.type, compact: true),
               if (trigger != null) ...[
                 const SizedBox(height: 4),
                 Text(
@@ -219,72 +566,6 @@ class _HistoryListTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _OutcomeBadge extends StatelessWidget {
-  const _OutcomeBadge({required this.type, this.compact = false});
-
-  final HistoryType type;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final (label, color) = switch (type) {
-      HistoryType.completed => (l10n.outcomeCompleted, Colors.green.shade700),
-      HistoryType.missed => (l10n.outcomeMissed, Colors.orange.shade800),
-      HistoryType.dismissed => (l10n.outcomeDismissed, Colors.blueGrey.shade700),
-      HistoryType.snoozed => (l10n.outcomeSnoozed, Colors.blue.shade700),
-    };
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 10,
-        vertical: compact ? 2 : 4,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: compact ? 11 : 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ),
-          Expanded(child: Text(value)),
-        ],
       ),
     );
   }

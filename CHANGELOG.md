@@ -9,7 +9,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
-* Multi-alarm dashboard on Home - run several active alarms at once with live distance/ETA per card
+* **Transfer Data screen** - Settings backup actions (export, import, HTTPS upload) moved from inline **Data** tiles to **Backup → Transfer Data**; shows last-backup timestamp and disabled Auto Backup placeholder
+* **History saved drafts** - Save only navigates to History; drafts appear under All and Saved filter with Start/Delete actions
+* **FAB create menu** - + opens bottom sheet: New Alarm / Import Alarm (inline import row removed from Alarms)
+* **Inline map provider credentials** - API keys configured in-place when selecting Google/Mapbox/HERE; Test + Save & Use; manage credentials from map provider row; dedicated API Keys screen removed
+* **History unified log** - Active filter chip; All shows running + past alarms; stats header includes active count
+* **Share & import alarm system** - privacy-first `.nomadalarm` v1 format; share bottom sheet from active alarm, alarm card overflow, and history detail; import preview before save (never auto-starts tracking); Alarms home import row (file, QR, clipboard); Android share-intent receive
+* 3-tab alarm-manager navigation: **Alarms | History | Settings** (Trips tab removed; journey details merged into History)
+* History stats header (completed, missed, success rate) and expanded filter chips (Cancelled, Snoozed)
+* Settings page subtitle and regrouped sections (Alarm, Accessibility, Power & battery, Backup & sharing, System)
+* Multi-alarm dashboard on Alarms tab - run several active alarms at once with live distance/ETA per card
 * Home quick actions (pause, resume, cancel) and **Add another alarm** flow
 * Single consolidated foreground notification summarizing all active alarms
 * [Settings Guide](docs/SETTINGS_GUIDE.md) on docs site - Google Cloud setup, troubleshooting, other providers
@@ -22,16 +31,31 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * Material 3 settings pickers: compact summary tiles and bottom sheets (segmented control for units)
 
 ### Changed
+* Google credential sheet simplified to **one standard API key** input (Maps, Places, Directions tested on the same key)
+* Save only → History (draft alarms); Save & Start → Alarms tab with immediate active list refresh
+* Import alarm moved from inline Alarms row to + FAB create menu
+* Map provider switches persist immediately; credential bottom sheet on provider selection (not Save); Settings Advanced → API Keys removed
+* Alarms tab shows top **5** nearest active alarms with **View all active in History** when more exist; **Recent searches** label replaces ambiguous "Recent"
+* Share/import moved out of Settings - alarm sharing lives on alarm contexts; import on Alarms home; backup under **Settings → Backup → Transfer Data**
+* Bottom nav redesigned for alarm-manager IA: Home → **Alarms** (`/alarms`), Trips tab removed
+* Settings copy polish: shorter labels (Voice announcements, Share alarm, Provider API keys, etc.)
 * Settings UI uses M3 picker sheets instead of expanded radio lists
-* Save & Start returns to Home with success snackbar instead of trapping on Active Alarm screen
+* Save & Start returns to Alarms with success snackbar instead of trapping on Active Alarm screen
 * Active Alarm screen is a detail page only (Alarm #id, back navigation)
-* Splash with running alarms opens Home dashboard and resumes monitoring
+* Splash with running alarms opens Alarms dashboard and resumes monitoring
 * API keys moved under **Advanced → API Keys** (status dashboard with per-service Google tests)
 * Map settings no longer auto-saves provider changes; explicit Save with credential gate
 * Map empty-state routes to map settings instead of API keys screen
 * Provider factory uses effective search/route from recommended bundles and overrides
 * Trip repository allows concurrent active trips for multiple alarms
-* Home screen: FAB-only create action; search moved up; active-alarm empty hint; settings icons
+* Alarms screen: FAB-only create action; search first; favorites before recents; current-location card removed from primary scroll
+
+### Fixed
+* Foreground tracking notification no longer duplicates app name - single-alarm title shows destination name
+* Alarm details screen loads instantly for running alarms (`watchActiveAlarm` replays last state)
+* Alarms active-alarm list updates immediately after Save & Start (provider invalidation now runs after alarm status is `active`)
+* Settings toggles and pickers update in place without full-screen loading refresh
+* Background GPS service no longer crashes with concurrent map modification when alarms are added/removed during tracking
 
 ---
 

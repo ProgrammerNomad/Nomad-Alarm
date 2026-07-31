@@ -63,7 +63,7 @@ Power users can override search/route under **Advanced** on the map settings scr
 
 ## Optional: Google APIs (BYO)
 
-User provides **one Google API key** via inline prompt on map settings Save, or under **Settings → Advanced → API Keys**. The app stores it in all Google slots (Maps, Places, Directions) and initializes the native Maps SDK at runtime on Android.
+User provides **one standard Google API key** via an **inline bottom sheet** when selecting Google Maps in **Settings → Map**. The same key is used for Maps SDK, Places search, and Directions routing when those APIs are enabled on the project. Keys are stored encrypted on device (`FlutterSecureStorage` / Android encrypted shared preferences) and initialize the native Maps SDK at runtime on Android.
 
 **Step-by-step setup:** [Settings Guide → Google Cloud setup]({{ '/settings-guide/#google-cloud-setup' | relative_url }})
 

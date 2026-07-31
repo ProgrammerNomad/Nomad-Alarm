@@ -6,12 +6,14 @@ class NomadScaffold extends StatelessWidget {
     required this.title,
     required this.body,
     super.key,
+    this.subtitle,
     this.actions,
     this.floatingActionButton,
     this.showBackButton = false,
   });
 
   final String title;
+  final String? subtitle;
   final Widget body;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
@@ -21,7 +23,23 @@ class NomadScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: subtitle == null
+            ? Text(title)
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title),
+                  Text(
+                    subtitle!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.7),
+                        ),
+                  ),
+                ],
+              ),
         automaticallyImplyLeading: showBackButton,
         actions: actions,
       ),

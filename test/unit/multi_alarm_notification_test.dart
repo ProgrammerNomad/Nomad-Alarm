@@ -30,9 +30,9 @@ void main() {
       _state(id: 1, name: 'Noida', distance: 7600, eta: 12),
     ]);
 
-    expect(content.title, 'Nomad Alarm');
-    expect(content.content, contains('Noida'));
+    expect(content.title, 'Noida');
     expect(content.content, contains('7.6 km'));
+    expect(content.content, isNot(contains('Noida')));
   });
 
   test('formats multi-alarm notification with nearest label', () {
@@ -41,7 +41,7 @@ void main() {
       _state(id: 2, name: 'Delhi Airport', distance: 18000, eta: 24),
     ]);
 
-    expect(content.content, contains('2 active alarms'));
+    expect(content.title, '2 active alarms');
     expect(content.content, contains('Nearest'));
     expect(content.content, contains('Noida'));
   });

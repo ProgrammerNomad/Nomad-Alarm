@@ -1,15 +1,47 @@
 package com.nomad.alarm
 
+import android.content.Intent
+import android.net.Uri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class MainActivity : FlutterActivity() {
+    private var importChannel: MethodChannel? = null
+    private var pendingImportPayload: String? = null
+
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        captureImportIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        captureImportIntent(intent)
+        pendingImportPayload?.let { payload ->
+            importChannel?.invokeMethod("onImportPayload", payload)
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        importChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "com.nomad.alarm/import",
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getPendingImport" -> result.success(pendingImportPayload)
+                    else -> result.notImplemented()
+                }
+            }
+        }
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "com.nomad.alarm/tile",
@@ -112,5 +144,36 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
-}
 
+    private fun captureImportIntent(intent: Intent?) {
+        if (intent == null) {
+            return
+        }
+        when (intent.action) {
+            Intent.ACTION_SEND -> {
+                if (intent.type?.startsWith("text/") == true) {
+                    pendingImportPayload = intent.getStringExtra(Intent.EXTRA_TEXT)
+                } else {
+                    val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                    pendingImportPayload = readUriText(uri)
+                }
+            }
+            Intent.ACTION_VIEW -> {
+                pendingImportPayload = readUriText(intent.data)
+            }
+        }
+    }
+
+    private fun readUriText(uri: Uri?): String? {
+        if (uri == null) {
+            return null
+        }
+        return try {
+            contentResolver.openInputStream(uri)?.use { input ->
+                BufferedReader(InputStreamReader(input)).readText()
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+}

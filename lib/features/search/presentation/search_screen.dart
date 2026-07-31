@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_alarm/core/constants/feature_flags.dart';
 import 'package:nomad_alarm/core/l10n/l10n_extensions.dart';
-import 'package:nomad_alarm/core/router/alarm_config_args.dart';
 import 'package:nomad_alarm/core/router/destination_args.dart';
 import 'package:nomad_alarm/models/recent_search.dart';
 import 'package:nomad_alarm/models/search_result.dart';
@@ -12,7 +11,7 @@ import 'package:nomad_alarm/providers/favorite_providers.dart';
 import 'package:nomad_alarm/providers/search_providers.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:nomad_alarm/services/deep_link_service.dart';
-import 'package:nomad_alarm/services/group_travel_service.dart';
+import 'package:nomad_alarm/features/alarm/presentation/import_alarm_flow.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -68,37 +67,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Future<void> _importFromClipboard() async {
+    if (FeatureFlags.groupTravel) {
+      await ImportAlarmFlow.pasteClipboardAndPreview(context);
+      return;
+    }
+
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     final text = data?.text?.trim();
     if (text == null || text.isEmpty) {
       return;
-    }
-
-    if (FeatureFlags.groupTravel) {
-      const groupTravel = GroupTravelService();
-      final draft = groupTravel.parseImport(text);
-      if (draft != null) {
-        if (!mounted) {
-          return;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.importAlarmConfig)),
-        );
-        context.push(
-          '/alarm/new',
-          extra: AlarmConfigArgs(
-            destination: DestinationArgs(
-              name: draft.name,
-              latitude: draft.destLatitude,
-              longitude: draft.destLongitude,
-              address: draft.address,
-              placeId: draft.placeId,
-            ),
-            importedDraft: draft,
-          ),
-        );
-        return;
-      }
     }
 
     final args = DeepLinkService.parse(text);

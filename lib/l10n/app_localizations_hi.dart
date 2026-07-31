@@ -15,6 +15,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get navHome => 'होम';
 
   @override
+  String get navAlarms => 'अलार्म';
+
+  @override
   String get navTrips => 'यात्राएँ';
 
   @override
@@ -37,6 +40,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get recent => 'हाल के';
+
+  @override
+  String get recentSearches => 'Recent searches';
 
   @override
   String get firstAlarmTitle => 'अपना पहला गंतव्य अलार्म सेट करें';
@@ -189,7 +195,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get alertDistance => 'अलर्ट दूरी';
 
   @override
-  String get voiceAlert => 'आवाज़ अलर्ट';
+  String get voiceAlert => 'आवाज़ घोषणाएँ';
 
   @override
   String get voiceAlertSubtitle => 'ट्रिगर होने पर बोला जाएगा';
@@ -201,7 +207,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get flashlight => 'फ़्लैशलाइट';
 
   @override
-  String get flashlightSubtitle => 'अलार्म पर LED स्ट्रोब';
+  String get flashlightSubtitle => 'अलार्म बजने पर LED फ्लैश करें।';
 
   @override
   String get saveAndStart => 'सहेजें और शुरू करें';
@@ -211,6 +217,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get settingsTitle => 'सेटिंग्स';
+
+  @override
+  String get settingsSubtitle =>
+      'ऐप व्यवहार, मानचित्र, सूचनाएँ और गोपनीयता प्रबंधित करें।';
+
+  @override
+  String get alarmsTitle => 'अलार्म';
 
   @override
   String get appearance => 'दिखावट';
@@ -252,13 +265,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get hindi => 'हिंदी';
 
   @override
-  String get alarmDefaults => 'अलार्म डिफ़ॉल्ट';
+  String get alarmDefaults => 'अलार्म';
 
   @override
-  String get defaultAlertDistance => 'डिफ़ॉल्ट अलर्ट दूरी';
+  String get defaultAlertDistance => 'डिफ़ॉल्ट अलार्म दूरी';
 
   @override
-  String get battery => 'बैटरी';
+  String get battery => 'पावर और बैटरी';
 
   @override
   String get gpsProfile => 'GPS प्रोफ़ाइल';
@@ -274,7 +287,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get batteryBalancedDesc =>
-      'दैनिक यात्रा के लिए - लगभग हर 10 मी पर अपडेट';
+      'दैनिक यात्रा के लिए सर्वोत्तम। लगभग हर 10 मीटर पर स्थान अपडेट।';
 
   @override
   String get batteryAggressiveDesc =>
@@ -285,6 +298,47 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get data => 'डेटा';
+
+  @override
+  String get backupSection => 'बैकअप';
+
+  @override
+  String get transferData => 'डेटा स्थानांतरण';
+
+  @override
+  String get transferDataTitle => 'डेटा स्थानांतरण';
+
+  @override
+  String get transferDataSubtitle =>
+      'डेटा बैकअप, स्थानांतरण या पुनर्स्थापित करें';
+
+  @override
+  String get transferDataIntro =>
+      'अपने बैकअप प्रबंधित करें और डेटा स्थानांतरण करें।';
+
+  @override
+  String get exportBackupDescription =>
+      'अलार्म, स्थान, सेटिंग्स और इतिहास सहेजें।';
+
+  @override
+  String get importBackupDescription =>
+      'पहले निर्यात किया गया बैकअप पुनर्स्थापित करें।';
+
+  @override
+  String get uploadBackupDescription =>
+      'एन्क्रिप्टेड बैकअप अपने HTTPS सर्वर पर अपलोड करें।';
+
+  @override
+  String get autoBackup => 'स्वचालित बैकअप';
+
+  @override
+  String get autoBackupComingSoon => 'अनुसूचित बैकअप भविष्य के अपडेट में आएगा';
+
+  @override
+  String get lastBackup => 'अंतिम बैकअप';
+
+  @override
+  String get lastBackupNever => 'कभी नहीं';
 
   @override
   String get exportBackup => 'बैकअप निर्यात';
@@ -326,7 +380,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get importedSettingsSuffix => ', सेटिंग्स';
 
   @override
-  String get more => 'अधिक';
+  String get more => 'सिस्टम';
 
   @override
   String get permissionsMenu => 'अनुमतियाँ';
@@ -479,16 +533,70 @@ class AppLocalizationsHi extends AppLocalizations {
   String get filterAll => 'सभी';
 
   @override
+  String get filterActive => 'Active';
+
+  @override
+  String get filterSaved => 'Saved';
+
+  @override
   String get filterCompleted => 'पूर्ण';
 
   @override
   String get filterMissed => 'चूके';
 
   @override
+  String get filterDismissed => 'रद्द';
+
+  @override
+  String get filterSnoozed => 'स्नूज़';
+
+  @override
+  String get historyStatsCompleted => 'पूर्ण';
+
+  @override
+  String get historyStatsActive => 'Active';
+
+  @override
+  String get historyStatsSaved => 'Saved';
+
+  @override
+  String get historyStatsMissed => 'चूके';
+
+  @override
+  String get historyStatsSuccessRate => 'सफलता दर';
+
+  @override
+  String get journeyDetailsTitle => 'यात्रा विवरण';
+
+  @override
   String get noHistoryTitle => 'अभी कोई इतिहास नहीं';
 
   @override
-  String get noHistoryMessage => 'पूर्ण और चूके अलार्म यहाँ दर्ज होंगे।';
+  String get noHistoryMessage =>
+      'Running alarms appear under Active or All. Completed and missed alarms are logged here after they finish.';
+
+  @override
+  String get historyActiveEmptyTitle => 'No active alarms';
+
+  @override
+  String get historyActiveEmptyMessage =>
+      'Running alarms appear here while tracking.';
+
+  @override
+  String get historySavedEmptyTitle => 'No saved alarms';
+
+  @override
+  String get historySavedEmptyMessage =>
+      'Alarms you save without starting appear here.';
+
+  @override
+  String get viewAllActiveInHistory => 'View all active in History';
+
+  @override
+  String get historyStatusTracking => 'Tracking';
+
+  @override
+  String get historyStartedAt => 'Started';
 
   @override
   String get deleteEntryTitle => 'प्रविष्टि हटाएँ?';
@@ -700,10 +808,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get debugSnapshotCopied => 'डीबग स्नैपशॉट कॉपी किया गया';
 
   @override
-  String get fgsStartingTitle => 'नोमैड अलार्म';
+  String get fgsStartingTitle => 'Starting location tracking…';
 
   @override
-  String get fgsStartingContent => 'स्थान ट्रैकिंग शुरू हो रही है…';
+  String get fgsStartingContent => 'Preparing GPS…';
 
   @override
   String get resumeAlarmAfterBoot => 'रीबूट के बाद अलार्म जारी रखें';
@@ -966,7 +1074,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get cloudBackupUpload => 'क्लाउड पर बैकअप अपलोड करें';
 
   @override
-  String get cloudBackupUrlHint => 'HTTPS अपलोड URL';
+  String get cloudBackupUrlHint => 'अपने HTTPS सर्वर पर बैकअप अपलोड करें।';
 
   @override
   String get cloudBackupSuccess => 'बैकअप सफलतापूर्वक अपलोड हुआ';
@@ -981,8 +1089,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lockScreenInfo => 'लॉक स्क्रीन पर दिखाएँ';
 
   @override
-  String get lockScreenInfoSubtitle =>
-      'लॉक स्क्रीन सूचना में दूरी और ETA दिखाएँ';
+  String get lockScreenInfoSubtitle => 'लॉक स्क्रीन पर दूरी और ETA दिखाएँ।';
 
   @override
   String get notifInternetLostTitle => 'इंटरनेट कनेक्शन खो गया';
@@ -1015,6 +1122,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get highContrastSubtitle => 'पठनीयता के लिए कंट्रास्ट बढ़ाएँ';
 
   @override
+  String get accessibilitySection => 'सुगम्यता';
+
+  @override
   String get voiceSearchHint => 'गंतव्य का नाम बोलें';
 
   @override
@@ -1034,6 +1144,31 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get newAlarm => 'नया अलार्म';
+
+  @override
+  String get createAlarmSheetTitle => 'Create alarm';
+
+  @override
+  String get importAlarm => 'Import alarm';
+
+  @override
+  String get alarmStatusSaved => 'Saved';
+
+  @override
+  String get startAlarm => 'Start';
+
+  @override
+  String get deleteSavedAlarmTitle => 'Delete saved alarm?';
+
+  @override
+  String deleteSavedAlarmBody(String name) {
+    return 'Remove \"$name\"?';
+  }
+
+  @override
+  String activeAlarmsNotificationTitle(int count) {
+    return '$count active alarms';
+  }
 
   @override
   String get alarmStatusTracking => 'ट्रैकिंग';
@@ -1068,6 +1203,49 @@ class AppLocalizationsHi extends AppLocalizations {
   String get configureAndSave => 'कॉन्फ़िगर करें और सहेजें';
 
   @override
+  String get configure => 'कॉन्फ़िगर करें';
+
+  @override
+  String saveAndUseProvider(String provider) {
+    return '$provider सहेजें और उपयोग करें';
+  }
+
+  @override
+  String get manageCredentials => 'क्रेडेंशियल प्रबंधित करें';
+
+  @override
+  String get editCredentials => 'क्रेडेंशियल संपादित करें';
+
+  @override
+  String get removeCredentials => 'क्रेडेंशियल हटाएं';
+
+  @override
+  String get testConnection => 'कनेक्शन परीक्षण';
+
+  @override
+  String get credentialRequired => 'आवश्यक';
+
+  @override
+  String get credentialOptional => 'वैकल्पिक';
+
+  @override
+  String get providerConfigured => 'कॉन्फ़िगर किया गया';
+
+  @override
+  String get googleMapsConfiguredSuccess => 'Google Maps कॉन्फ़िगर हो गया।';
+
+  @override
+  String removeCredentialsConfirm(String provider) {
+    return '$provider के लिए संग्रहीत क्रेडेंशियल हटाएं?';
+  }
+
+  @override
+  String get testFailed => 'कनेक्शन विफल';
+
+  @override
+  String get testPassed => 'कनेक्शन सफल';
+
+  @override
   String get providerSaveBlocked =>
       'मान्य API कुंजी दर्ज होने तक सहेजना अवरुद्ध है।';
 
@@ -1081,7 +1259,17 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get credentialGoogleMapsBody =>
-      'एक कुंजी Maps, Places और Directions को कवर करती है।';
+      'एक मानक Google API कुंजी का उपयोग करें। Google Cloud Console में नीचे दिए API एक ही प्रोजेक्ट पर सक्षम करें, फिर अपनी कुंजी पेस्ट करें।';
+
+  @override
+  String googleTestResultOk(String service) {
+    return '$service: OK';
+  }
+
+  @override
+  String googleTestResultFailed(String service) {
+    return '$service: विफल';
+  }
 
   @override
   String get credentialMapboxTitle => 'Mapbox के लिए एक्सेस टोकन आवश्यक है';
@@ -1173,13 +1361,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get resumeAlarmAfterBootBatteryWarning =>
-      'रीबूट के बाद ट्रैकिंग पुनः शुरू करें। अधिक बैटरी उपयोग।';
+      'रीस्टार्ट के बाद सक्रिय अलार्म स्वचालित रूप से फिर से शुरू करें। बैटरी उपयोग बढ़ सकता है।';
 
   @override
   String get uploadBackupViaHttps => 'HTTPS के माध्यम से बैकअप अपलोड करें';
 
   @override
-  String get shareLiveTrip => 'लाइव यात्रा साझा करें';
+  String get shareLiveTrip => 'अलार्म साझा करें';
 
   @override
   String get importSharedAlarm => 'साझा अलार्म आयात करें';
@@ -1215,4 +1403,129 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get languageEndonymHint =>
       'भाषा के नाम उनकी मूल लिपि में दिखाए जाते हैं';
+
+  @override
+  String get shareAlarmTitle => 'Share Alarm';
+
+  @override
+  String get shareAlarmSubtitle => 'Share this alarm with someone else.';
+
+  @override
+  String get shareModePackageTitle => 'Alarm Package';
+
+  @override
+  String get shareModePackageSubtitle =>
+      'Complete alarm configuration file (.nomadalarm)';
+
+  @override
+  String get shareModeDestinationTitle => 'Destination Only';
+
+  @override
+  String get shareModeDestinationSubtitle => 'Maps link anyone can open';
+
+  @override
+  String get shareModeQrTitle => 'QR Code';
+
+  @override
+  String get shareModeQrSubtitle => 'Generate a scannable code';
+
+  @override
+  String get shareModeCopyCoordsTitle => 'Copy Coordinates';
+
+  @override
+  String get sharePreviewTitle => 'Share preview';
+
+  @override
+  String get shareCoordsCopied => 'Coordinates copied';
+
+  @override
+  String get recommendedLabel => 'Recommended';
+
+  @override
+  String get enabledLabel => 'Enabled';
+
+  @override
+  String get disabledLabel => 'Disabled';
+
+  @override
+  String get importPreviewTitle => 'Import Shared Alarm';
+
+  @override
+  String get importPreviewDestination => 'Destination';
+
+  @override
+  String get importPreviewCoordinates => 'Coordinates';
+
+  @override
+  String get importEditBeforeSaving => 'Edit Before Saving';
+
+  @override
+  String get importSuccessTitle => 'Alarm Imported';
+
+  @override
+  String get importStartNow => 'Start Now';
+
+  @override
+  String get importSuccessEdit => 'Edit';
+
+  @override
+  String get importSuccessBack => 'Back';
+
+  @override
+  String get importErrorMissingCoordinates => 'Missing coordinates.';
+
+  @override
+  String get importErrorUnsupportedVersion => 'Unsupported version.';
+
+  @override
+  String get importErrorCorruptedFile => 'Corrupted file.';
+
+  @override
+  String get importDuplicateTitle => 'This alarm already exists.';
+
+  @override
+  String get importDuplicateBody =>
+      'An alarm for this destination is already saved.';
+
+  @override
+  String get importDuplicateUpdate => 'Update Existing';
+
+  @override
+  String get importDuplicateCreateCopy => 'Create Copy';
+
+  @override
+  String get importSourceFile => 'Browse file (.nomadalarm / .json)';
+
+  @override
+  String get importSourceQr => 'Scan QR code';
+
+  @override
+  String get importSourceClipboard => 'Paste from clipboard';
+
+  @override
+  String get importClipboardDetected => 'Shared alarm detected.';
+
+  @override
+  String importBundleTitle(int count) {
+    return '$count alarms found';
+  }
+
+  @override
+  String get importBundleBody => 'Import all alarms from this bundle?';
+
+  @override
+  String get importBundleAll => 'Import All';
+
+  @override
+  String get importBundleFirstOnly => 'First Only';
+
+  @override
+  String importPreviewProgress(int current, int total) {
+    return 'Alarm $current of $total';
+  }
+
+  @override
+  String importProgressSaved(int current, int total) {
+    return 'Saved $current of $total';
+  }
 }

@@ -248,9 +248,8 @@ Bottom navigation shell with nested routes:
 | Splash | `/` | Auth-free bootstrap |
 | Welcome | `/welcome` | First launch only |
 | Permissions | `/permissions` | Guided permission flow |
-| Home | `/home` | Bottom nav tab |
-| Trips | `/trips` | Bottom nav tab |
-| History | `/history` | Bottom nav tab |
+| Alarms | `/alarms` | Bottom nav tab (`/home` redirects here) |
+| History | `/history` | Bottom nav tab; unified past alarms + journey detail |
 | Settings | `/settings` | Bottom nav tab |
 | Search | `/search` | Full screen |
 | Map | `/map` | Full screen, optional pin drop |

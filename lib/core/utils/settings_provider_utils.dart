@@ -41,13 +41,37 @@ List<CredentialRequirement> credentialsRequiredFor(AppSettings settings) {
   );
 }
 
-Future<bool> hasCredential(ApiKeyStore store, ApiKeyId id) async {
+Future<bool> hasCredential(
+  ApiKeyStore store,
+  ApiKeyId id, {
+  CredentialKind? kind,
+}) async {
   if (ApiKeyId.googleSlots.contains(id)) {
-    final key = await store.readGoogleApiKey();
+    final effectiveKind = kind ?? CredentialKind.googleMaps;
+    final key = await store.readGoogleKeyFor(effectiveKind);
+    if (effectiveKind == CredentialKind.googleMaps) {
+      final mapsKey = await store.read(ApiKeyId.googleMaps);
+      return mapsKey != null && mapsKey.isNotEmpty;
+    }
     return key != null && key.isNotEmpty;
   }
   final value = await store.read(id);
   return value != null && value.isNotEmpty;
+}
+
+Future<bool> hasMapProviderCredential(
+  ApiKeyStore store,
+  MapProviderType mapProvider,
+) async {
+  final keyId = ProviderCatalog.apiKeyIdForMapProvider(mapProvider);
+  if (keyId == null) {
+    return true;
+  }
+  if (keyId == ApiKeyId.googleMaps) {
+    final mapsKey = await store.read(ApiKeyId.googleMaps);
+    return mapsKey != null && mapsKey.isNotEmpty;
+  }
+  return hasCredential(store, keyId);
 }
 
 Future<List<CredentialRequirement>> missingCredentialsFor(
@@ -57,7 +81,12 @@ Future<List<CredentialRequirement>> missingCredentialsFor(
   final required = credentialsRequiredFor(settings);
   final missing = <CredentialRequirement>[];
   for (final requirement in required) {
-    if (requirement.required && !await hasCredential(store, requirement.apiKeyId)) {
+    if (requirement.required &&
+        !await hasCredential(
+          store,
+          requirement.apiKeyId,
+          kind: requirement.kind,
+        )) {
       if (!missing.any((m) => m.apiKeyId == requirement.apiKeyId)) {
         missing.add(requirement);
       }

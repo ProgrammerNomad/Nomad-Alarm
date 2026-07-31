@@ -36,6 +36,7 @@ Future<T?> showSettingsPickerSheet<T>({
   required String cancelLabel,
   IconData? Function(T option)? iconFor,
   Widget? Function(T option)? trailingFor,
+  void Function(T option)? onLongPressFor,
 }) {
   return showModalBottomSheet<T>(
     context: context,
@@ -75,6 +76,12 @@ Future<T?> showSettingsPickerSheet<T>({
                       ],
                     ),
                     onTap: () => Navigator.pop(context, option),
+                    onLongPress: onLongPressFor == null
+                        ? null
+                        : () {
+                            Navigator.pop(context);
+                            onLongPressFor(option);
+                          },
                   );
                 }).toList(),
               ),

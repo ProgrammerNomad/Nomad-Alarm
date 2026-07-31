@@ -66,7 +66,7 @@ open class NomadAlarmWidgetProvider(
                 val route = if (active && alarmId > 0) {
                     "/alarm/active/$alarmId"
                 } else {
-                    "/home"
+                    "/alarms"
                 }
                 val uri = Uri.parse("nomadalarm://widget?route=$route")
                 val pendingIntent =

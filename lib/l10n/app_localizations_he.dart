@@ -15,6 +15,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get navHome => 'בית';
 
   @override
+  String get navAlarms => 'התראות';
+
+  @override
   String get navTrips => 'נסיעות';
 
   @override
@@ -37,6 +40,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get recent => 'אחרונים';
+
+  @override
+  String get recentSearches => 'Recent searches';
 
   @override
   String get firstAlarmTitle => 'הגדר את התראת היעד הראשונה';
@@ -182,7 +188,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get alertDistance => 'מרחק התראה';
 
   @override
-  String get voiceAlert => 'התראה קולית';
+  String get voiceAlert => 'הכרזות קוליות';
 
   @override
   String get voiceAlertSubtitle => 'הודעה מדוברת בעת הפעלה';
@@ -194,7 +200,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get flashlight => 'פנס';
 
   @override
-  String get flashlightSubtitle => 'הבהוב LED כשההתראה מצלצלת';
+  String get flashlightSubtitle => 'הבהוב LED כשההתראה מצלצלת.';
 
   @override
   String get saveAndStart => 'שמור והתחל';
@@ -204,6 +210,12 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get settingsTitle => 'הגדרות';
+
+  @override
+  String get settingsSubtitle => 'נהל התנהגות אפליקציה, מפות, התראות ופרטיות.';
+
+  @override
+  String get alarmsTitle => 'התראות';
 
   @override
   String get appearance => 'מראה';
@@ -245,13 +257,13 @@ class AppLocalizationsHe extends AppLocalizations {
   String get hindi => 'הינדי';
 
   @override
-  String get alarmDefaults => 'ברירות מחדל להתראה';
+  String get alarmDefaults => 'התראה';
 
   @override
   String get defaultAlertDistance => 'מרחק התראה ברירת מחדל';
 
   @override
-  String get battery => 'סוללה';
+  String get battery => 'חשמל וסוללה';
 
   @override
   String get gpsProfile => 'פרופיל GPS';
@@ -266,7 +278,8 @@ class AppLocalizationsHe extends AppLocalizations {
   String get batterySaver => 'חיסכון';
 
   @override
-  String get batteryBalancedDesc => 'מתאים לנסיעות יומיות - עדכון כל ~10 מ\'';
+  String get batteryBalancedDesc =>
+      'הטוב ביותר לנסיעות יומיומיות. עדכוני מיקום בערך כל 10 מטרים.';
 
   @override
   String get batteryAggressiveDesc => 'אמינות מקסימלית - יותר סוללה ליד היעד';
@@ -276,6 +289,43 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get data => 'נתונים';
+
+  @override
+  String get backupSection => 'גיבוי';
+
+  @override
+  String get transferData => 'העברת נתונים';
+
+  @override
+  String get transferDataTitle => 'העברת נתונים';
+
+  @override
+  String get transferDataSubtitle => 'העבר, גבה או שחזר את הנתונים שלך';
+
+  @override
+  String get transferDataIntro => 'נהל את הגיבויים והעבר את הנתונים שלך.';
+
+  @override
+  String get exportBackupDescription =>
+      'שמור התראות, מקומות, הגדרות והיסטוריה.';
+
+  @override
+  String get importBackupDescription => 'שחזר גיבוי שיוצא בעבר.';
+
+  @override
+  String get uploadBackupDescription => 'העלה גיבוי מוצפן לשרת HTTPS שלך.';
+
+  @override
+  String get autoBackup => 'גיבוי אוטומטי';
+
+  @override
+  String get autoBackupComingSoon => 'גיבויים מתוזמנים יגיעו בעדכון עתידי';
+
+  @override
+  String get lastBackup => 'גיבוי אחרון';
+
+  @override
+  String get lastBackupNever => 'אף פעם';
 
   @override
   String get exportBackup => 'ייצוא גיבוי';
@@ -316,7 +366,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get importedSettingsSuffix => ', הגדרות';
 
   @override
-  String get more => 'עוד';
+  String get more => 'מערכת';
 
   @override
   String get permissionsMenu => 'הרשאות';
@@ -468,16 +518,70 @@ class AppLocalizationsHe extends AppLocalizations {
   String get filterAll => 'הכל';
 
   @override
+  String get filterActive => 'Active';
+
+  @override
+  String get filterSaved => 'Saved';
+
+  @override
   String get filterCompleted => 'הושלם';
 
   @override
   String get filterMissed => 'הוחמץ';
 
   @override
+  String get filterDismissed => 'בוטל';
+
+  @override
+  String get filterSnoozed => 'נודניק';
+
+  @override
+  String get historyStatsCompleted => 'הושלם';
+
+  @override
+  String get historyStatsActive => 'Active';
+
+  @override
+  String get historyStatsSaved => 'Saved';
+
+  @override
+  String get historyStatsMissed => 'הוחמץ';
+
+  @override
+  String get historyStatsSuccessRate => 'שיעור הצלחה';
+
+  @override
+  String get journeyDetailsTitle => 'פרטי מסע';
+
+  @override
   String get noHistoryTitle => 'אין היסטוריה עדיין';
 
   @override
-  String get noHistoryMessage => 'התראות שהושלמו או הוחמצו יירשמו כאן.';
+  String get noHistoryMessage =>
+      'Running alarms appear under Active or All. Completed and missed alarms are logged here after they finish.';
+
+  @override
+  String get historyActiveEmptyTitle => 'No active alarms';
+
+  @override
+  String get historyActiveEmptyMessage =>
+      'Running alarms appear here while tracking.';
+
+  @override
+  String get historySavedEmptyTitle => 'No saved alarms';
+
+  @override
+  String get historySavedEmptyMessage =>
+      'Alarms you save without starting appear here.';
+
+  @override
+  String get viewAllActiveInHistory => 'View all active in History';
+
+  @override
+  String get historyStatusTracking => 'Tracking';
+
+  @override
+  String get historyStartedAt => 'Started';
 
   @override
   String get deleteEntryTitle => 'למחוק רשומה?';
@@ -689,10 +793,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get debugSnapshotCopied => 'תמונת Debug הועתקה';
 
   @override
-  String get fgsStartingTitle => 'Nomad Alarm';
+  String get fgsStartingTitle => 'Starting location tracking…';
 
   @override
-  String get fgsStartingContent => 'מתחיל מעקב מיקום…';
+  String get fgsStartingContent => 'Preparing GPS…';
 
   @override
   String get resumeAlarmAfterBoot => 'המשך התראה אחרי אתחול';
@@ -953,7 +1057,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get cloudBackupUpload => 'העלה גיבוי לענן';
 
   @override
-  String get cloudBackupUrlHint => 'כתובת HTTPS להעלאה';
+  String get cloudBackupUrlHint => 'העלה גיבויים לשרת HTTPS שלך.';
 
   @override
   String get cloudBackupSuccess => 'הגיבוי הועלה בהצלחה';
@@ -968,7 +1072,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get lockScreenInfo => 'הצג במסך נעילה';
 
   @override
-  String get lockScreenInfoSubtitle => 'הצג מרחק ו-ETA בהתראת מסך נעילה';
+  String get lockScreenInfoSubtitle => 'הצג מרחק ו-ETA במסך הנעילה.';
 
   @override
   String get notifInternetLostTitle => 'חיבור האינטרנט אבד';
@@ -1001,6 +1105,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get highContrastSubtitle => 'הגבר ניגודיות לקריאות';
 
   @override
+  String get accessibilitySection => 'נגישות';
+
+  @override
   String get voiceSearchHint => 'אמור שם יעד';
 
   @override
@@ -1020,6 +1127,31 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get newAlarm => 'התראה חדשה';
+
+  @override
+  String get createAlarmSheetTitle => 'Create alarm';
+
+  @override
+  String get importAlarm => 'Import alarm';
+
+  @override
+  String get alarmStatusSaved => 'Saved';
+
+  @override
+  String get startAlarm => 'Start';
+
+  @override
+  String get deleteSavedAlarmTitle => 'Delete saved alarm?';
+
+  @override
+  String deleteSavedAlarmBody(String name) {
+    return 'Remove \"$name\"?';
+  }
+
+  @override
+  String activeAlarmsNotificationTitle(int count) {
+    return '$count active alarms';
+  }
 
   @override
   String get alarmStatusTracking => 'מעקב';
@@ -1053,6 +1185,49 @@ class AppLocalizationsHe extends AppLocalizations {
   String get configureAndSave => 'הגדר ושמור';
 
   @override
+  String get configure => 'הגדר';
+
+  @override
+  String saveAndUseProvider(String provider) {
+    return 'שמור והשתמש ב-$provider';
+  }
+
+  @override
+  String get manageCredentials => 'נהל אישורים';
+
+  @override
+  String get editCredentials => 'ערוך אישורים';
+
+  @override
+  String get removeCredentials => 'הסר אישורים';
+
+  @override
+  String get testConnection => 'בדוק חיבור';
+
+  @override
+  String get credentialRequired => 'נדרש';
+
+  @override
+  String get credentialOptional => 'אופציונלי';
+
+  @override
+  String get providerConfigured => 'מוגדר';
+
+  @override
+  String get googleMapsConfiguredSuccess => 'Google Maps הוגדר.';
+
+  @override
+  String removeCredentialsConfirm(String provider) {
+    return 'להסיר אישורים שמורים עבור $provider?';
+  }
+
+  @override
+  String get testFailed => 'החיבור נכשל';
+
+  @override
+  String get testPassed => 'החיבור הצליח';
+
+  @override
   String get providerSaveBlocked => 'השמירה חסומה עד להזנת מפתח API תקין.';
 
   @override
@@ -1063,7 +1238,17 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get credentialGoogleMapsBody =>
-      'מפתח אחד מכסה Maps, Places ו-Directions כשהם מופעלים.';
+      'השתמש במפתח Google API סטנדרטי אחד. הפעל את ה-APIs למטה באותו פרויקט ב-Google Cloud Console, והדבק את המפתח.';
+
+  @override
+  String googleTestResultOk(String service) {
+    return '$service: OK';
+  }
+
+  @override
+  String googleTestResultFailed(String service) {
+    return '$service: נכשל';
+  }
 
   @override
   String get credentialMapboxTitle => 'Mapbox דורש אסימון גישה';
@@ -1152,13 +1337,13 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get resumeAlarmAfterBootBatteryWarning =>
-      'הפעל מעקב מחדש לאחר אתחול. צורך יותר סוללה.';
+      'חדש התראות פעילות אוטומטית לאחר הפעלה מחדש. עלול להגדיל שימוש בסוללה.';
 
   @override
   String get uploadBackupViaHttps => 'העלה גיבוי דרך HTTPS';
 
   @override
-  String get shareLiveTrip => 'שתף נסיעה חיה';
+  String get shareLiveTrip => 'שתף התראה';
 
   @override
   String get importSharedAlarm => 'ייבא התראה משותפת';
@@ -1192,4 +1377,129 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get languageEndonymHint => 'שמות השפות מוצגים בכתב המקורי שלהן';
+
+  @override
+  String get shareAlarmTitle => 'Share Alarm';
+
+  @override
+  String get shareAlarmSubtitle => 'Share this alarm with someone else.';
+
+  @override
+  String get shareModePackageTitle => 'Alarm Package';
+
+  @override
+  String get shareModePackageSubtitle =>
+      'Complete alarm configuration file (.nomadalarm)';
+
+  @override
+  String get shareModeDestinationTitle => 'Destination Only';
+
+  @override
+  String get shareModeDestinationSubtitle => 'Maps link anyone can open';
+
+  @override
+  String get shareModeQrTitle => 'QR Code';
+
+  @override
+  String get shareModeQrSubtitle => 'Generate a scannable code';
+
+  @override
+  String get shareModeCopyCoordsTitle => 'Copy Coordinates';
+
+  @override
+  String get sharePreviewTitle => 'Share preview';
+
+  @override
+  String get shareCoordsCopied => 'Coordinates copied';
+
+  @override
+  String get recommendedLabel => 'Recommended';
+
+  @override
+  String get enabledLabel => 'Enabled';
+
+  @override
+  String get disabledLabel => 'Disabled';
+
+  @override
+  String get importPreviewTitle => 'Import Shared Alarm';
+
+  @override
+  String get importPreviewDestination => 'Destination';
+
+  @override
+  String get importPreviewCoordinates => 'Coordinates';
+
+  @override
+  String get importEditBeforeSaving => 'Edit Before Saving';
+
+  @override
+  String get importSuccessTitle => 'Alarm Imported';
+
+  @override
+  String get importStartNow => 'Start Now';
+
+  @override
+  String get importSuccessEdit => 'Edit';
+
+  @override
+  String get importSuccessBack => 'Back';
+
+  @override
+  String get importErrorMissingCoordinates => 'Missing coordinates.';
+
+  @override
+  String get importErrorUnsupportedVersion => 'Unsupported version.';
+
+  @override
+  String get importErrorCorruptedFile => 'Corrupted file.';
+
+  @override
+  String get importDuplicateTitle => 'This alarm already exists.';
+
+  @override
+  String get importDuplicateBody =>
+      'An alarm for this destination is already saved.';
+
+  @override
+  String get importDuplicateUpdate => 'Update Existing';
+
+  @override
+  String get importDuplicateCreateCopy => 'Create Copy';
+
+  @override
+  String get importSourceFile => 'Browse file (.nomadalarm / .json)';
+
+  @override
+  String get importSourceQr => 'Scan QR code';
+
+  @override
+  String get importSourceClipboard => 'Paste from clipboard';
+
+  @override
+  String get importClipboardDetected => 'Shared alarm detected.';
+
+  @override
+  String importBundleTitle(int count) {
+    return '$count alarms found';
+  }
+
+  @override
+  String get importBundleBody => 'Import all alarms from this bundle?';
+
+  @override
+  String get importBundleAll => 'Import All';
+
+  @override
+  String get importBundleFirstOnly => 'First Only';
+
+  @override
+  String importPreviewProgress(int current, int total) {
+    return 'Alarm $current of $total';
+  }
+
+  @override
+  String importProgressSaved(int current, int total) {
+    return 'Saved $current of $total';
+  }
 }

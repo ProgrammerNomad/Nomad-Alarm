@@ -6,6 +6,7 @@ import 'package:nomad_alarm/services/backup_service.dart';
 import 'package:nomad_alarm/services/boot_prefs_sync.dart';
 import 'package:nomad_alarm/services/cloud_backup_service.dart';
 import 'package:nomad_alarm/services/deep_link_service.dart';
+import 'package:nomad_alarm/services/import_intent_service.dart';
 import 'package:nomad_alarm/services/isar_service.dart';
 import 'package:nomad_alarm/services/offline_tile_service.dart';
 import 'package:nomad_alarm/services/permission_service.dart';
@@ -57,5 +58,6 @@ final deferredInitProvider = FutureProvider<void>((ref) async {
   await WidgetService.initialize();
   await TileService.initialize();
   await DeepLinkService.initialize();
+  await ImportIntentService.initialize();
   await OfflineTileService.initialize();
 });

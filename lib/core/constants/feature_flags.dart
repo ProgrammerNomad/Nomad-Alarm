@@ -22,6 +22,7 @@ abstract class FeatureFlags {
   static const bool aiEtaPrediction = true;
   static const bool groupTravel = true;
   static const bool familySharing = true;
+  static const bool qrImport = true;
   static const bool cloudBackup = true;
   static const bool voiceSearch = true;
 
